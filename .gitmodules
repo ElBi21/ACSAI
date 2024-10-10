@@ -1,0 +1,3 @@
+[submodule "NoTeX"]
+	path = NoTeX
+	url = https://github.com/ElBi21/NoTeX.git
