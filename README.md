@@ -1,3 +1,64 @@
 <h1 align="center">My ACSAI</h1>
 
 This repo represents a collection of notes, tools, projects and stuff that I used while studying for my BSc course @ Sapienza. I am (still) enrolled in the **A**pplied **C**omputer **S**cience and **A**rtificial **I**ntelligence course (shorted in ACSAI, because as it is known, the longer the name of a programme, the ~~more stupid~~ better it is).
+
+The notes contained here are made with my template, [NoTeX](https://www.github.com/ElBi21/NoTeX), which is also contained as a submodule. Hence, if you want to correct some errors, make sure to clone the whole repo.
+
+
+> [!NOTE]
+> While these notes *may* seem correct, they may have some conceptual errors. If you do find some, feel free to open a PR!
+>
+> Since the repo uses a submodule, make sure to clone that too. You can use directly the following command:
+> ```bash
+> git clone https://github.com/ElBi21/ACSAI --recurse-submodules
+> ```
+
+## Content of the repo
+
+<div align="left">
+  <details>
+    <summary><b>3rd Year Content</b></summary>
+    <table align="center">
+      <tr>
+        <th align="center">Course</th>
+        <th align="center">Semester</th>
+        <th align="center">Language</th>
+        <th align="center">Notes?</th>
+        <th align="center">Code?</th>
+      </tr>
+      <tr>
+        <td align="center">Programmazione di Sistemi<br>Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
+        <td align="center" rowspan=6>1st Semester</td>
+        <td align="center">🇮🇹</td>
+        <td align="center">✓</td>
+        <td align="center">✓</td>
+      </tr>
+      <tr>
+        <td align="center">Foundations of<br>Computer Science<br><sub>Prof. Daniele Gorla</sub></td>
+        <td align="center" rowspan=5>🇬🇧</td>
+        <td align="center">✓</td>
+        <td align="center">×</td>
+      </tr>
+      <tr>
+        <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso & Marco Raoul Marini</sub></td>
+        <td align="center">✓</td>
+        <td align="center">×</td>
+      </tr>
+      <tr>
+        <td align="center">Cybersecurity<br><sub>Prof. Angelo Spognardi</sub></td>
+        <td align="center">✓</td>
+        <td align="center">×</td>
+      </tr>
+      <tr>
+        <td align="center">Web and Software<br>Architecture<br><sub>Prof. Emanuele Panizzi</sub></td>
+        <td align="center">✓</td>
+        <td align="center">×</td>
+      </tr>
+      <tr>
+        <td align="center">Business and Computer Science<br><sub>Prof. Riccardo Savio</sub></td>
+        <td align="center">✓</td>
+        <td align="center">×</td>
+      </tr>
+    </table>
+  </details>
+</div>
