@@ -1,2 +1,6 @@
+# Tectonic
 *.log
 *.synctex.gz
+
+# C
+*.o
