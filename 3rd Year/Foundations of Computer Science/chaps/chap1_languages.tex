@@ -1,2 +1,24 @@
 \chapter{Languages}
 
+While we may think that computers are just machines, there is an incredible work behind that aims to make some kind of language that computers can understand. It is well renewed that computers act depending on streams of binary code, but that same stream of binary code can be considered as a language, something that the computers "speak" and "think" with. Let's define more in detail this "computers' language".
+
+\begin{definition}{Alphabeth and Strings}
+    An \textbf{alphabet} $\Sigma$ is a \textbf{non-empty}, \textbf{finite set}, which contains elements called \textbf{symbols} (or \textbf{characters}). For instance, the following two sets are considered alphabets:
+    \begin{itemize}
+        \item $\quad \Sigma = \{0, \; 1\}$
+        \item $\quad \Sigma = \{a, \; b, \; c, \; \dots, \; x, \; y, \; z \}$
+    \end{itemize}
+    
+    \noindent A \textbf{string} $w$ over an alphabet $\Sigma$ is a \textbf{sequence of symbols}, all belonging to $\Sigma$, which are all written one after the other and aren't separated by other symbols
+\end{definition}
+
+\noindent Strings also have different properties, such as a \textbf{length}, a \textbf{reverse} and the possibility to include one or more \textbf{substrings}:
+\begin{itemize}
+    \item \textbf{Length}: defined as $|w|$, it denotes the \textbf{number of symbols} contained within $w$. If a string has length $0$, then such string is called \textbf{empty string}, and is denoted with $\epsilon$;
+    \item \textbf{Reverse}: defined as $w^R$, the reverse is a string which contains all the symbols of $w$ in the reverse order;
+    \item \textbf{Substring}: we say that a string $z$ is a substring of $w$ if $z$ appears consecutively within $w$.
+\end{itemize}
+
+\begin{example}
+    For instance, the string $w = 00101$ has a length of $5$, its reverse is $w^R = 10100$, and has, as possible substrings the following: $001, 10, \epsilon$. Its alphabet is $\Sigma = \{0, \; 1\}$
+\end{example}
