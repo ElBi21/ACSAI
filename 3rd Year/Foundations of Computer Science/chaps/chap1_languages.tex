@@ -22,3 +22,59 @@ While we may think that computers are just machines, there is an incredible work
 \begin{example}
     For instance, the string $w = 00101$ has a length of $5$, its reverse is $w^R = 10100$, and has, as possible substrings the following: $001, 10, \epsilon$. Its alphabet is $\Sigma = \{0, \; 1\}$
 \end{example}
+
+\noindent When we have two strings $x$ and $y$, we can \textbf{concatenate} them by appending $y$ at the end of $x$. The result is denoted as $xy$. Clearly, the length of the concatenated string is equal to the sum of the length of the two strings ($|xy| = |x| + |y|$). A specific notation $x^k$ denotes the concatenation of string $x$ with itself for $k$ times. So, if $x$ was for instance "$01$", then we would have that
+\[ x^0 = \epsilon \quad \quad x^1 = 01 \quad \quad x^2 = 0101 \quad \quad x^3 = 010101 \quad \text{and so on...} \]
+
+\noindent By combining the definitions of concatenation and substring, we can define properly what a \textbf{prefix} and \textbf{suffix} is:
+\begin{itemize}
+    \item \textbf{Prefix}: we say that a string $x$ is a prefix of a string $z$ if there exists a string $y$ such that $z = xy$. Moreover, we say that $x$ is a \textbf{proper prefix} of $z$ if, additionally, $x \neq z$, so if $y \neq \epsilon$;
+    \item \textbf{Suffix}: we say that a string $x$ is a suffix of a string $z$ if there exists a string $y$ such that $z = yx$. Moreover, we say that $x$ is a \textbf{proper suffix} of $z$ if, additionally, $x \neq z$, so if $y \neq \epsilon$.
+\end{itemize}
+
+\noindent Given these tools, we can now define what a language is:
+
+\begin{definition}{Language}
+    A \textbf{language} is a \textbf{set of strings}. It is also defined as \textbf{prefix-free} if no member is a proper prefix of any other member
+\end{definition}
+
+\noindent Languages can follow an order. There are different types of orders, one of which is the \textbf{lexicographic order}, which is defined by the order of the alphabet; we can think of it as the familiar dictionary order. Another order is the \textbf{shortlex order} (or \textbf{string order}), which is the same of the lexicographic order with the exception that shorter strings precede longer strings.
+
+\section{Automaton}
+
+We know that sometimes circuits can use the output from a given combination of inputs as input for the next output. In that case, we talk about circuits with states, or more specifically, we talk about \textbf{automata}.
+
+\begin{definition}{Automaton}
+    We define a \textbf{finite automaton} as a tuple of 5 elements $(Q, \; \Sigma, \; \delta, \; q_{0}, \; F)$, where:
+    \begin{itemize}
+        \item $Q$ is a finite set, denoting the \textbf{states} that the automaton can reach;
+        \item $\Sigma$ is a finite set, denoting the \textbf{alphabet} of the automaton;
+        \item $\delta$ is a function, called \textbf{transition function}, which given $Q$ and $\Sigma$ returns the set of next states $Q'$;
+        \[ \delta \; : \; Q \times \Sigma \longmapsto Q'  \]
+        \item $q_{0} \in Q$ is a state, and denotes the \textbf{starting state} of the automaton;
+        \item $F \subseteq Q$ is a finite set, denoting the set of \textbf{accepted states} (or \textbf{final states}). An accepted state tells the automata if a string can be accepted or not.
+    \end{itemize}
+\end{definition}
+
+\noindent Let's make an example:
+
+\begin{example}
+    Consider the following tuple: 
+    \[ (\{ q_{1}, \; q_{2}, \; q_{3} \}, \{ 0, \; 1 \}, \delta, \; q_{1}, \; q_{2}) \]
+    
+    \noindent It denotes that we have 3 possible states $\{ q_{1}, \; q_{2}, \; q_{3} \}$, the alphabet is made of 2 symbols, $\{ 0, \; 1 \}$, the starting state is $q_{1}$, the final state is $q_{2}$ and the transition function is $\delta$. Such transition function could be the following: 
+    \begin{center}
+        \begin{tabular}{c|c c}
+            & 0 & 1 \\
+            \hline
+            $q_{1}$ & $q_{1}$ & $q_{2}$ \\
+            $q_{2}$ & $q_{3}$ & $q_{2}$ \\
+            $q_{3}$ & $q_{2}$ & $q_{2}$
+        \end{tabular}
+    \end{center}
+    
+    \noindent We can represent it visually as follows:
+    \begin{center}
+        \includegraphics[scale = 0.25]{imgs/001.png}
+    \end{center}
+\end{example}
