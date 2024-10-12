@@ -40,11 +40,11 @@ While we may think that computers are just machines, there is an incredible work
 
 \noindent Languages can follow an order. There are different types of orders, one of which is the \textbf{lexicographic order}, which is defined by the order of the alphabet; we can think of it as the familiar dictionary order. Another order is the \textbf{shortlex order} (or \textbf{string order}), which is the same of the lexicographic order with the exception that shorter strings precede longer strings.
 
-\section{Automaton}
+\section{Deterministic Finite Automata (DFA)}
 
 We know that sometimes circuits can use the output from a given combination of inputs as input for the next output. In that case, we talk about circuits with states, or more specifically, we talk about \textbf{automata}.
 
-\begin{definition}{Automaton}
+\begin{definition}{Deterministic Finite Automaton (DFA)}
     We define a \textbf{finite automaton} as a tuple of 5 elements $(Q, \; \Sigma, \; \delta, \; q_{0}, \; F)$, where:
     \begin{itemize}
         \item $Q$ is a finite set, denoting the \textbf{states} that the automaton can reach;
@@ -78,3 +78,46 @@ We know that sometimes circuits can use the output from a given combination of i
         \includegraphics[scale = 0.25]{imgs/001.png}
     \end{center}
 \end{example}
+
+\noindent Automata change states depending on the string that they receive in input. So when a string $x$ is given to the automaton, it goes through the string symbol by symbol, and changes states depending on the input characters read and the result of the transition function. If, after reading the whole string, the automaton arrives at a final input, then we say that it \textbf{accepts} the string, otherwise it \textbf{rejects} it.
+
+\begin{definition}{Language of an automaton and Regular Language}
+    The \textbf{language of an automaton} $M$, denoted as $L(M)$, is the \textbf{set} of all those \textbf{input strings} which make the automaton \textbf{go} from the starting state \textbf{to} a \textbf{final state}.
+    \\\\
+    \noindent More specifically: given an automaton $M = (Q, \; \Sigma, \; \delta, \; q_{0}, \; F)$ and let $w$ be a string of $n$ symbols where $w_i$ denotes the $i^\text{th}$ symbol of the string; let also that
+    \[ \forall \; w_{i} \in w, \text{ then } w_{i} \in \Sigma \]
+    
+    \noindent Then, we say that $M$ accepts $w$ if there exists a set of states $r = \{ r_{0}, \; r_{1}, \; \dots, \; r_{n} \} \in Q$ which respects all the following three conditions:
+    \begin{itemize}
+        \item $r_0 = q_0$: the first state of $r$ must coincide with the initial state;
+        \item $\delta(r_{i}, \; w_{i + 1}) = r_{i + 1}, \; \forall  i \in [0, \; 1, \; \dots, \; n-1]$: each character must lead to a transition of state;
+        \item $r_{n} \in F$: the final state in $r$ should be in $F$.
+    \end{itemize}
+    
+    \noindent $M$ recognizes a language $A$ If
+    \[ A = \{ w \; | \; M \text{ accepts } w \} \]
+
+    \noindent A \textbf{language} $L$ is said to be \textbf{regular} if there exists a finite automaton $M$ which accepts $L$
+\end{definition}
+
+\noindent Note that it's possible for an automaton to have that $q_{0} \in F$.
+
+\section{Non-Deterministic Finite Automata (NFA)}
+
+With DFA, we always knew that, given a current state $q_i$ and a character $w_i \in \Sigma$, then we would \textbf{always know} what the \textbf{next state} would be. There is another type of automata which breaks this deterministic rule, and is called \textbf{non-deterministic finite automata}.
+
+\begin{definition}{Non-Deterministic Finite Automaton (NFA)}
+    A \textbf{non-deterministic finite automaton} (\textbf{NFA}) is an automaton denoted by a tuple of 5 elements $(Q, \; \Sigma, \; \delta, \; q_{0}, \; F)$ where:
+    \begin{itemize}
+        \item $Q$ is a finite set of \textbf{states} that the automaton can reach;
+        \item $\Sigma$ denotes a finite \textbf{alphabet} recognized by the automaton;
+        \item $\delta$ is the \textbf{transition function}, which given $Q$ and $\Sigma_\epsilon$ returns the \textbf{power set} of $Q$ (denoted by $\mathcal{P}(Q)$);
+        \[ \delta \; : \; Q \times \Sigma_\epsilon \longmapsto \mathcal{P}(Q) \]
+
+        \item $q_{0} \in Q$ is the \textbf{starting state} of the automaton;
+        \item $F \subseteq Q$ is the set of \textbf{accepted states}.
+    \end{itemize}
+
+    \noindent The power set $\mathcal{P}(Q)$ of a set $Q$ is the set of all subsets of $Q$, for any $Q$; the alphabet denoted with $\Sigma_\epsilon$ is equal to $\Sigma \cup \{ \epsilon \}$.
+\end{definition}
+
