@@ -45,7 +45,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">Programmazione di Sistemi<br>Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
     <td align="center">🇮🇹</td>
     <td align="center">✓</td>
-    <td align="center">✓</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Progettazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
   </tr>
   <tr>
     <td align="center">Foundations of<br>Computer Science<br><sub>Prof. Daniele Gorla</sub></td>
