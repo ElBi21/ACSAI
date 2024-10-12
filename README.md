@@ -32,8 +32,8 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <th align="center">Code?</th>
   </tr>
   <tr>
-    <td align="center" rowspan=4>2nd Year</td>
-    <td align="center" rowspan=4>1st Semester</td>
+    <td align="center">2nd Year</td>
+    <td align="center">1st Semester</td>
     <td align="center">Systems and Networking<br><sub>Prof. Gabriele Tolomei and Novella Bartolini</sub></td>
     <td align="center">🇬🇧</td>
     <td align="center">✓</td>
