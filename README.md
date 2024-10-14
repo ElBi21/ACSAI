@@ -1,4 +1,4 @@
-<h1 align="center">ACSAI</h1>
+<h1 align="center">My ACSAI Journey</h1>
 
 This repo represents a collection of notes, tools, projects and stuff that I used while studying for my BSc course @ Sapienza. I am (still) enrolled in the **A**pplied **C**omputer **S**cience and **A**rtificial **I**ntelligence course (shorted in ACSAI, because as it is known, the longer the name of a programme, the ~~more stupid~~ better it is).
 
@@ -23,6 +23,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <th align="center">Language</th>
     <th align="center">Notes?</th>
     <th align="center">Code?</th>
+    <th align="center">Requires Completion?</th>
   </tr>
   <tr>
     <td align="center" rowspan="2">2nd Year</td>
@@ -31,6 +32,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">🇬🇧</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/2nd%20Year/Systems%20and%20Networking/Systems%20and%20Networking%20Notes.pdf">PDF</a>]</td>
     <td align="center">×</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center">2nd Semester</td>
@@ -38,6 +40,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">🇬🇧</td>
     <td align="center">×</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/2nd%20Year/AI%20Lab%3A%20Computer%20Vision%20and%20NLP">Code</a>]</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center" rowspan=6>3rd Year</td>
@@ -46,31 +49,37 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">🇮🇹</td>
     <td align="center">✓</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Progettazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
+    <td align="center">N/A</td>
   </tr>
   <tr>
     <td align="center">Foundations of<br>Computer Science<br><sub>Prof. Daniele Gorla</sub></td>
     <td align="center" rowspan=5>🇬🇧</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Foundations%20of%20Computer%20Science/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
+    <td align="center">N/A</td>
   </tr>
   <tr>
     <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso & Marco Raoul Marini</sub></td>
     <td align="center">✓</td>
     <td align="center">×</td>
+    <td align="center">N/A</td>
   </tr>
   <tr>
     <td align="center">Cybersecurity<br><sub>Prof. Angelo Spognardi</sub></td>
     <td align="center">✓</td>
     <td align="center">×</td>
+    <td align="center">N/A</td>
   </tr>
   <tr>
     <td align="center">Web and Software<br>Architecture<br><sub>Prof. Emanuele Panizzi</sub></td>
     <td align="center">✓</td>
     <td align="center">×</td>
+    <td align="center">N/A</td>
   </tr>
   <tr>
     <td align="center">Business and Computer Science<br><sub>Prof. Riccardo Savio</sub></td>
     <td align="center">×</td>
     <td align="center">×</td>
+    <td align="center">N/A</td>
   </tr>
 </table>
