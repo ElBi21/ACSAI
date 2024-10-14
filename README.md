@@ -59,7 +59,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">N/A</td>
   </tr>
   <tr>
-    <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso & Marco Raoul Marini</sub></td>
+    <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco Raoul Marini</sub></td>
     <td align="center">✓</td>
     <td align="center">×</td>
     <td align="center">N/A</td>
