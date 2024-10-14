@@ -1,1 +1,23 @@
-% Test
+\documentclass[]{../../../NoTeX/notex}
+\usepackage{../../../NoTeX/notexmacros}
+
+\newlength\tindent
+\setlength{\tindent}{\parindent}
+\setlength{\parindent}{0pt}
+\renewcommand{\indent}{\hspace*{\tindent}}
+
+%\renewcommand*\ttdefault{cmvtt}
+
+\title{\textsc{Progettazione di Sistemi Embedded e Multicore}}
+\author{Leonardo Biason}
+
+\begin{document}
+
+\maketitle
+
+\input{chaps/chap1_intro.tex}
+\pagebreak
+
+\input{chaps/chap2_mpi.tex}
+
+\end{document}

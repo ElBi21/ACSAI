@@ -1,0 +1,78 @@
+\chapter{Message Passing Interface (MPI)}
+
+\textbf{MPI} (acronimo di \textbf{M}essage \textbf{P}assing \textbf{I}nterface) è una libreria usata per \textbf{programmare sistemi a memoria distribuita}, e delle varie librerie menzionate nell'introduzione è l'unica pensata per sistemi a memoria distribuita. Questo vuol dire che la memoria e il core usato per ogni thread o processo sono \textbf{unici}. Tale core e memoria possono essere collegati attraverso vari metodi: un bus, la rete, etc...
+\\\\
+MPI fa uso del paradigma \textbf{Single Program Multiple Data} (\textbf{SPMD}), quindi ci sarà un \textbf{unico programma} che verrà compilato e poi eseguito da vari processi o threads. Per determinare cosa ogni processo o thread deve fare, si usa semplicemente un'istruzione di \textbf{branching}, come l'\texttt{if-else} o lo \texttt{switch}.
+\\\\
+Siccome la memoria non è condivisa tra i vari processi, l'unico modo per passarsi dei dati è attraverso l'invio di \textbf{messaggi} (da qui il nome della libreria). Per esempio, abbiamo visto come fare un semplice "Hello world" in C in modo sequenziale, ma possiamo anche renderlo parallelo tramite MPI. Ad esempio:
+\\
+\begin{codeblock}
+    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+#include <stdio.h>
+
+int main() {
+    printf("Hello world");
+    return 0;
+}   \end{lstlisting}
+\end{codeblock}
+
+Per rendere questo Hello World un programma parallelo tramite MPI, serve includere la libreria \texttt{mpi.h} e usare alcune funzioni della libreria. Vediamo intanto come potremmo scrivere il programma:
+\\
+\begin{codeblock}
+    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+#include <stdio.h>
+#include <mpi.h>
+
+int main(void) {
+    // Per usare MPI, serve usare una funzione chiamata MPI_INIT;
+    int r = MPI_Init(NULL, NULL);
+
+    if(r != MPI_SUCCESS) {
+        printf("C'è stato un errore con il programma");
+        MPI_Abort(MPI_COMM_WORLD, r);
+    }
+
+    printf("Hello world");
+
+    // Per terminare l'esecuzione di tutti i threads si usa MPI_Finalize
+    MPI_Finalize();
+    return 0;
+}   \end{lstlisting}
+\end{codeblock}
+
+Nel precedente codice sono state usate alcune funzioni e alcuni valori di MPI, che possiamo notare grazie al prefix "\texttt{MPI\_}", \textbf{comune a tutte le definizioni}, siano esse di funzioni, variabili o costanti, \textbf{della libreria}:
+\begin{itemize}
+    \item \verb|MPI_Init()|: \textbf{inizializza} un programma su più processi o threads, e restituisce come output un \texttt{int}, che identifica se è stato possibile inizializzare con successo la libreria di MPI o meno (ovverosia restituisce 0 se la libreria è stata inizializzata con successo, un altro numero altrimenti);
+    \item \verb|MPI_SUCCESS|: è il segnale con cui è possibile comparare l'output di \verb|MPI_Init| per controllare se MPI è stato inizializzato correttamente o meno;
+    \item \verb|MPI_Abort(MPI_COMM_WORLD, <mpi_boot_result>)|: \textbf{abortisce} l'esecuzione di MPI, ad esempio nel caso in cui l'inizializzazione non sia stata eseguita con successo;
+    \item \verb|MPI_Finalize()|: \textbf{interrompe} l'esecuzione di MPI a fine programma.
+\end{itemize}
+
+Per compilare ed eseguire un programma con MPI si usa \texttt{mpicc}, che è un wrapper del compilatore \texttt{gcc} di C. Un comando che viene usato per compilare un programma che usa MPI può essere il seguente:
+
+\begin{lstlisting}[language = bash, numbers = none, columns=fullflexible]
+    $ mpicc <file>.c -o <output>
+    $ mpicc -g -Wall <file>.c -o <output>    # Fa stampare i warning in console
+\end{lstlisting}
+
+Il compilatore ha molte flags che possono essere usate, così da personalizzare il processo di compilazione. Nel secondo comando si può notare l'uso di due flags che possono risultare comode in fase di debug:
+\begin{itemize}
+    \item \verb|-Wall|: fa stampare in console \textbf{tutti i warnings} del compilatore;
+    \item \verb|-g|: fa stampare in console varie \textbf{informazioni di debug}.
+\end{itemize}
+
+Questo è per quanto riguarda la compilazione, ma per eseguire il programma invece? Dovremo usare \texttt{mpirun}, attraverso il seguente comando:
+
+\begin{lstlisting}[language = bash, numbers = none, columns=fullflexible]
+    $ mpirun -n <numero_core_fisici> <programma>
+    $ mpirun --oversubscribe -n <numero_core> <programma>
+            # Permette di usare più core di quelli fisici
+\end{lstlisting}
+
+Normalmente MPI esegue il codice solo sui core fisici di una CPU, tuttavia è possibile far sì che questa limitazione non venga considerata. La flag \verb|--oversubscribe| permette di lanciare il programma su $n$ processi, dove $n \geq \text{numero di core fisici}$.
+\\\\
+In un programma complesso, è spesso utile sapere quale core esegue quale parte di programma, magari anche per assegnare dei compiti diversi ad ogni core. In questi casi, possiamo differenziare i processi in base al loro \textbf{rank}.
+
+\begin{definition}{Rank}
+    Il \textbf{rank} di un processo appartenente a un programma di MPI è un \textbf{indice incrementale}, nell'intervallo $[0, \; 1, \; 2, \; \dots , \; p)$, che viene assegnato ad ogni processo.
+\end{definition}
