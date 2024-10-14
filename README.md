@@ -36,8 +36,8 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">2nd Semester</td>
     <td align="center">AI Lab: Computer Vision and NLP<br><sub>Prof. Daniele Pannone</sub></td>
     <td align="center">🇬🇧</td>
-    <td align="center">✓</td>
-    <td align="center">✓</td>
+    <td align="center">×</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/2nd%20Year/AI%20Lab%3A%20Computer%20Vision%20and%20NLP">Code</a>]</td>
   </tr>
   <tr>
     <td align="center" rowspan=6>3rd Year</td>
