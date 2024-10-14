@@ -15,13 +15,6 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
 
 ## Content of the repo
 
-<div align="left">
-  <details>
-    <summary><b>3rd Year Content</b></summary>
-    
-  </details>
-</div>
-
 <table align="center">
   <tr>
     <th align="center">Year</th>
