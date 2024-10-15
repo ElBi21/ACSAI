@@ -13,7 +13,7 @@ Siccome la memoria non è condivisa tra i vari processi, l'unico modo per passar
 int main() {
     printf("Hello world");
     return 0;
-}   \end{lstlisting}
+}\end{lstlisting}
 \end{codeblock}
 
 Per rendere questo Hello World un programma parallelo tramite MPI, serve includere la libreria \texttt{mpi.h} e usare alcune funzioni della libreria. Vediamo intanto come potremmo scrivere il programma:
@@ -37,7 +37,7 @@ int main(void) {
     // Per terminare l'esecuzione di tutti i threads si usa MPI_Finalize
     MPI_Finalize();
     return 0;
-}   \end{lstlisting}
+}\end{lstlisting}
 \end{codeblock}
 
 Nel precedente codice sono state usate alcune funzioni e alcuni valori di MPI, che possiamo notare grazie al prefix "\texttt{MPI\_}", \textbf{comune a tutte le definizioni}, siano esse di funzioni, variabili o costanti, \textbf{della libreria}:
@@ -75,4 +75,74 @@ In un programma complesso, è spesso utile sapere quale core esegue quale parte 
 
 \begin{definition}{Rank}
     Il \textbf{rank} di un processo appartenente a un programma di MPI è un \textbf{indice incrementale}, nell'intervallo $[0, \; 1, \; 2, \; \dots , \; p)$, che viene assegnato ad ogni processo.
+\end{definition}
+
+% ...
+
+\section{Misurazione delle Prestazioni}
+
+Una volta che sviluppiamo un programma con MPI, è importante misurarne le prestazioni. Esistono vari modi per controllare l'efficienza di un programma, e qui ne vedremo alcuni.
+\\\\
+Un modo molto semplice per capire l'efficienza di un programma consiste nel misurare il tempo di esecuzione, e possiamo farlo tramite la funzione \verb|MPI_Wtime()|, la quale ritorna un timestamp che misura il tempo dal momento in cui il programma viene eseguito. Per poter ottenere il tempo di esecuzione, bisognerà sottrarre dal tempo a fine esecuzione il tempo di quanto la funzione viene chiamata.
+\\\\
+In un programma parallelo, ogni processo calcola il suo tempo, ma può essere che alcuni processi impieghino meno tempo, soprattutto se ogni processo esegue operazioni diverse. Per questo motivo, l'efficienza si calcola considerando il tempo maggiore. Per ovviare a questo problema, tutti i processi possono mandare a un solo processo i loro tempi, e tramite una chiamata di \verb|MPI_Reduce()| si può ritornare solo il tempo maggiore.
+
+\begin{codeblock}
+    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+double local_start, local_finish, local_elapsed, elapsed;
+local_start = MPI_Wtime();
+
+// Codice...
+
+local_finish = MPI_Wtime();
+local_elapsed = local_finish - local_start;
+
+MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+if (rank == 0) {
+    printf("Tempo totale di esecuzione: %e\n", elapsed);
+}\end{lstlisting}
+\end{codeblock}
+
+Tuttavia, un altro problema si presenta: \textbf{non tutti i processi possono iniziare allo stesso tempo}. E questo chiaramente è un problema, soprattutto se il processo che inizia in ritardo inizia parecchio in ritardo. Un modo per far sì che tutti i processi inizino assieme è tramite l'uso di una funzione chiamata \verb|MPI_Barrier()|. Tale funzione è una \textbf{funzione collettiva}, che si propaga a tutti i processi, e che li blocca fino al momento in cui tutti non raggiungono tale barriera. Possiamo considerare questa funzione come una sorta di checkpoint, che \textbf{posta all'inizio del programma} fa sì che tutti i processi inizino ad eseguire il loro codice "assieme".
+\\\\
+Tuttavia, se anche questa collettiva generasse ritardi venendo propagata, non avremmo più un inizio collettivo. Riuscire a sincronizzare tutti i processi assieme è complicato, e richiederebbe l'uso di clock interni per ogni core. Tuttavia, in casi in cui non sia fondamentale avere grande precisione, \verb|MPI_Barrier()| \textbf{garantisce} una \textbf{buona approssimazione}.
+\\\\
+Ma è abbastanza eseguire l'applicazione solo una volta per avere una buona misurazione? Generalmente no, e ci sono vari motivi: sappiamo che il sistema operativo, di tanto in tanto, può effettuare dei cambi di contesto, per cui uno o più core vengono usati per eseguire delle operazioni dell'OS. Questo chiaramente può aumentare i tempi per alcune esecuzioni. In altri casi invece potrebbe essere che lo scheduler della memoria liberi la cache prima del necessario, etc...
+\\\\
+Tali motivi di ritardo vengono chiamati \textbf{rumore} (o \textbf{noise}). In genere, per misurare l'efficienza di un programma, \textbf{conviene sempre basarsi su tutte le esecuzioni di un programma}, considerando media, mediana, il tipo di distribuzione, eventuali intervalli di confidenza, etc... Il tempo di esecuzione minimo, da solo, non indica molto, poiché per vari motivi di interferenza può non sempre (e in realtà non accade quasi mai) indicare la vera efficienza del programma.
+\\\\
+Generalmente, potremmo aspettarci che se un processo viene eseguito da quanti più core possibili, allora potremmo ottenere tempi sempre più bassi. Benché in molti casi questo sia vero, lo speed-up dell'esecuzione parallela non è sempre esistente aumentando il numero di processi e di core. Infatti, consideriamo il seguente esempio:
+
+% tabella con i tempi
+
+Se notiamo la prima colonna, il tempo di esecuzione con 8 e 16 core è identico. Questo perché, oltre a un certo punto, anche dividendo le operazioni su più core, raggiungeremmo un tempo minimo di inizializzazione che non è ottimizzabile. Dunque, lo speed-up terminerebbe. Ma cosa intendiamo effettivamente con speed-up?
+
+\begin{definition}{Speed-up}
+    Definiamo le seguenti variabili:
+    \begin{itemize}
+        \item $T_s(n)$: il \textbf{tempo di esecuzione} di un problema di dimensione $n$ in \textbf{seriale};
+        \item $T_p(n, \; p)$: il \textbf{tempo di esecuzione} di un problema di dimensione $n$ eseguito in \textbf{parallelo} su $p$ core;
+    \end{itemize}
+
+    Lo \textbf{speed-up} di un'applicazione in parallelo su $p$ core viene dunque definito come il rapporto tra il tempo di esecuzione in seriale e il tempo di esecuzione in parallelo con $p$ core:
+    \[ S(n, \; p) \eq \frac{T_s(n)}{T_p(n, \; p)} \]
+
+    Se $S(n, \; p) \eq p$, allora lo speed-up viene definito come \textbf{speed-up lineare}.
+\end{definition}
+
+C'è un dettaglio importante di questa precedente definizione: il tempo di esecuzione in sequenziale \textbf{non è uguale} al tempo di esecuzione in parallelo con $p \eq 1$, anzi, tendenzialmente $t_p(n, \; 1) \geq t_s(n)$. A causa di questo, possiamo definire due implementazioni diverse della precedente formula:
+
+\begin{center}
+    \begin{tabular}{c c c}
+        $S(n, \; p) \eq \frac{T_s(n)}{T_p(n, \; p)}$ & \quad \quad \quad \quad & $S(n, \; p) \eq \frac{T_p(n, \; 1)}{T_p(n, \; p)}$ \\ & & \\
+        \textbf{Speed-up} & & \textbf{Scalabilità}
+    \end{tabular}
+\end{center}
+
+Grazie alla definizione di speed-up, possiamo definire anche il concetto di \textbf{efficienza}:
+
+\begin{definition}{Efficienza}
+    L'\textbf{efficienza} di un programma viene calcolata come il rapporto tra lo speed-up di un programma e il numero di core su cui viene eseguito:
+    \[ E(n, \; p) \eq \frac{S(n, \; p)}{p} \eq \frac{T_s(n)}{p \cdot T_p(n, \; p)} \]
 \end{definition}
