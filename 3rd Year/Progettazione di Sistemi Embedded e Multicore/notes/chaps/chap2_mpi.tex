@@ -111,7 +111,9 @@ Tuttavia, se anche questa collettiva generasse ritardi venendo propagata, non av
 Ma è abbastanza eseguire l'applicazione solo una volta per avere una buona misurazione? Generalmente no, e ci sono vari motivi: sappiamo che il sistema operativo, di tanto in tanto, può effettuare dei cambi di contesto, per cui uno o più core vengono usati per eseguire delle operazioni dell'OS. Questo chiaramente può aumentare i tempi per alcune esecuzioni. In altri casi invece potrebbe essere che lo scheduler della memoria liberi la cache prima del necessario, etc...
 \\\\
 Tali motivi di ritardo vengono chiamati \textbf{rumore} (o \textbf{noise}). In genere, per misurare l'efficienza di un programma, \textbf{conviene sempre basarsi su tutte le esecuzioni di un programma}, considerando media, mediana, il tipo di distribuzione, eventuali intervalli di confidenza, etc... Il tempo di esecuzione minimo, da solo, non indica molto, poiché per vari motivi di interferenza può non sempre (e in realtà non accade quasi mai) indicare la vera efficienza del programma.
-\\\\
+
+\subsection{Speed-Up ed Efficienza}
+
 Generalmente, potremmo aspettarci che se un processo viene eseguito da quanti più core possibili, allora potremmo ottenere tempi sempre più bassi. Benché in molti casi questo sia vero, lo speed-up dell'esecuzione parallela non è sempre esistente aumentando il numero di processi e di core. Infatti, consideriamo il seguente esempio:
 
 % tabella con i tempi
@@ -146,3 +148,46 @@ Grazie alla definizione di speed-up, possiamo definire anche il concetto di \tex
     L'\textbf{efficienza} di un programma viene calcolata come il rapporto tra lo speed-up di un programma e il numero di core su cui viene eseguito:
     \[ E(n, \; p) \eq \frac{S(n, \; p)}{p} \eq \frac{T_s(n)}{p \cdot T_p(n, \; p)} \]
 \end{definition}
+
+\subsection{Scalabilità Forte e Scalabilità Debole}
+
+Esistono due tipi di scalabilità, in base ai risultati che si ottengono dalle misurazioni dell'efficienza di un programma: \textbf{scalabilità forte} e \textbf{scalabilità debole}.
+
+\begin{itemize}
+    \item Per \textbf{scalabilità forte} si intende quando, dato un problema di grandezza $n$, se si incrementa il numero di processi $p$, allora l'efficienza rimane alta;
+    \item Per \textbf{scalabilità debole} si intende quando, dato un problema di grandezza $n$ e un numero di processi $p$, se incrementando ugualmente $n$ e $p$, allora l'efficienza rimane alta.
+\end{itemize}
+
+\begin{center}
+    \begin{tabular}{|c||c|c|c|c|c|}
+        \hline
+        \multirow{2}{*}{ \texttt{comm\_size} } & \multicolumn{5}{c|}{Ordine della matrice} \\
+         & $1024$ & $2048$ & $4096$ & $8192$ & $16384$ \\
+        \hline\hline
+    \end{tabular}
+\end{center}
+
+% inserisci seconda tabella
+
+\subsection{Leggi di Amdhal e Gustafson}
+
+Quando dobbiamo rendere un programma parallelo, sappiamo che possiamo parallelizzare solo alcune operazioni: ad esempio, leggere dal disco dei dati, richiedere dei dati in input all'utente o mandare dati attraverso un comunicatore di MPI. Avremo dunque una parte \textbf{sempre sequenziale} e una parte \textbf{parallelizzabile}. La frazione del programma sempre sequenziale viene indicata con $\alpha$. C'è una legge, chiamata \textbf{legge di Amdhal}, che definisce lo speed-up possibile di un'applicazione.
+
+\begin{definition}{Legge di Amdhal}
+    Per la \textbf{legge di Amdhal}, lo speed-up di un'applicazione, se resa parallela, è limitato dalla \textbf{frazione di codice sequenziale} $\alpha$:
+    \[ T_p(n, \; p) \eq (1 - \alpha) \cdot T_s(n) + \alpha \cdot \frac{T_s(n)}{p} \]
+
+    Lo speed-up calcolabile sarà dunque uguale a
+    \[ S(n, p) \eq \frac{T_s(n)}{(1 - \alpha) \cdot T_s(n) + \alpha \cdot \frac{T_s(n)}{p}} \]
+\end{definition}
+
+Generalmente, se portassimo il numero di core $p$ all'infinito, raggiungeremmo il seguente valore:
+\[ \lim_{x \to +\infty} S(n, \; p) \eq \frac{1}{1 - \alpha} \]
+
+\noindent La legge di Amdhal tuttavia ha dei problemi: intanto non tiene conto della scalabilità debole (poiché la legge di Amdhal considera un $n$ costante) % continua...
+
+\begin{definition}{Legge di Gustafson}
+    La legge di Gustafson definisce ciò che si chiama \textbf{speed-up scalabile}, e che prende in assunzione che, se si aumenta il numero di processi $p$ per una costante $a$, allora anche la dimensione del problema $n$ aumenta di $a$.
+    \[ S(n, \; p) \eq (1 - \alpha) + \alpha \cdot p \]
+\end{definition}
+
