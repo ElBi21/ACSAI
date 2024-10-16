@@ -199,7 +199,7 @@ Un altro esempio di codice parallelizzabile è la \textbf{somma tra vettori}. Pe
 \\\\
 MPI ha una funzione collettiva che ci permette di mandare ad ogni processo una parte di un elemento, ovverosia \verb|MPI_Scatter()|. Tale funzione è definita come segue:
 
-\begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+\begin{lstlisting}[language = C, numbers = none]
 int MPI_Scatter(
     void*          send_buff_p,
     int            send_count,
@@ -210,3 +210,47 @@ int MPI_Scatter(
     int            src_proc,
     MPI_Comm       comm
 )\end{lstlisting}
+
+\section{Tipi Derivati}
+
+Sappiamo che in C è possibile creare \verb|struct|s, ovverosia composizioni di vari tipi. Tuttavia, nel caso in cui volessimo usare una \verb|struct| custom, come possiamo dire ad MPI come funziona la nostra \verb|struct|? Si possono definire dei \textbf{tipi di MPI derivati}. Ad esempio, nell'esercizio del trapezio, noi per inviare dei dati abbiamo impiegato 3 invii e 3 ricezioni. Possiamo fare di meglio utilizzando proprio i tipi derviati.
+
+\begin{definition}{Tipi Derivati}
+    Un \textbf{tipo derivato} di MPI consiste in una \textbf{sequenza} di \textbf{tipi primitivi} di MPI, che indica anche lo spazio che ogni tipo primitivo occupa in memoria.
+\end{definition}
+
+Possiamo creare nuovi tipi attraverso la funzione \verb|MPI_Type_create_struct()|, che è definita come segue:
+
+\begin{lstlisting}[language = C, numbers = none]
+int MPI_Type_create_struct (
+    int             count,
+    int             array_of_blocklengths[],
+    MPI_Aint        array_of_displacements[],
+    MPI_Datatype    array_of_types[],
+    MPI_Datatype*   new_type_p
+)\end{lstlisting}
+
+Nel seguente codice, vedremo come trasformare una \verb|struct| di C in un tipo derivato:
+
+\begin{codeblock}
+    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+struct my_struct {
+    double a;
+    double b;
+    int c;
+}
+
+// Trasformiamo my_struct in un tipo derivato
+MPI_Aint a_addr, b_addr, c_addr;
+
+MPI_Get_address(&a, %a_addr);
+array_of_displacements[0] = 0;
+MPI_Get_address(&b, %b_addr);
+array_of_displacements[0] = b_addr - a_addr;
+MPI_Get_address(&c, %c_addr);
+array_of_displacements[0] = c_addr - b_addr;
+
+// Facciamo il commit del tipo derivato
+MPI_Type_commit()
+    \end{lstlisting}
+\end{codeblock}
