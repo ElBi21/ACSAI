@@ -190,3 +190,23 @@ Generalmente, se portassimo il numero di core $p$ all'infinito, raggiungeremmo i
     La legge di Gustafson definisce ciò che si chiama \textbf{speed-up scalabile}, e che prende in assunzione che, se si aumenta il numero di processi $p$ per una costante $a$, allora anche la dimensione del problema $n$ aumenta di $a$.
     \[ S(n, \; p) \eq (1 - \alpha) + \alpha \cdot p \]
 \end{definition}
+
+\section{Esempi con MPI}
+
+% inserire il parallel sorting
+
+Un altro esempio di codice parallelizzabile è la \textbf{somma tra vettori}. Per questo esempio, abbiamo dei vettori composti da $n$ elementi, e abbiamo $p$ core disponibili per fare la somma delle componenti dei vettori. Intuitivamente, il metodo più semplice per parallelizzare tale esempio è assegnare a ogni core un numero $\frac{n}{p}$ di elementi da ogni vettore e calcolare dunque la somma tra le varie parti autonomamente.
+\\\\
+MPI ha una funzione collettiva che ci permette di mandare ad ogni processo una parte di un elemento, ovverosia \verb|MPI_Scatter()|. Tale funzione è definita come segue:
+
+\begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+int MPI_Scatter(
+    void*          send_buff_p,
+    int            send_count,
+    MPI_Datatype   send_type,
+    void*          recv_buff_p,
+    int            recv_count,
+    MPI_Datatype   recv_type,
+    int            src_proc,
+    MPI_Comm       comm
+)\end{lstlisting}
