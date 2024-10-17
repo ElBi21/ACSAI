@@ -60,7 +60,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
   </tr>
   <tr>
     <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco Raoul Marini</sub></td>
-    <td align="center">✓</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Deep%20Learning/notes/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
     <td align="center">N/A</td>
   </tr>
