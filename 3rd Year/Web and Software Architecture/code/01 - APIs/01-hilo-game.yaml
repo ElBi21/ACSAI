@@ -1,8 +1,51 @@
 openapi: 3.0.3
 info:
   title: Hi-Lo Game
-  description: |
-        This is a game where the user has 10 trials to guess a number between *1* and *100*. For each trial, the user will receive a feedback from the server:
+  description: |-
+    This is a game where the user has 10 trials to guess a number between *1* and *100*. For each trial, the user will receive a feedback from the server:
     - `hi`: the input number is too high;
     - `lo`: the input number is too low;
     - `correct`: the input number is correct.
+  version: 1.0.0
+paths:
+  /games:
+    # Return all the games (GET) or create a new game (POST)
+    post:
+      summary: Start a new game
+      description: |
+        Starts a new game. Each game has a unique ID
+      responses:
+        "200":
+          description: |
+            The game has been successfully created
+          content:
+            application/json:
+              schema:   # Defines a primitive, depending on the type
+                type: integer
+        "500":
+          description: |
+            Internal Server Error
+    get:
+      summary: Return all games
+      description: |
+        Returns the list of all the games
+      responses:
+        "200":
+          description: |
+            The list of games has been retrieven successfully
+  /games/{id}:
+    post:
+      summary: Guess a number
+      description: |
+        Guess a number. The response can either be `hi`, `lo` or `correct`
+      responses:
+        "200":
+          description: |
+            tbd
+    get:
+      summary: Return number of remaining guesses
+      description: |
+        Return the number of remaining guesses
+    reset:
+      summary: Reset the game
+    # For each game, you can do stuff...
