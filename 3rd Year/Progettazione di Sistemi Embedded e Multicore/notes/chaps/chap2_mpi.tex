@@ -5,9 +5,9 @@
 MPI fa uso del paradigma \textbf{Single Program Multiple Data} (\textbf{SPMD}), quindi ci sarà un \textbf{unico programma} che verrà compilato e poi eseguito da vari processi o threads. Per determinare cosa ogni processo o thread deve fare, si usa semplicemente un'istruzione di \textbf{branching}, come l'\texttt{if-else} o lo \texttt{switch}.
 \\\\
 Siccome la memoria non è condivisa tra i vari processi, l'unico modo per passarsi dei dati è attraverso l'invio di \textbf{messaggi} (da qui il nome della libreria). Per esempio, abbiamo visto come fare un semplice "Hello world" in C in modo sequenziale, ma possiamo anche renderlo parallelo tramite MPI. Ad esempio:
-\\
-\begin{codeblock}
-    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+
+\begin{codeblock}{HelloWorld.c}
+    \begin{lstlisting}[language = C]
 #include <stdio.h>
 
 int main() {
@@ -17,9 +17,9 @@ int main() {
 \end{codeblock}
 
 Per rendere questo Hello World un programma parallelo tramite MPI, serve includere la libreria \texttt{mpi.h} e usare alcune funzioni della libreria. Vediamo intanto come potremmo scrivere il programma:
-\\
-\begin{codeblock}
-    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+
+\begin{codeblock}{ParallelHelloWorld.c}
+    \begin{lstlisting}[language = C]
 #include <stdio.h>
 #include <mpi.h>
 
@@ -50,10 +50,11 @@ Nel precedente codice sono state usate alcune funzioni e alcuni valori di MPI, c
 
 Per compilare ed eseguire un programma con MPI si usa \texttt{mpicc}, che è un wrapper del compilatore \texttt{gcc} di C. Un comando che viene usato per compilare un programma che usa MPI può essere il seguente:
 
-\begin{lstlisting}[language = bash, numbers = none, columns=fullflexible]
-    $ mpicc <file>.c -o <output>
-    $ mpicc -g -Wall <file>.c -o <output>    # Fa stampare i warning in console
-\end{lstlisting}
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+$ mpicc <file>.c -o <output>
+$ mpicc -g -Wall <file>.c -o <output>    # Fa stampare i warning in console\end{lstlisting}
+\end{terminal}
 
 Il compilatore ha molte flags che possono essere usate, così da personalizzare il processo di compilazione. Nel secondo comando si può notare l'uso di due flags che possono risultare comode in fase di debug:
 \begin{itemize}
@@ -62,12 +63,12 @@ Il compilatore ha molte flags che possono essere usate, così da personalizzare 
 \end{itemize}
 
 Questo è per quanto riguarda la compilazione, ma per eseguire il programma invece? Dovremo usare \texttt{mpirun}, attraverso il seguente comando:
-
-\begin{lstlisting}[language = bash, numbers = none, columns=fullflexible]
-    $ mpirun -n <numero_core_fisici> <programma>
-    $ mpirun --oversubscribe -n <numero_core> <programma>
-            # Permette di usare più core di quelli fisici
-\end{lstlisting}
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+$ mpirun -n <numero_core_fisici> <programma>
+$ mpirun --oversubscribe -n <numero_core> <programma>
+        # Permette di usare più core di quelli fisici\end{lstlisting}
+\end{terminal}
 
 Normalmente MPI esegue il codice solo sui core fisici di una CPU, tuttavia è possibile far sì che questa limitazione non venga considerata. La flag \verb|--oversubscribe| permette di lanciare il programma su $n$ processi, dove $n \geq \text{numero di core fisici}$.
 \\\\
