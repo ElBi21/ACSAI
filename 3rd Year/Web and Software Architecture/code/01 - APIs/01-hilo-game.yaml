@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: Hi-Lo Game
+  description: |
+        This is a game where the user has 10 trials to guess a number between *1* and *100*. For each trial, the user will receive a feedback from the server:
+    - `hi`: the input number is too high;
+    - `lo`: the input number is too low;
+    - `correct`: the input number is correct.
