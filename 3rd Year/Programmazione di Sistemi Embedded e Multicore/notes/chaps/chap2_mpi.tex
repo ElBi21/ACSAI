@@ -78,6 +78,92 @@ In un programma complesso, è spesso utile sapere quale core esegue quale parte 
     Il \textbf{rank} di un processo appartenente a un programma di MPI è un \textbf{indice incrementale}, nell'intervallo $[0, \; 1, \; 2, \; \dots , \; p)$, che viene assegnato ad ogni processo.
 \end{definition}
 
+Prima abbiamo usato, nella funzione \verb|MPI_Abort()|, un parametro di MPI: \verb|MPI_COMM_WORLD|. Questo è un \textbf{comunicatore}, ovverosia un canale di comunicazione con altri processi / thread (può anche essere usato per tutti i processi). \verb|MPI_COMM_WORLD| è il comunicatore di default in MPI, a cui tutti i processi sono collegati. Ogni comunicatore ha vari parametri associati, tra cui anche la sua \textbf{grandezza} (ovverosia quanti processi sono collegati al comunicatore). Ci sono due funzioni importanti relativi al comunicatore, che permettono di ottenere sia la grandezza del comunicatore che il rank del processo che chiama la funzione:
+
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
+// Questa funzione ritorna il numero di processi che
+// usano il comunicatore specificato dal parametro
+// comm (di tipo MPI_Comm)
+int MPI_Comm_size(MPI_Comm comm, int* comm_size_p)\end{lstlisting}
+    \manlower
+    Parametri di \verb|MPI_Comm_size|:
+    \begin{itemize}
+        \item \verb|comm|: il comunicatore di cui vogliamo sapere la dimensione;
+        \item \verb|comm_size_p|: il puntatore di dove verrà salvata la dimensione del comunicatore.
+    \end{itemize}
+\end{codedefine}
+
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
+// Questa funzione ritorna il rank relativo al
+// comunicatore, ovverosia l'indice del processo
+// che ha eseguito la chiamata di questa funzione
+int MPI_Comm_rank(MPI_Comm comm, int* my_rank_p)\end{lstlisting}
+    \manlower    
+    Parametri di \verb|MPI_Comm_rank|:
+    \begin{itemize}
+        \item \verb|comm|: il comunicatore rispetto cui si vuole conoscere il proprio rank;
+        \item \verb|my_rank_p|: il puntatore di dove verrà salvato il rank del processo nel comunicatore.
+    \end{itemize}
+\end{codedefine}
+
+Possiamo provare ad eseguire il seguente codice, che dati $p$ processi fa stampare ad ognuno di loro il proprio rank e la dimensione del comunicatore:
+
+\begin{codeblock}{MPIRankAndSize.c}
+    \begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <mpi.h>
+
+int main(void) {
+    int res = MPI_Init(NULL, NULL);
+    int comm_sz, my_rank;
+
+    // Determiniamo la dimensione del comunicatore
+    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
+
+    // Determiniamo il rank del processo che esegue
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+    if(res != MPI_SUCCESS) {
+        printf("C'è stato un errore con il programma");
+        MPI_Abort(MPI_COMM_WORLD, res);
+    }
+
+    printf("'Hello world' dal core %d di %d\n", my_rank, comm_sz);
+
+    MPI_Finalize();
+    return 0;
+}
+    \end{lstlisting}
+\end{codeblock}
+
+Chiamando il precedente programma con il seguente comando di MPI, noteremo un effetto interessante, che magari potremmo non aspettarci:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+ $ mpirun --oversubscribe -n 4 02-mpi-ranks-comm
+    \end{lstlisting}
+    \begin{tcolorbox}
+        \begin{lstlisting}[language=txt, basewidth=0.44em, numbers=none]
+// Prima esecuzione
+'Hello world' dal core 1 di 4
+'Hello world' dal core 0 di 4
+'Hello world' dal core 2 di 4
+'Hello world' dal core 3 di 4
+
+// Seconda esecuzione
+'Hello world' dal core 3 di 4
+'Hello world' dal core 0 di 4
+'Hello world' dal core 1 di 4
+'Hello world' dal core 2 di 4\end{lstlisting}
+    \end{tcolorbox}
+\end{terminal}
+
+Notiamo che l'ordine dei processi è sempre diverso, sia nella prima esecuzione che nella seconda. Ma perché accade? Siccome i processi vengono eseguiti ognuno su un core diverso, soprattutto se $p \eq |\text{core}|$, allora in certi momenti alcuni dei core verranno usati dal sistema operativo, tramite cambi di contesto, per effettuare altre operazioni, magari del kernel. Questo può causare dei ritardi di esecuzione, e quindi il motivo del perché ogni volta l'ordine è diverso.
+
+\section{Invio e Ricezione di Dati}
+
 % ...
 
 \section{Misurazione delle Prestazioni}
@@ -89,7 +175,7 @@ Un modo molto semplice per capire l'efficienza di un programma consiste nel misu
 In un programma parallelo, ogni processo calcola il suo tempo, ma può essere che alcuni processi impieghino meno tempo, soprattutto se ogni processo esegue operazioni diverse. Per questo motivo, l'efficienza si calcola considerando il tempo maggiore. Per ovviare a questo problema, tutti i processi possono mandare a un solo processo i loro tempi, e tramite una chiamata di \verb|MPI_Reduce()| si può ritornare solo il tempo maggiore.
 
 \begin{codeblock}
-    \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
+    \begin{lstlisting}[language = C]
 double local_start, local_finish, local_elapsed, elapsed;
 local_start = MPI_Wtime();
 
