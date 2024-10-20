@@ -108,3 +108,18 @@ Let's make a quick example to show how convolutions work:
 
     And so on and so forth for all the multiplications...
 \end{example}
+
+From this previous example we had a way to illustrate how the convolution works, but what if we had to code it? If we had to keep track of two different indexes, we would waste some computational memory. Let's try to find a quicker and more efficient method. We can start from the kernel: the multiplication $I \otimes g$ is made between items that are in mirrored positions with respect to some "invisible axes" $l$ and $k$:
+
+\begin{center}
+    \begin{tikzpicture}[scale = 0.75]
+        \draw[step=1cm,gray,very thin] (0, 0) grid (4, -4);
+        \draw[black, ->] (-0.5, -2) -- (4.5, -2) node [anchor = west] {$l$};
+        \draw[black, ->] (2, 0.5) -- (2, -4.5) node [anchor = north] {$k$};
+        \fill[black] (2, -2) circle (2pt) node [anchor = south west] {$(0, \; 0)$}
+    \end{tikzpicture}
+\end{center}
+
+A simple way to make the computations easier is to flip the kernel along these axes, so that to align it to the image's axes. This way, we would just have to do the element-wise multiplication of the matrices and sum the resulting values.
+\nl
+A special case of convolution is the when we use a 1D filter on a 2D image.
