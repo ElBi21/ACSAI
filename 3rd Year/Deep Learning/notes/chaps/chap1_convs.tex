@@ -50,7 +50,7 @@ Image filtering is a technique that is widely used for various reasons: to \text
     where $I$ is the image, $g$ is the kernel and $m, \; n, \; k \text{ and } l$ are indexes.
 \end{definition}
 
-Let's make a quick example to show how convolutions work:
+In the case where in the formula there would've been $+$ instead of $-$ (so within $I[m - k, \; n - l]$), then we would've called that operation a \textbf{correlation}. Let's make a quick example to show how convolutions work:
 
 \begin{example}
     Suppose that we have the following image $I$ and kernel $g$:
@@ -122,4 +122,158 @@ From this previous example we had a way to illustrate how the convolution works,
 
 A simple way to make the computations easier is to flip the kernel along these axes, so that to align it to the image's axes. This way, we would just have to do the element-wise multiplication of the matrices and sum the resulting values.
 \nl
-A special case of convolution is the when we use a 1D filter on a 2D image.
+A special case of convolution is when we use a 1D filter on a 2D image, but we'll see more about this later on.
+
+\subsection{Linear Filters}
+
+There are different types of filters, depending on the values stored within $g$ and on its shape. For instance, assume that we have a filter whose shape is $1 \times 9$, and that it's equal to the following:
+\[ g \eq \begin{bmatrix}
+    0 & 0 & 0 & 1 & 0 & 0 & 0
+\end{bmatrix} \]
+
+What would it happen if we multiplied $I \otimes g$? For each pixel, the filter would return only the central pixel, so the one in the coordinates $(0, \; 0)$ of the filter when it passes through the image. So, at the end, nothing would change
+
+\begin{center}
+    \begin{tikzpicture}
+        \fill[left color=gray!40, right color=gray!20] (0, 0) rectangle (3, 3);
+        \draw[step=0.25cm, black!40, very thin] (0, 0) grid (3, 3);
+        \draw[black, thick] (0, 0) rectangle (3, 3);
+        \draw[white] (1.5, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$I$}};
+
+        \draw[white] (4, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$\otimes$}};
+
+        \draw[step=0.25cm, gray!30, very thin] (5, 0.5) grid (7.40, 2.40);
+        \draw[black, ->] (5, 0.5) -- (7.5, 0.5);
+        \draw[black, ->] (5, 0.5) -- (5, 2.5);
+        \draw[white] (6.25, 0.49) circle (0.1pt) node [anchor = north] {\textcolor{black}{\footnotesize$0$}};
+        \draw[white] (6.25, 0.2) circle (0.1pt) node [anchor = north] {\textcolor{black}{\scriptsize Pixel offset}};
+        \draw[white] (6.25, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$g$}};
+        
+        \draw[black, very thick] (6.25, 0.5) -- (6.25, 2.25) node [anchor = south west] {$1.0$};
+
+        \draw[white] (8.5, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$=$}};
+
+        \fill[left color=gray!40, right color=gray!20] (10, 0) rectangle (13, 3);
+        \draw[step=0.25cm, black!40, very thin] (10, 0) grid (13, 3);
+        \draw[black, thick] (10, 0) rectangle (13, 3);
+        \draw[white] (11.5, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$f$}};
+    \end{tikzpicture}
+\end{center}
+
+What if we used instead the following filter $g$?
+\[ g \eq \begin{bmatrix}
+    1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix} \]
+
+Now, for each pixel on which the filter slides, we would take a pixel that is 3 pixels at the right and place it at the local coordinates $(0, \; 0)$. If we repeat that for the entire image, we will then obtain an image shifted by 3 pixels:
+
+\begin{center}
+    \begin{tikzpicture}
+        \fill[left color=gray!40, right color=gray!20] (0, 0) rectangle (3, 3);
+        \draw[step=0.25cm, black!40, very thin] (0, 0) grid (3, 3);
+        \draw[black, thick] (0, 0) rectangle (3, 3);
+        \draw[white] (1.5, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$I$}};
+
+        \draw[white] (4, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$\otimes$}};
+
+        \draw[step=0.25cm, gray!30, very thin] (5, 0.5) grid (7.40, 2.40);
+        \draw[black, ->] (5, 0.5) -- (7.5, 0.5);
+        \draw[black, ->] (5, 0.5) -- (5, 2.5);
+        \draw[white] (6.25, 0.49) circle (0.1pt) node [anchor = north] {\textcolor{black}{\footnotesize$0$}};
+        \draw[white] (6.25, 0.2) circle (0.1pt) node [anchor = north] {\textcolor{black}{\scriptsize Pixel offset}};
+        \draw[white] (6.25, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$g$}};
+        
+        \draw[black, very thick] (5.25, 0.5) -- (5.25, 2.25) node [anchor = south west] {$1.0$};
+
+        \draw[white] (8.5, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$=$}};
+
+        \fill[left color=gray!40, right color=gray!20] (10, 0) rectangle (13, 3);
+        \draw[step=0.25cm, black!40, very thin] (10.75, 0) grid (13.75, 3);
+        \draw[black, thick] (10.75, 0) rectangle (13.75, 3);
+        \draw[white] (11.875, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$f$}};
+    \end{tikzpicture}
+\end{center}
+
+A very interesting filter is the following:
+\[ g \eq \begin{bmatrix}
+    0 & 0 & 0 & 0,33 & 0,33 & 0,33 & 0 & 0 & 0
+\end{bmatrix} \]
+
+\noindent This filter combines a pixel with its neighbours, taking a third of each pixel's values and then summing them up together. This kind of filter is called \textbf{blur}.
+
+\begin{center}
+    \begin{tikzpicture}
+        \draw[white] (1.5, 1.5) circle (0pt) node [anchor = center] {\includegraphics[width = 3cm, height = 3cm]{imgs/001.png}};
+        \draw[black, thick] (0, 0) rectangle (3, 3);
+        \draw[white] (1.5, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$I$}};
+
+        \draw[white] (4, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$\otimes$}};
+
+        \draw[step=0.25cm, gray!30, very thin] (5, 0.5) grid (7.40, 2.40);
+        \draw[black, ->] (5, 0.5) -- (7.5, 0.5);
+        \draw[black, ->] (5, 0.5) -- (5, 2.5);
+        \draw[white] (6.25, 0.49) circle (0.1pt) node [anchor = north] {\textcolor{black}{\footnotesize$0$}};
+        \draw[white] (6.25, 0.2) circle (0.1pt) node [anchor = north] {\textcolor{black}{\scriptsize Pixel offset}};
+        \draw[white] (6.25, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$g$}};
+        
+        \draw[black, very thick] (5.25, 0.5) -- (5.25, 2.25) node [anchor = south west] {$1.0$};
+
+        \draw[white] (8.5, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$=$}};
+
+        \draw[white] (11.5, 1.5) circle (0pt) node [anchor = center] {\includegraphics[width = 3cm, height = 3cm]{imgs/002.png}};
+        \draw[black, thick] (10, 0) rectangle (13, 3);
+        \draw[white] (11.5, -0.5) circle (0.1pt) node [anchor = north] {\textcolor{black}{$f$}};
+    \end{tikzpicture}
+\end{center}
+
+When dealing with images, it's important to also recognize some details, such as an edge or some variations in the color. But how do we define them?
+
+\begin{definition}{Edge}
+    An \textbf{edge} of an image is when there is an \textbf{abrupt change} of the values from one pixel to an adjacent one
+\end{definition}
+
+Also, it's possible that we can sometimes deal with \textbf{impulses}, so images where only one pixel stores non-zero values.
+\nl
+Generally, it's important to recognize edges in the images because it helps on detecting items. But not in all images the edges are clear to recognize, and sometimes we may need to accentuate, to \textbf{sharp} them. This can be done through a \textbf{sharpening filter}, which usually has the following form:
+
+\begin{center}
+    \begin{tikzpicture}
+        \draw[white] (1.5, 1.5) circle (0pt) node [anchor = center] {\includegraphics[width = 3cm, height = 3cm]{imgs/001.png}};
+        \draw[black, thick] (0, 0) rectangle (3, 3);
+        \draw[white] (1.5, -1) circle (0.1pt) node [anchor = north] {\textcolor{black}{$I$}};
+
+        \draw[white] (4, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$\otimes$}};
+
+        \draw[step=0.25cm, gray!30, very thin] (5, 0.5) grid (7.40, 2.40);
+        \draw[black, ->] (5, 0.5) -- (7.5, 0.5);
+        \draw[black, ->] (5, 0.5) -- (5, 2.5);
+        \draw[white] (6.25, 0) circle (0.1pt) node [anchor = north] {\textcolor{black}{\footnotesize$0$}};
+        \draw[white] (6.25, -0.29) circle (0.1pt) node [anchor = north] {\textcolor{black}{\scriptsize Pixel offset}};
+        \draw[white] (6.25, -1) circle (0.1pt) node [anchor = north] {\textcolor{black}{$g$}};
+        
+        \draw[black, very thick] (6.25, 0.5) -- (6.25, 2.75) node [anchor = south west] {$1.\overline{6}$};
+        \draw[black, very thick] (6, 0.5) -- (6, 0.2) node [anchor = east] {$0.\overline{3}$};
+        \draw[black, very thick] (6.50, 0.5) -- (6.50, 0.2) node [anchor = west] {$0.\overline{3}$};
+
+        \draw[white] (8.5, 1.5) circle (0.1pt) node [anchor = center] {\textcolor{black}{\huge$=$}};
+
+        \draw[white] (11.5, 1.5) circle (0pt) node [anchor = center] {\includegraphics[width = 3cm, height = 3cm]{imgs/003.png}};
+        \draw[black, thick] (10, 0) rectangle (13, 3);
+        \draw[white] (11.5, -1) circle (0.1pt) node [anchor = north] {\textcolor{black}{$f$}};
+    \end{tikzpicture}
+\end{center}
+
+We can notice how the differences of colors are accentuated, and how the costant areas are instead left similar to the original image.
+\nl
+Since these filters are all linear, they also can use the basic properties of the linear systems, which are the following three:
+\begin{itemize}
+    \item \textbf{Homogeneity}: $T[a \cdot X] \eq a \cdot T[X]$;
+    \item \textbf{Additivity}: $T[X_1 + X_2] \eq T[X_1] + T[X_2]$;
+    \item \textbf{Superposition}: $T[a \cdot X_1 + b \cdot X_2] \eq a \cdot T[X_1] + b \cdot T[X_2]$.
+\end{itemize}
+
+In general, a system is said to be \textbf{linear} if and only if the \textbf{superposition} property \textbf{holds}. All the filters presented until now are linear filters (convolutions too), so they can take advantage of these properties.
+
+\subsection{Average and Gaussian Filters}
+
+\subsection{Edges and Derivatives}
