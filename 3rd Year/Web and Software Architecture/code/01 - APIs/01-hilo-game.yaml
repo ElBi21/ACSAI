@@ -7,6 +7,8 @@ info:
     - `lo`: the input number is too low;
     - `correct`: the input number is correct.
   version: 1.0.0
+
+# Define the paths of the API, so /games to have an overview of the games and /games/{id} to interact with each single game
 paths:
   /games:
     # Return all the games (GET) or create a new game (POST)
@@ -20,11 +22,12 @@ paths:
             The game has been successfully created
           content:
             application/json:
-              schema:   # Defines a primitive, depending on the type
+              schema:   # Starts defining how the JSON is made (so its schema)
                 type: integer
         "500":
           description: |
             Internal Server Error
+            
     get:
       summary: Return all games
       description: |
@@ -33,19 +36,131 @@ paths:
         "200":
           description: |
             The list of games has been retrieven successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    # Here, id is the key
+                    id:
+                      type: integer   # Type of the value
+                    outcome:   # Enum(string)
+                      type: string    # Type of the value
+                      enum:   # Possible values accepted
+                        - win
+                        - lose
+                    guesses: # Int 
+                      type: integer
+  
   /games/{id}:
-    post:
-      summary: Guess a number
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: ID of the game
+      schema:
+        type: integer
+        description: |
+          Examples: /games/4, /games/17
+    
+    # Methods:
+    #  - PUT: Start or reset a game
+    #  - POST: Guess a number
+    #  - GET: Get statistics for a game
+    
+    put:
+      summary: Start or reset a game
       description: |
-        Guess a number. The response can either be `hi`, `lo` or `correct`
+        Starts or resets an existing game, depending whether the ID already exists or not
       responses:
         "200":
           description: |
-            tbd
+            The game already exists, it will be reset
+        "201":
+          description: |
+            A new game will be created at the given ID
+            
+    post:
+      summary: Guess a number
+      description: |
+        Guess a number. The response can either be `hi`, `lo` or `correct`, together with the guesses count
+      parameters:
+      - name: guess
+        in: query
+        required: true
+        description: |
+          The guess of the user
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        "200":
+          description: |
+            The guess has been accepted, the result follows in a collection {id: int, res: string}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guesses-counter: 
+                    type: integer
+                    minimum: 1
+                    maximum: 10
+                  result:
+                    type: string
+                    enum:
+                    - hi
+                    - lo
+                    - correct
+        "403":
+          description: |
+            Game over. You will receive the results of the queried game
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  outcome:
+                    type: string
+                    enum:
+                    - Game won
+                    - Game lost
+                  guesses:
+                    type: integer
+        "404":
+          description: |
+            Game not found. Check the ID and try again
+                  
     get:
-      summary: Return number of remaining guesses
+      summary: List the remaining guesses
       description: |
         Return the number of remaining guesses
-    reset:
-      summary: Reset the game
-    # For each game, you can do stuff...
+      responses:
+        "200":
+          description: |
+            Query accepted
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    guess-number:
+                      type: integer
+                      minimum: 1
+                      maximum: 10
+                    result-of-guess:
+                      type: string
+                      enum:
+                      - hi
+                      - lo
+                      - correct
+                    
+    #reset:
+    #  summary: Reset the game
