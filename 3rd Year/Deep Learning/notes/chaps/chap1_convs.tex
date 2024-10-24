@@ -276,4 +276,23 @@ In general, a system is said to be \textbf{linear} if and only if the \textbf{su
 
 \subsection{Average and Gaussian Filters}
 
+There are other interesting types of filters that we can use with convolutions, such as the \textbf{average filter}. The task of this filter is to replace each pixel with an average of its neighbours (so for instance, each neighbour of a pixel will contribute to $\nicefrac{1}{9}$ of the total value). The average can also have different \textbf{weights}, so that to give more importance to some pixels than to others. If all the weights are equal, then such filter is also called \textbf{box filter}.
+\nl
+Another type of blur filter is the \textbf{Gaussian Average filter}, which weights the neighbours depending on their distance from the central pixel (the nearer, the greater the weight). The smoothing of the kernel is proportional to the Gaussian function:
+\[ \underbrace{g}_{\text{kernel}} \; \propto \; \underbrace{\frac{1}{2 \pi \sigma^2} \cdot e^{- \frac{x^2 + y^2}{2 \sigma^2}}}_{\text{Gaussian function}} \]
+
+We can here compare the results of the average and Gaussian filters:
+\begin{center}
+    \footnotesize
+    \begin{tabular}{c c c}
+        \includegraphics[width = 4cm]{imgs/004.jpg} & \includegraphics[width = 4cm]{imgs/005.jpg} & \includegraphics[width = 4cm]{imgs/006.jpg} \\
+        \textbf{Starting image $I$} & \textbf{Average Filter} & \textbf{Gaussian Filter}
+    \end{tabular}
+\end{center}
+
+% 004: standard
+% 005: Gaussian
+% 006: average
+
+
 \subsection{Edges and Derivatives}

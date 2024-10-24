@@ -56,4 +56,36 @@ The second problem with the sigmoid function is that the outputs of the sigmoid 
 
 \section{Data Preprocessing}
 
-Generally the data can be 
+Generally the data can be
+
+\section{Weight Initialization}
+
+\pagebreak
+
+\section{Batch Normalization}
+
+Sometimes, the data, if scattered randomly in the space, can have some patterns that make learning hard for a model. This will make the model not be able to fix a parameter, and would mostly go back and forth between multiple values. If we were able to normalize the data, then we would have a smoother learning. 
+
+\pagebreak
+
+\section{Training and Testing Error}
+
+Whenever we train a model, we usually keep track of two important values: the value of the \textbf{loss function} and the value of the \textbf{accuracy}. We already know how to reduce the value of the loss function, so to use better optimization algorithms. For the accuracy instead, that's a different story: we want to maximize it, but we must avoid \textbf{overfitting}. Generally, we see that there is overfitting when the gap between training accuracy and validation accuracy starts to grow.
+\nl
+So how do we deal with this? An idea is to use an \textbf{early stopping} technique: whenever we see that the gap has been augmenting for too much and it also takes greater and greater values, then we want to stop training. This will return a model that could not be overfitting, and it's a technique that should be \textbf{always employed}.
+\nl
+If we had the possibility of training multiple models, we can use the \textbf{model ensemble} technique. By training multiple models, we would have for each model different parameters, and at test time we would average the parameters of each model. This would grant, usually a $\sim 2\%$ performance improvement, which may not seem a lot, but it's actually helpful depending on the cases.
+
+\subsection{Regularization}
+
+The model ensemble technique works only if we have multiple trainable models, but what can we do to improve the performance of a single model? We can use the \textbf{regularization}. Regularization can be achieved in multiple ways:
+\begin{itemize}
+    \item with an \textbf{extra term} in the \textbf{loss function};
+    \item with the \textbf{dropout};
+\end{itemize}
+
+% add loss regularization
+
+The second method, called \textbf{dropout}, is more advanced than the previous method, so adding an extra term to the loss function. For the dropout method, for each forward pass, the output of a neuron is randomly set to 0. This randomness is dictated by a hyperparameter, which is usually $0,5$. This means that around $50\%$ of the neurons will return nothing.
+\nl
+But why is this a good idea? Because this makes the network develop a redundant representation, and this way it wouldn't rely on groups of neurons to determine the output. For instance, we define a cat as an animal which has a tail, ears and furr. Say that for each of these features we have a neuron assigned. Now, if we deactivate at random the neuron which detects the ears, if the model learned that a cat must have all of these three features together, then in might not recognize the cat. If we deactivate some neurons instead, then the model will try to recognize the cat also without the feature of the ears.
