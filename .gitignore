@@ -4,6 +4,7 @@
 
 # C
 *.o
+*-test.c
 
 # MacOS
 */.DS_Store
