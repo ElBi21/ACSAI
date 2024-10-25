@@ -76,7 +76,7 @@ So how do we deal with this? An idea is to use an \textbf{early stopping} techni
 \nl
 If we had the possibility of training multiple models, we can use the \textbf{model ensemble} technique. By training multiple models, we would have for each model different parameters, and at test time we would average the parameters of each model. This would grant, usually a $\sim 2\%$ performance improvement, which may not seem a lot, but it's actually helpful depending on the cases.
 
-\subsection{Regularization}
+\subsection{Regularization and Dropout}
 
 The model ensemble technique works only if we have multiple trainable models, but what can we do to improve the performance of a single model? We can use the \textbf{regularization}. Regularization can be achieved in multiple ways:
 \begin{itemize}
@@ -89,3 +89,20 @@ The model ensemble technique works only if we have multiple trainable models, bu
 The second method, called \textbf{dropout}, is more advanced than the previous method, so adding an extra term to the loss function. For the dropout method, for each forward pass, the output of a neuron is randomly set to 0. This randomness is dictated by a hyperparameter, which is usually $0,5$. This means that around $50\%$ of the neurons will return nothing.
 \nl
 But why is this a good idea? Because this makes the network develop a redundant representation, and this way it wouldn't rely on groups of neurons to determine the output. For instance, we define a cat as an animal which has a tail, ears and furr. Say that for each of these features we have a neuron assigned. Now, if we deactivate at random the neuron which detects the ears, if the model learned that a cat must have all of these three features together, then in might not recognize the cat. If we deactivate some neurons instead, then the model will try to recognize the cat also without the feature of the ears.
+\nl
+The behaviour of dropout is something that we want to have only during training, not during testing. We want to average out the randomness during test time. So what we can do is the following: if we define with $d(x, \; z)$ the function which determines whether a neuron is deactivated or not, then by taking it's expectation value, we can remove it from the testing of the model.
+\[ y \eq \mathbb{E}\left(d(x, \; z)\right) \eq \int p(z) d(x, \; z) \text{d}x \]
+
+This integral is a bit hard to compute though, so how can we compute this without losing time and computational power? We can approximate it. Consider a single neuron $a$:
+\begin{itemize}
+    \item at test time, the value of $\mathbb{E}[a]$ is equal to
+    \[ \mathbb{E}[a] \eq w_1x + w_2y \]
+    \item at training time, the value of $\mathbb{E}[a]$ is instead equal to
+    \[ \mathbb{E}[a] \eq \frac{1}{4} (w_1x + w_2y) + \frac{1}{4} (w_1x + 0y) + \frac{1}{4} (0x + w_2y) + \frac{1}{4} (0x + 0y) \eq \frac{1}{2} (w_1x + w_2y) \]
+\end{itemize}
+
+Notice how the expectation value at training time is just multiplied by the value of the dropout: this makes it much easier for us to compute $\mathbb{E}$.
+
+\subsection{Data Augmentation}
+
+One last regularization method is to perform what is called \textbf{data augmentation}. For this method, 
