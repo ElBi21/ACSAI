@@ -121,3 +121,94 @@ With DFA, we always knew that, given a current state $q_i$ and a character $w_i 
     \noindent The power set $\mathcal{P}(Q)$ of a set $Q$ is the set of all subsets of $Q$, for any $Q$; the alphabet denoted with $\Sigma_\epsilon$ is equal to $\Sigma \cup \{ \epsilon \}$.
 \end{definition}
 
+In practice, how do NFAs work? The idea of NFAs is that, at \textbf{any moment in time}, \textbf{several choices may exist} for deciding the next state, and also $\epsilon$ can be a choice. An NFA runs through an input in the following way:
+\begin{itemize}
+    \item [1)] Like for DFAs, we start from the initial state $q_0$;
+    \item [2)] Let $q$ denote the current state and $a$ the next symbol that the NFA receives as input, then:
+    \begin{itemize}
+        \item [a)] For every $a$-transition, the machine \textbf{splits} into a \textbf{different copy} and follows the path given by $a$, in parallel with all the other possible copies that might have been created. For instance, if from a state we have three outgoing transitions $0 \rightarrow q_i$, $1 \rightarrow q_j$ and $1 \rightarrow q_k$, then the machine will split into three different copies and, in parallel, will proceed on the three states, and the procedure will go on for each state;
+        \item [b)] For every $\epsilon$-transition, the machine will split itself into a new copy \textbf{without reading the input}, and then each copy will proceed from the destination state given by each $\epsilon$-transition;
+        \item [c)] If a state $q$ has no outgoing transitions, and $q \notin F$, then that copy of the machine dies, alongside all its computations.
+    \end{itemize}
+    \item [3)] If \textbf{any of the copies} of the NFA arrives to a final state, then we say that the \textbf{NFA accepts} the input string.
+\end{itemize}
+
+We can think of an NFA as a machine that runs sort of "\textit{parallel}" computations on independent threads, concurrently. It's also possible to think of an NFA as a \textbf{tree}, where the root of the tree is the root of the computation, and where each branch represents a possible choice that the machine has. If at least one of the leafs of the tree is a final state, then the machine accepts the input. Let's better formalize the acceptance of an NFA:
+
+\begin{definition}{Acceptance of an NFA}
+    Let $N \eq (Q, \; \Sigma, \; \delta, \; q_0, \; F)$ be an NFA and $w$ a string over the alphabeth $\Sigma$. We say that $N$ \textbf{accepts} $w$ if $w$ can be rewritten as $w \eq y_1 y_2 ... y_m$ where $\forall i \in m, \; y_i \in \Sigma_{\epsilon}$ and there exists a sequence of states $r_0, \; r_1, \; ..., \; r_m$ in $Q$ such taht the following three conditions are respected:
+    \begin{itemize}
+        \item $r_0 \eq q_0$ the initial states must coincide;
+        \item $r_{i + 1} \in \delta(r_i, \; y_{i + 1})$: the next state must be in the set of states returned by the transition function given a specific state $r_i$ and the next input character $y_{i + 1}$;
+        \item $r_m \in F$: the final state must belong to $F$.
+    \end{itemize}
+
+    It is possible that $m \geq |w|$, because some $w_i \in w$ can be $\epsilon$.
+\end{definition}
+
+The possibility of using $\epsilon$ as a valid character is very helpful when it comes to recognizing one pattern of characters among a set of patterns. In the following example is better explained how to use this approach:
+
+\begin{example}
+    Suppose that we want to build an automaton (specifically, an NFA) which recognizes the words in the following language:
+    \[ \left\{ \; 0^k \; : \; k \text{ is a multiple of 2 or 3 } \right\} \]
+
+    How can we build such automaton? Let's break it down into two smaller parts:
+    \begin{itemize}
+        \item if $k$ must be a multiple of 2, then the automaton is as follows:
+        \begin{center}
+            \begin{tikzpicture}[shorten >= 1pt, node distance=3cm, on grid, auto, bend angle=30]
+                \node[state, initial, accepting] (q_0) {$q_0$};
+                \node[state] (q_1) [right of=q_0] {$q_1$};
+                \path[->] 
+                (q_0) edge [bend left] node {0} (q_1)
+                (q_1) edge [bend left] node {0} (q_0);
+            \end{tikzpicture}
+        \end{center}
+
+        \item if $k$ must be a multiple of 3, then the automaton is as follows:
+        \begin{center}
+            \begin{tikzpicture}[shorten >= 1pt, node distance=2cm, on grid, auto, bend angle=20]
+                \node[state, initial, accepting] (q_0) {$q_0$};
+                \node[state] (q_1) [above right of=q_0] {$q_1$};
+                \node[state] (q_2) [below right of=q_0] {$q_2$};
+                \path[->] 
+                (q_0) edge [bend left] node {0} (q_1)
+                (q_1) edge [bend left] node {0} (q_2)
+                (q_2) edge [bend left] node {0} (q_0);
+            \end{tikzpicture}
+        \end{center}
+    \end{itemize}
+
+    We can merge these two automatons thanks to the $\epsilon$-transition. This way the automaton will create a copy of itself for both cases (so that $w$ has a number of zeroes which is either a multiple of 2 or 3, in the best case the number will be simultaneously a multiple of both 2 and 3), and if at least one of the two cases will end up in a final state, then the NFA will accept such string. Here is the final version:
+
+    \begin{center}
+        \begin{tikzpicture}[shorten >= 1pt, node distance=2cm, on grid, auto, bend angle=30]
+            \node[state, initial] (s) {$s$};
+            \node[state, accepting] (q_0) [above right of=s] {$q_0$};
+            \node[state] (q_1) [right of=q_0] {$q_1$};
+            \node[state, accepting] (q_2) [below right of=s] {$q_2$};
+            \node[state] (q_3) [right of=q_2] {$q_3$};
+            \node[state] (q_4) [right of=q_3] {$q_4$};
+            \path[->] 
+            (s) edge node {$\epsilon$} (q_0)
+            (s) edge node {$\epsilon$} (q_2)
+            (q_0) edge [bend left] node {0} (q_1)
+            (q_1) edge [bend left] node {0} (q_0)
+            (q_2) edge node {0} (q_3)
+            (q_3) edge node {0} (q_4)
+            (q_4) edge [bend left] node {0} (q_2);
+        \end{tikzpicture}
+    \end{center}
+\end{example}
+
+Intuitively, we may think that a DFA can be expressed with an NFA, since DFAs are a specific version of NFAs where there are no $\epsilon$-transitions and where, from each state, given a specific input character, there is only one possible action to perform. But can we say the same of the other way around? So, is there, for each NFA, the possibility to express is with a DFA? There is a theorem which states that it's possible, and we'll also see its proof:
+
+\begin{theorem}{Equivalence of DFAs and NFAs}
+    For every NFA $N$ there exists a DFA $M$ such that the language accepted by $N$ is also accepted by $M$ (so $L(N) \eq L(M)$)
+
+    \begin{proof}
+        Let $N$ be an NFA such that $N \eq \{Q, \; \Sigma, \; \delta, \; q_0, \; F \}$ and let $A \eq L(N)$ denote the language accepted by $N$. Our objective is to devise a DFA $M \eq \{Q', \; \Sigma, \; \delta', \; q_0', \; F' \}$ which accepts that same language $A$.
+        \nl
+        Let's first consider a case where the NFA has no $\epsilon$-transitions: 
+    \end{proof}
+\end{theorem}
