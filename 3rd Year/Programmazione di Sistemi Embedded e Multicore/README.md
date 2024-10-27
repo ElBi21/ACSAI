@@ -1,4 +1,4 @@
-<h1 align="center">Progettazione di Sistemi Embedded e Multicore</h1>
+<h1 align="center">Programmazione di Sistemi Embedded e Multicore</h1>
 <p align="center">3rd Year • Taught by Daniele De Sensi • A.Y. 2024/25</p>
 
 
