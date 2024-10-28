@@ -353,17 +353,21 @@ Un altro esempio di codice parallelizzabile è la \textbf{somma tra vettori}. Pe
 \nl
 MPI ha una funzione collettiva che ci permette di mandare ad ogni processo una parte di un elemento, ovverosia \verb|MPI_Scatter()|. Tale funzione è definita come segue:
 
-\begin{lstlisting}[language = C, numbers = none]
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
 int MPI_Scatter(
-    void*          send_buff_p,
-    int            send_count,
-    MPI_Datatype   send_type,
-    void*          recv_buff_p,
-    int            recv_count,
-    MPI_Datatype   recv_type,
-    int            src_proc,
-    MPI_Comm       comm
+    void* send_buff_p,
+    int send_count,
+    MPI_Datatype send_type,
+    void* recv_buff_p,
+    int recv_count,
+    MPI_Datatype recv_type,
+    int src_proc,
+    MPI_Comm comm
 )\end{lstlisting}
+    \tcblower
+\end{codedefine}
+
 
 \section{Tipi Derivati}
 
@@ -375,18 +379,21 @@ Sappiamo che in C è possibile creare \verb|struct|s, ovverosia composizioni di 
 
 Possiamo creare nuovi tipi attraverso la funzione \verb|MPI_Type_create_struct()|, che è definita come segue:
 
-\begin{lstlisting}[language = C, numbers = none]
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
 int MPI_Type_create_struct (
-    int             count,
-    int             array_of_blocklengths[],
-    MPI_Aint        array_of_displacements[],
-    MPI_Datatype    array_of_types[],
-    MPI_Datatype*   new_type_p
+    int count,
+    int array_of_blocklengths[],
+    MPI_Aint array_of_displacements[],
+    MPI_Datatype array_of_types[],
+    MPI_Datatype* new_type_p
 )\end{lstlisting}
+\tcblower
+\end{codedefine}
 
 Nel seguente codice, vedremo come trasformare una \verb|struct| di C in un tipo derivato:
 
-\begin{codeblock}
+\begin{codeblock}{CustomStruct.c}
     \begin{lstlisting}[language = C, numbers = none, columns=fullflexible]
 struct my_struct {
     double a;
