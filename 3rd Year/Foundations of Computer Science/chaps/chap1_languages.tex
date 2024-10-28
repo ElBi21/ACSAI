@@ -83,7 +83,7 @@ We know that sometimes circuits can use the output from a given combination of i
 
 \begin{definition}{Language of an automaton and Regular Language}
     The \textbf{language of an automaton} $M$, denoted as $L(M)$, is the \textbf{set} of all those \textbf{input strings} which make the automaton \textbf{go} from the starting state \textbf{to} a \textbf{final state}.
-    \\\\
+    \nl
     \noindent More specifically: given an automaton $M = (Q, \; \Sigma, \; \delta, \; q_{0}, \; F)$ and let $w$ be a string of $n$ symbols where $w_i$ denotes the $i^\text{th}$ symbol of the string; let also that
     \[ \forall \; w_{i} \in w, \text{ then } w_{i} \in \Sigma \]
     
@@ -202,13 +202,18 @@ The possibility of using $\epsilon$ as a valid character is very helpful when it
 \end{example}
 
 Intuitively, we may think that a DFA can be expressed with an NFA, since DFAs are a specific version of NFAs where there are no $\epsilon$-transitions and where, from each state, given a specific input character, there is only one possible action to perform. But can we say the same of the other way around? So, is there, for each NFA, the possibility to express is with a DFA? There is a theorem which states that it's possible, and we'll also see its proof:
+\pagebreak % temp
 
 \begin{theorem}{Equivalence of DFAs and NFAs}
     For every NFA $N$ there exists a DFA $M$ such that the language accepted by $N$ is also accepted by $M$ (so $L(N) \eq L(M)$)
 
     \begin{proof}
         Let $N$ be an NFA such that $N \eq \{Q, \; \Sigma, \; \delta, \; q_0, \; F \}$ and let $A \eq L(N)$ denote the language accepted by $N$. Our objective is to devise a DFA $M \eq \{Q', \; \Sigma, \; \delta', \; q_0', \; F' \}$ which accepts that same language $A$.
-        \nl
-        Let's first consider a case where the NFA has no $\epsilon$-transitions: 
+        Let's first consider a case where the NFA has no $\epsilon$-transitions:
+        \begin{itemize}
+            \item $Q' \eq \mathcal{P}(Q)$: the set of states $Q'$ would be equal to the power set of $Q$, so the set of all subsets that can be done with the states in $Q$;
+            \item $q_0' \eq \{ q_0 \}$: the starting state of $N$ is equal to the starting state of $M$;
+            \item $F' \eq \left\{ R \in Q' \; | \; R \text{ contains an accepting state of } N \right\}$: the set of final states of $M$ is equal to a subset $R$ of $Q'$, such that at least an accepting state of $N$ is present in $R$.
+        \end{itemize}
     \end{proof}
 \end{theorem}
