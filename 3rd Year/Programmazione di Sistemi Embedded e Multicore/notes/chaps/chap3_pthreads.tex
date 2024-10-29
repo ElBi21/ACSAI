@@ -1,0 +1,62 @@
+\chapter{PThreads}
+Con MPI, ci siamo sempre occupati di sistemi a memoria distribuita, dove i processi sono collegati da qualche mezzo (come un bus comune, o una connessione internet). Tuttavia come rappresentazione, questa è molto semplificata.
+\nl
+Ogni nodo (o server, o addirittura \textit{blade}) contiene una memoria DRAM e una CPU multicore. In questa CPU, per ogni core sono presenti, assieme all'ALU, anche una cache L1 privata. La CPU ha anche assegnata una cache L2 comune. Assegnato al nodo, può esserci anche una, o più, GPUs (Graphics Processing Unit) e una, o più, NICs (Network Interface Card).
+\nl
+Come possiamo sfruttare un cluster di servers? Sappiamo che ogni server può comunicare attraverso MPI, ma come usarlo al meglio? Dovremmo scrivere un programma di MPI per ogni core? O per ogni nodo?
+\nl
+Di norma, si usa creare un processo MPI per ogni nodo, e poi internamente sfruttare librerie come PThreads e CUDA (per le GPU Nvidia) per gestire rispettivamente i core / threads delle CPU e i core della GPU. Il vantaggio di usare dei threads al posto di processi separati è che i \textbf{threads condividono la memoria DRAM} della CPU.
+\nl
+Ridefiniamo al volo cosa intendiamo con il termine \textbf{processo} e \textbf{thread}, così da poter distinguere la differenza tra un processo e un thread:
+
+\begin{definition}{Processo}
+    Un \textbf{processo} è un'\textbf{istanza di computazione} di un programma che può essere in esecuzione, in stato di attesa o sospeso.
+\end{definition}
+
+\begin{definition}{Thread}
+    Un \textbf{thread} è l'\textbf{istanza di computazione più piccola} e \textbf{indipendente} che può essere eseguita su un computer.
+\end{definition}
+
+Sui sistemi UNIX, un processo si crea tramite la chiamata di sistema \verb|fork()|. Facendo così, il processo padre viene duplicato e riassegnato al processo figlio. Quando viene creato il processo, viene copiato il codice del processo, la sua memoria, etc... Una volta copiata la memoria del processo, questa viene poi sovrascritta con il codice
+\nl
+Sempre sui processi UNIX, si usa la libreria PThreads, che sta per POSIX Threads. Questa libreria può essere utilizzata tramite C, includendola proprio come veniva fatto per MPI.
+\nl
+Con MPI dovevamo usare un wrapper specifico di \verb|gcc|, ma con PThreads non è necessario: i threads infatti vengono creati automaticamente una volta lanciato il programma. La funzione per creare un thread è la seguente:
+
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
+int pthread_create (
+    pthread_t* thread_p,
+    const pthread_attr_t* attr_p,
+    void* (*start_routine) (void*),
+    void* arg_p
+)
+    \end{lstlisting}
+    \tcblower
+    Parametri di \verb|pthread_create()|:
+    \begin{itemize}
+        \item \verb|thread_p|: è un handle che rappresenta lo stato del thread. Tale handle è opaco, quindi non va modificato, e il puntatore va sempre allocato prima della chiamata della funzione. PThreads garantisce che tale handle contenga abbastanza informazioni per identificare il thread;
+        \item \verb|attr_p|: è un set di attributi, che non verranno coperti in queste note;
+        \item \verb|(*start_routine)|: è un puntatore a funzione, che definisce da dove il thread inizierà ad eseguire il codice;
+        \item \verb|arg_p|: è un puntatore ai parametri che la funzione \verb|start_routine| richiede.
+    \end{itemize}
+\end{codedefine}
+
+Un puntatore a funzione è semplicemente un indirizzo di memoria che indica il luogo in memoria dove è immagazzinata una funzione. Il nome di una funzione è utilizzabile per ottenere il puntatore della funzione stessa. Ad esempio:
+
+\begin{codeblock}{FunctionPointer.c}
+    \begin{lstlisting}[language = C]
+void func(int a) {
+    printf("Hello world");
+}
+
+void main() {
+    // Riprendere dalle slides...
+}\end{lstlisting}
+\end{codeblock}
+
+Le variabili globali sono visibili da tutti i threads, tuttavia è meglio evitarne l'uso a meno che non sia assolutamente necessario.
+\nl
+Per attendere la fine dell'esecuzione di un thread, si usa la funzione \verb|pthread_join()|. Tale funzione richiede in input l'handle del thread, e aspetterà finché il thread non terminerà la sua esecuzione. 
+
+% C'è la possibilità, tramite alcune syscalls, di far sì che un thread venga eseguito specificamente su un core. Questo è comodo quando si ha un programma che crea tanti threads quasi quanto è il numero di core sulla CPU, cosicché il sistema operativo non ridistribuisca magari, dopo un tot di tempo, i threads su un unico core.
