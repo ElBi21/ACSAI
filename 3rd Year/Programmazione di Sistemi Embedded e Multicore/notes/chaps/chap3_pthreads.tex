@@ -60,3 +60,46 @@ Le variabili globali sono visibili da tutti i threads, tuttavia è meglio evitar
 Per attendere la fine dell'esecuzione di un thread, si usa la funzione \verb|pthread_join()|. Tale funzione richiede in input l'handle del thread, e aspetterà finché il thread non terminerà la sua esecuzione. 
 
 % C'è la possibilità, tramite alcune syscalls, di far sì che un thread venga eseguito specificamente su un core. Questo è comodo quando si ha un programma che crea tanti threads quasi quanto è il numero di core sulla CPU, cosicché il sistema operativo non ridistribuisca magari, dopo un tot di tempo, i threads su un unico core.
+
+\section{Concorrenza}
+
+Supponiamo di voler creare, similarmente a come è stato fatto per MPI, un programma che calcoli il vlaore di $\pi$ tramite approssimazione. Proviamo dunque a scrivere una versione del codice con PThreads:
+
+\begin{codeblock}{PthreadPi.c}
+    \begin{lstlisting}[language = C]
+// Put code...\end{lstlisting}
+\end{codeblock}
+
+Proviamo a vedere il valore delle varie approssimazioni in base al numero di threads $t$ con cui eseguiamo il programma:
+
+\begin{center}
+    \begin{tabular}{|c||c|c|c|c|}
+        \hline
+        \multirow{2}{*}{Threads} & \multicolumn{4}{c|}{$n$} \\
+        \cline{2-5}\rule{0pt}{2.5ex} 
+        & $10^5$ & $10^6$ & $10^7$ & $10^8$ \\
+        \hline\hline
+        $\pi$ & $3,14159$ & $3,141593$ & $3,1415927$ & $3,14159265$ \\
+        \hline
+        $t \eq 1$ & $3,14158$ & $3,141592$ & $3,1415926$ & $3,14159264$ \\
+        \hline
+        $t \eq 2$ & $3,14158$ & $3,141480$ & $3,1413692$ & $3,14164686$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Come possiamo notare, più il numero di threads aumenta, più la stima si allontana dal valore reale. Questo però è controintuitivo, in quanto ci aspetteremmo che con più threads la stima dovrebbe essere più accurata. Quindi, come mai succede questo?
+\nl
+Il motivo sta nella riga di codice \verb|sum += factor/(2 * i + 1)|, più nello specifico, nel fatto che la variabile \verb|sum| è condivisa da tutti i threads. Quando si fa l'operazione \verb|+=| non stiamo facendo solo una somma, ma stiamo eseguendo più istruzione.
+
+\subsection{Busy Waiting}
+
+\subsection{Mutex}
+
+Un modo alternativo per far sì che l'accesso a una variabile sia controllato è usare una \textbf{mutex} (mutual exclusive). Le mutex esistono per ovviare al problema del busy waiting, cioè che la CPU continua a non eseguire nulla mentre controlla il valore di una variabile.
+
+\begin{definition}{Mutex}
+    Una variabile \textbf{mutex} (mutually exclusive) è una variabile che \textbf{controlla l'accesso} a una sezione critica, e che permette a un solo thread alla volta di accedervi.
+\end{definition}
+
+PThread implementa il concetto di mutex attraverso un tipo speciale: \verb|pthread_mutex_t|. Le mutex sono implementate attraverso istruzioni di Assembly particolari, come ad esempio le \texttt{test/set}. Le istruzioni \texttt{test/set} sono istruzioni \textbf{atomiche} che riescono a controllare una variabile e impostarla a 1 quando essa è 0. 
