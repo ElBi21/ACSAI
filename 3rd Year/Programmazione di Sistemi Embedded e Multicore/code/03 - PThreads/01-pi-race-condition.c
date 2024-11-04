@@ -6,6 +6,7 @@
 
 int thread_count;
 long sum;
+int* total_estimates;
 
 void estimate(void* n, void* r) {
     long rank = (long) r;
@@ -26,21 +27,17 @@ void estimate(void* n, void* r) {
 }
 
 int main(int argc, char** argv) {
-    int t_count;
-    if (argv[1] != NULL) {
-        t_count = (int*) strtol(argv[1], NULL, 10);
-    }
-
-    int total_est[t_count];
+    thread_count = (int*) strtol(argv[1], NULL, 10);
+    int total_estimates[thread_count];
 
     pthread_t* t_handle;
-    int* t_handles = malloc(t_count * sizeof(pthread_t));
+    int* t_handles = malloc(thread_count * sizeof(pthread_t));
 
-    for(int t = 0; t < t_count; t++) {
+    for (int t = 0; t < thread_count; t++) {
         pthread_create(&t_handles[t], NULL, estimate, (void*) t);
     }
 
-    for(int t = 0; t < t_count; t++) {
+    for (int t = 0; t < thread_count; t++) {
         pthread_join(t_handles[t], NULL);
     }
 
