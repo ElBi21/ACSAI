@@ -103,3 +103,53 @@ Un modo alternativo per far sì che l'accesso a una variabile sia controllato è
 \end{definition}
 
 PThread implementa il concetto di mutex attraverso un tipo speciale: \verb|pthread_mutex_t|. Le mutex sono implementate attraverso istruzioni di Assembly particolari, come ad esempio le \texttt{test/set}. Le istruzioni \texttt{test/set} sono istruzioni \textbf{atomiche} che riescono a controllare una variabile e impostarla a 1 quando essa è 0. 
+
+\section{Semafori}
+
+temp
+
+\section{Barriere e Variabili di Confizioni}
+
+temp
+
+\section{Read-Write Locks}
+
+% Avendo una struct tipo
+%
+%   struct ciao {
+%       int data,
+%       ciao* ptr
+%   }
+%
+% La notazione ciao -> data ritorna il valore contenuto in data
+
+Quando si usa una struttura di dati condivisa, è importante controllare l'accesso a tale struttura. Consideriamo ad esempio una linked list \textbf{ordinata} senza doppi elementi (cioè una lista di elementi dove ogni elemento contiene un valore e un puntatore al prossimo elemento) dove le possibili operationi saranno \verb|Member| (che controlla se un elemento è nella lista), \verb|Insert| (che inserisce un elemento nella lista) e \verb|Delete| (che rimuove un elemento).
+\nl
+Come possiamo far sì che questa lista sia utilizzabile in parallelo? Perché chiaramente scrivere o cancellare elementi da una lista necessita di una sezione critica. Finché più threads leggono solo la lista non è un problema, ma quando si fanno operazioni di scrittura allora si creano vari problemi.
+\nl
+La soluzione più semplice è di usare un lock sulla lista, cosicché se un thread deve usare la lista dovrà prima ottenere il relativo lock, per poi rilasciarlo una volta finito. Questo però serializza la lista, sia in lettura che in scrittura, e soprattutto se la maggior parte delle operazioni fosse di lettura (quindi con \verb|Member|) allora perderemmo una chance di parallelizzare la lista. Nel caso in cui ad esempio si facessero più operazioni di scrittura che di lettura allora non sarebbe così tanto problematico. Chiaramente ci sarebbe un certo tempo necessario per acquisire il lock e per liberarlo, che non è negligibile.
+\nl
+Una seconda idea è quella di usare un lock per ogni nodo della lista, che nonostante sia più complesso da implementare, garantirebbe a tutti di poter usare la lista. Questo approccio però è parecchio lento, siccome ogni volta che bisogna accedere a un nodo serve acquisirne il relativo lock. Inoltre, a livello di memoria si va ad occupare parecchio spazio per immagazzinare ogni lock.
+\nl
+L'idea ottimale sarebbe quella di usare un lock solo in fase di scrittura, e non in fase di lettura. Questo tipo di lock esiste e si chiama \textbf{Read-Write Lock}.
+
+\begin{definition}{Read-Write Lock}
+    Un \textbf{Read-Write Lock} è una \textbf{mutex} che permette di \textbf{differenziare} il \textbf{tipo di lock} in base all'operazione da fare. Pthreads implementa tale lock usando due funzioni: una per il \textbf{lock in lettura} e una per il \textbf{lock in scrittura}.
+\end{definition}
+
+Come ogni lock, c'è una funzione per inizializzare il lock e una per distruggerla:
+
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
+int pthread_rwlock_init (
+    pthread_rwlock_t* rwlock,
+    pthread_rwlockattr_t* attr
+);
+
+
+int pthread_rwlock_destroy (
+    pthread_rwlock_t* rwlock
+);\end{lstlisting}
+\tcblower
+
+\end{codedefine}
