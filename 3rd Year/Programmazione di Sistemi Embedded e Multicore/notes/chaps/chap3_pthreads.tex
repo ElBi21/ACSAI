@@ -151,5 +151,31 @@ int pthread_rwlock_destroy (
     pthread_rwlock_t* rwlock
 );\end{lstlisting}
 \tcblower
-
+tbd
 \end{codedefine}
+
+\section{Thread Safety}
+
+\subsection{Thread Safety su MPI}
+
+Abbiamo visto come MPI viene usato per fare programmi paralleli su memoria distribuita, ma se un programma di MPI viene chiamato su un solo sistema, ogni processo viene considerato come un thread. In tale caso, ci ritroveremmo in una situazione simile a PThreads, con dei problemi di race conditions. La domanda dunque sorge spontanea: le funzioni di MPI sono thread-safe? Ad esempio, potremmo usare, contemporaneamente, la funzione \verb|MPI_Send()|?
+\nl
+La risposta è sì, ma non in tutti i casi. Se vogliamo usare dei threads su MPI, dobbiamo usare una funzione di inizializzazione diversa, chiamata \verb|MPI_Init_thread|, che ha i seguenti parametri:
+\begin{codedefine}
+    \begin{lstlisting}[language = C, numbers = none]
+int MPI_Init_thread(
+    int* argc,
+    char** argv,
+    int required,
+    int* provided
+)\end{lstlisting}
+    \tcblower
+    Parametri di \verb|MPI_Init_thread()|:
+    \begin{itemize}
+        \item i parametri \verb|argc| e \verb|argv| sono gli stessi di \verb|MPI_Init|;
+        \item \verb|required|: è il livello di threading richiesto dal programma;
+        \item \verb|provided|: è il livello di threading supportato dal programma.
+    \end{itemize}
+\end{codedefine}
+
+I possibili livelli di threading 

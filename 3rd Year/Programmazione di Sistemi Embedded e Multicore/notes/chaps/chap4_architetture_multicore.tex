@@ -1,0 +1,53 @@
+\chapter{Architetture Multicore \texorpdfstring{\&}{&} OpenMP}
+
+Per spiegare un'architettura multicore ci vorrebbero parecchie pagine, per cui in questo capitolo ci concentreremo a vedere i punti salienti delle architetture multicore.
+
+\section{Cache}
+
+Spesso si parla di cache quando si parla di processori, ma cosa intendiamo di preciso?
+
+\begin{definition}{Cache}
+    Una \textbf{cache} è una memoria, posizionata vicino ai core della CPU, che permette di accedere a dei dati a velocità molto più alte rispetto alla DRAM.
+\end{definition}
+
+Le cache sono fatte con una tecnologia chiamata SRAM, che è molto più rapida della DRAM (la DRAM necessita di essere caricata e scaricata continuamente, risultando in tempi di richiesta molto più alti; la SRAM invece è composta da soli transistors, motivo della velocità della cache stessa). Le memorie in SRAM sono, tuttavia, molto costose, quindi di solito le cache in SRAM sono abbastanza piccole, se comparate alla memoria principale.
+\nl
+Il motivo del perché usiamo le cache è perché, quando si esegue un programma, c'è la possibilità che il programma, in un qualsiasi momento, richieda alcune istruzioni immagazzinate vicino all'istruzione che sta venendo eseguita. Parliamo dunque di \textbf{località temporale} e \textbf{località spaziale}.
+\nl
+I dati sono spostati verso la cache in blocchi (o linee), proprio per il concetto di località. Inoltre, è molto più rapido per una cache fare un'unico spostamento di $n$ elementi piuttosto che fare $n$ spostamenti di un elemento ciascuno.
+\nl
+All'interno di una CPU ci sono 3 tipi di cache, cioè la cache \textbf{Level 1} (o \textbf{L1}), \textbf{Level 2} (o \textbf{L2}) e \textbf{Level 3} (o \textbf{L3}). La cache L1 è la più rapida, ma anche la più piccola, mentre invece la cache L3 è la più lenta, ma anche la più spaziosa. In base al tipo di cache, un dato potrebbe essere immagazzinato sia in una cache (come ad esempio la L1) che in quelle sottostanti, ma generalmente dipende da come viene implementata.
+\nl
+Quando la CPU richiede un dato (diciamo il valore di una variabile \verb|x|), allora quel dato verrà cercato nella cache L1; se non verrà trovato, la CPU cercherà poi il dato nella cache L2; se non venisse trovato cercherà poi nella cache L3 e infine, se non trovasse il dato in nessuna delle cache, lo cercherà nella memoria.
+% inserisci esempio con moltiplicazione tra matrici dal GitHub del corso
+\nl
+Ma come possiamo ottimizzare l'uso delle cache? Di norma, un programmatore non ha accesso alle cache, e non può specificare quale dato va dove. Quindi l'unico modo per ottimizzare un programma è tramite l'uso di varie flags di ottimizzazione di \verb|gcc|.
+
+\subsection{Coerenza delle cache}
+
+Ma come funzionano le cache quando sono coinvolti più core in un programma? Supponiamo di avere un programma con due threads dove il thread 0 è assegnato al core 0, mentre il thread 1 è assegnato al core 1. Supponiamo inoltre che il core 0 abbia una variabile privata \verb|y_0| e che il core 1 abbia invece le variabili private \verb|y_1| e \verb|z_1|; consideriamo inoltre una variabile condivisa \verb|x = 2|. Consideriamo il seguente programma, che si diversifica in base al core:
+
+\begin{center}
+    \begin{tabular}{|c||c|c|}
+        \hline
+        Time & Core 0 & Core 1 \\
+        \hline\hline
+        0 & \verb|y_0 = x;| & \verb|y_1 = 3 * x;| \\
+        \hline
+        1 & \verb|x = 7;| & Istruzioni che non usano \verb|x| \\
+        \hline
+        2 & Istruzioni che non usano \verb|x| & \verb|z_1 = 4 * x;| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Ora, nella cache del core 0 abbiamo che \verb|y_0 = 2| e \verb|x = 7|, ma che cosa avremo nella cache del core 1? Siccome \verb|x| viene modificato solo nella cache del core 0, questa modifica non arriva alla cache del core 1. Questo vuol dire che nella cache del core 1 avremo \verb|y_1 = 6| e \verb|z_1 = 8|, e non \verb|y_1 = 6| e \verb|z_1 = 28|.
+\nl
+Ci sono vari modi per risolvere questo problema, e uno di questi è lo \textbf{snooping cache coherence}. L'idea di base è che i core sono connessi tutti tramite un bus comune, che permette a tutti i core di vedere quali sono i dati che passano tramite tale bus. Ciò viene sfruttato dalle cache come canale di broadcast, per cui ogni volta che una cache viene aggiornata da un core, allora anche gli altri cores lo sapranno. Tuttavia, questo metodo non viene ormai più usato, e questo perché ormai, con processori con 64/128 cores, effettuare un broadcast è costoso.
+\nl
+Un altro metodo, più efficace, è il \textbf{directory based cache coherence}, per cui c'è una una struttura di dati, chiamata \textbf{directory}, che segna lo stato di ogni linea della cache, simile a una bitmap. Quando una variabile viene modificata, allora viene anche modificata la directory, e questa modifica viene propagata anche ai controllori di ogni cache, che invalideranno il contenuto nelle cache di ogni core dove la variabile non è aggiornata.
+
+\subsection{Organizzazione della memoria}
+
+Generalmente la memoria di un sistema può essere organizzata in due modi: può essere o \textbf{Uniform Memory Access} (\textbf{UMA}) o \textbf{Non-Uniform Memory Access} (\textbf{NUMA}). Per l'organizzazione UMA, i core condividono la stessa memoria, mentre per i NUMA, ogni gruppo di core ha una sua sezione di memoria. Con un sistema NUMA, bisogna fare attenzione a dove vengono allocati i dati, perché se dei dati che servono a un core vengono allocati nella parte di memoria nella quale il core non può accedere, allora si creano problemi di latenza: accedere a una memoria "locale" è infatti più economico che accedere a una memoria "remota". Tramite l'uso della libreria \verb|numa.h| è possibile gestire la modalità di allocazione dei dati (in caso si può usare anche l'utilità da terminale \verb|numactl|).
+\nl

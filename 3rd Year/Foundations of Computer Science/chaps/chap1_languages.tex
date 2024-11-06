@@ -215,5 +215,10 @@ Intuitively, we may think that a DFA can be expressed with an NFA, since DFAs ar
             \item $q_0' \eq \{ q_0 \}$: the starting state of $N$ is equal to the starting state of $M$;
             \item $F' \eq \left\{ R \in Q' \; | \; R \text{ contains an accepting state of } N \right\}$: the set of final states of $M$ is equal to a subset $R$ of $Q'$, such that at least an accepting state of $N$ is present in $R$.
         \end{itemize}
+
+        For $R \in Q'$ and $a \in \Sigma$, let the following: 
+        \[ \delta'(R, \; a) \eq \bigcup_{r \in R} \delta(r, \; a) \]
+        
+        Remember that $R$ is a set of states, since it's a subset of $Q'$: this means that a character $a$ might take a state $r$ 
     \end{proof}
 \end{theorem}
