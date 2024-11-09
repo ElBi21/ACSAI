@@ -1,0 +1,175 @@
+\chapter{Backend and Go}
+
+Go is a statically typed programming language created by Google, and it's made for building high-performance and scalable applications. Widely used in the Web, it allows to build powerful backends with high-level features such as \textbf{garbage collection} and \textbf{memory safety}. Its syntax is similar to the one of C, but it's way simpler. It's also more verbose though, so it's very similar to the choice that also Rust's creators took.
+\nl
+Go is structured in packages, where each package represents a collection of files and folders. A package is declared with the syntax \verb|package <name>|. In a folder, only one package may be declared. Go requires a \verb|main| package, which will contain the first functions to be executed.
+\nl
+Within a package, all the declarations are \textbf{global}: this means that a function declared in a file can be used in another file within the same package. In order to use other packages, we use the \verb|import <package_name>| syntax. Let's see an example of Go code for a simple Hello World program:
+
+\begin{codeblock}{HelloWorld.go}
+    \begin{lstlisting}[language = go]
+package main
+
+// Import the fmt (format) package for including functions like "Println()"
+import "fmt"
+
+func main() {
+    fmt.Println("Hello World")
+}\end{lstlisting}
+\end{codeblock}
+
+We can now build our code (because Go produces a binary) with the following command:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+go build HelloWorld.go -o HelloWorld
+    \end{lstlisting}
+\end{terminal}
+
+and then run it as a standard executable. By executing the binary, we obtain the following:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+ $ ./HelloWorld
+    \end{lstlisting}
+    \begin{tcolorbox}
+        \begin{lstlisting}[basewidth=0.44em, numbers=none]
+Hello World\end{lstlisting}
+    \end{tcolorbox}
+\end{terminal}
+
+Go is a statically typed language, so we are encouraged to write down the types of the variables that we create for code security. Variables are defined either through the \verb|var| keyword or through the \verb|:=| operator.
+\nl
+Some types that are allowed in Go are \verb|bool| for booleans, \verb|intXX| and \verb|uintXX| for respectively signed and unsigned integers (the \verb|XX| stands for the number of bits that the number should take, so a value between \verb|8|, \verb|16|, \verb|32| and \verb|64|), \verb|string| for strings, \verb|byte| for the bytes (it's an alias for \verb|uint8|), \verb|rune| for Unicode characters (has a size of \verb|32| bits), \verb|uintptr| for memory pointers, and so on and so forth...
+\nl
+Each variable is initialized to a specific value if no value is assigned. For most of the types, the standard value is 0, for strings, it's an empty string and for booleans it's \verb|false|. Inference is also done if a type is missing. We can also declare constants if we want to. Here is an example of some variables:
+
+\begin{codeblock}{Variables.go}
+    \begin{lstlisting}[language = go]
+// Create the variable without assigning a value
+var anInteger int
+
+// Assignment of the value
+anInteger = 6
+
+// Inference: the type will be "float"
+var pi = 3.14
+
+// If we are not sure of how many bits we need, we can just use int or uint
+var anotherInteger uint = 14
+
+// Cast the second integer to an integer of type int64
+var mySum int64 = 5 + int64(anotherInteger)
+
+// Use the := notation instead of "var"
+eulernumber := 2.7183
+
+// We can also declare constants with the "const" keyword
+const g float32 = 9.81\end{lstlisting}
+\end{codeblock}
+
+We can also declare arrays which, similarly to C's arrays, all have a fixed length. Arrays are declared with the \verb|var <name> [<size>]<type>| syntax. This syntax underlines how Go's arrays can store only one type of elements. So, for instance:
+\pagebreak
+\begin{codeblock}{Arrays.go}
+    \begin{lstlisting}[language = go]
+var myArray [10]int
+
+// If we want to also assign some values, we have to do the following:
+assignedArray := [10]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+// We can access to an array's value with the "[]" notation
+var mySum = assignedArray[5] + assignedArray[3]
+    \end{lstlisting}
+\end{codeblock}
+
+Go also uses the concept of slices, which allows to access to portions of the array just like in Python. The syntax is \verb|[initial index (included):final index(excluded)]|, wehre the lowest initial index is \verb|0| and the highest final index is the length of the array. Slices do not contain data, but just point to a section of the array.
+\nl
+There is a way to have dynamic arrays, and it's to use the slices mechanism. For instance, with \verb|bools := []bool{true, false, false}| creates a dynamic array. But why does it use the slices? Because with the previous notation we are just creating an array of not known size and then we created a slice to that array.
+\nl
+Slices have also two important properties: \textbf{length} and \textbf{capacity}.
+
+\begin{definition}{Length and Capacity of a slice}
+    The \textbf{length} of a slice denotes the number of elements in the slice.
+    \nl\nl
+    The \textbf{capacity} of a slice denotes the number of elements that the sliced array contains.
+\end{definition}
+
+Let's make a couple examples, to better grasp the concept: if we define an empty slice with \verb|var a_slice []int|, then we have a slice with both length and capacity equal to \verb|0|. Now though, if we append one element with \verb|a_slice = append(a_slice, 40)|, we now have that both the capacity of the underlying array and its length increased to 1. If we instead created a slice such as \verb|var a_slice = []int{1, 2, 3, 4}|, then we would have a capacity and a length of both \verb|4|.
+\nl
+Go also provides a more granular way to control the creation of slices, and that's through the \verb|make()| function. This function has the following syntax:
+
+\begin{codedefine}
+    \begin{lstlisting}[language = go]
+make(
+    []type,
+    length,
+    capacity
+)\end{lstlisting}
+\tcblower
+Parameters of \verb|make()|:
+\begin{itemize}
+    \item \verb|[]type|: the type of the slice;
+    \item \verb|length|: the length of the slice;
+    \item \verb|capacity|: the capacity of the slice.
+\end{itemize}
+\end{codedefine}
+
+\pagebreak
+For instance, with \verb|var a_slice = make(int[], 0, 7)| we are creating a slice of capacity 7 and with a length of 0. Note that slices can assume a \verb|nil| value (which is equivalent to C's \verb|NULL| or Python's \verb|None|) if they are declared but never assigned, but if they get declared through \verb|make()| they will be equal to a slice of \verb|nil|s. A clearer example follows:
+
+\begin{codeblock}{SlicesAndNil.go}
+    \begin{lstlisting}[language = go]
+// This slice is equal to nil
+var nilSlice []int
+
+// This slice is not equal to nil, but contains nil
+var sliceOfNils = make([]int, 0)
+
+// This last slice will have the same length of nilSlice, but different content\end{lstlisting}
+\end{codeblock}
+
+We can also have the equivalent of Python's dictionary in Go, and they are called \textbf{maps}. A map can either be declared but not assigned (and this must be done with the \verb|make()| function only) or declared and assigned. Why can we only declare with \verb|make()|? Let's try to run the following code:
+
+\begin{codeblock}{MapsError.go}
+    \begin{lstlisting}[language = go]
+package main
+
+func main() {
+    var aMap map[string]int
+
+    aMap["Hello"] = 2
+}
+    \end{lstlisting}
+\end{codeblock}
+
+If we try to execute this program, we will obtain the following error:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+ $ ./MapsError
+    \end{lstlisting}
+    \begin{tcolorbox}
+        \begin{lstlisting}[basewidth=0.44em, numbers=none]
+panic: assignment to entry in nil map
+
+goroutine 1 [running]:
+main.main()
+        /home/user/go/MapsError.go:8 +0x28\end{lstlisting}
+    \end{tcolorbox}
+\end{terminal}
+
+This is because the \verb|var aMap map[string]int| instruction just declared the map, but never allocated it. So, in order to allocate it, we must use \verb|make()|. We can then do the following:
+
+\begin{codeblock}{MapsExamples.go}
+    \begin{lstlisting}[language = go]
+package main
+
+func main() {
+    var aMap = map[string]int {
+        "Mark": 27,
+        "Bob": 21,
+        "Silvia": 19,
+        "Mike": 26
+    }
+}\end{lstlisting}
+\end{codeblock}
