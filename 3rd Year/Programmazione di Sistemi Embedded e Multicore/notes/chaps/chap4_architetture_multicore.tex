@@ -2,7 +2,7 @@
 
 Per spiegare un'architettura multicore ci vorrebbero parecchie pagine, per cui in questo capitolo ci concentreremo a vedere i punti salienti delle architetture multicore.
 
-\section{Cache}
+\section{Organizzazione delle cache}
 
 Spesso si parla di cache quando si parla di processori, ma cosa intendiamo di preciso?
 
@@ -51,3 +51,157 @@ Un altro metodo, più efficace, è il \textbf{directory based cache coherence}, 
 
 Generalmente la memoria di un sistema può essere organizzata in due modi: può essere o \textbf{Uniform Memory Access} (\textbf{UMA}) o \textbf{Non-Uniform Memory Access} (\textbf{NUMA}). Per l'organizzazione UMA, i core condividono la stessa memoria, mentre per i NUMA, ogni gruppo di core ha una sua sezione di memoria. Con un sistema NUMA, bisogna fare attenzione a dove vengono allocati i dati, perché se dei dati che servono a un core vengono allocati nella parte di memoria nella quale il core non può accedere, allora si creano problemi di latenza: accedere a una memoria "locale" è infatti più economico che accedere a una memoria "remota". Tramite l'uso della libreria \verb|numa.h| è possibile gestire la modalità di allocazione dei dati (in caso si può usare anche l'utilità da terminale \verb|numactl|).
 \nl
+\section{OpenMP}
+
+Un altro framework/API per creare applicazioni a memoria condivisa è \textbf{OpenMP}, che garantisce, rispetto a PThreads, un'interfaccia più ad alto livello. Il sistema su cui viene eseguito un programma di OpenMP è visto come una collezione di cores, dove ogni core ha accesso alla memoria principale.
+\nl
+Rispetto a PThreads, OpenMP cerca di eseguire un codice in maniera parallela partendo da un programma sequenziale, ed è molto più semplice da applicare rispetto al trasformare un programma con PThreads. Per poter usare OpenMP, serve usare delle \textbf{pragma} e un compilatore che supporti la libreria: questo perché ci sono alcune direttive che devono essere eseguite al momento di compilazione. Segue la definizione di una pragma:
+
+\begin{definition}{Pragma}
+    Le \textbf{pragma} sono alcune \textbf{direttive} speciali che vengono \textbf{riconosciute} dal \textbf{preprocessore}. In \verb|C|, una pragma ha la forma \verb|#pragma|. Se un compilatore non supportasse le pragma di una libreria, allora le pragma verrebbero ignorate.
+    \nl
+    Le pragma possono usare delle \textbf{clausole}, ovverosia delle \textbf{direttive} che \textbf{modificano le pragma} e la loro esecuzione
+\end{definition}
+
+La pragma più utilizzata di OpenMP è \verb|#pragma omp parallel|, che dice al compilatore che il blocco di codice successivo va eseguito in parallelo. Per fare un esempio:
+
+\begin{codeblock}{HelloWorld.c}
+    \begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+
+void Hello(void) {
+    int my_rank = omp_get_thread_num();
+    int thread_count = omp_get_num_threads();
+
+    printf("Hello dal thread %d su %d\n", my_rank, thread_count);
+}
+
+int main(int argc, char** argv[]) {
+    int thread_count = strtol(argv[1], NULL, 10);
+
+    #pragma omp parallel num_threads(thread_count)
+    Hello();
+
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+Possiamo compilare il codice tramite il seguente comando:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+$ gcc -g -Wall -fopenmp -o hello_world HelloWorld.c
+$ ./hello_world 4
+    \end{lstlisting}
+    \begin{tcolorbox}
+        \begin{lstlisting}[basewidth=0.44em, numbers=none]
+Hello dal thread 1 di 4
+Hello dal thread 0 di 4
+Hello dal thread 2 di 4
+Hello dal thread 3 di 4\end{lstlisting}
+    \end{tcolorbox}
+\end{terminal}
+
+Come possiamo impostare il numero di threads the eseguiranno il codice? Ci sono vari modi, che verranno ora elencati in ordine gerarchico (per primi quelli con gerarchia più bassa):
+\begin{itemize}
+    \item In modo \textbf{universale}: attraverso l'impostazione della variabile d'ambiente (enviromental variable di UNIX) \verb|OMP_NUM_THREADS|. Questa variabile può essere impostata attraverso il comando \verb|export| di UNIX:
+    \begin{terminal}
+        \begin{lstlisting}[style = notexterm]
+$ echo $OMP_NUM_THREADS    # Per ottenere il valore
+$ export OMP_NUM_THREADS=<num_threads>     # Per salvare il valore\end{lstlisting}
+    \end{terminal}
+
+    \item A livello di \textbf{programma}: attraverso l'uso della funzione \verb|omp_set_num_threads()| a inizio codice;
+    \item A livello di \textbf{pragma}: usando la clausola \verb|num_threads()| nella pragma.
+\end{itemize}
+
+Per sapere quanti threads stanno eseguendo una certa parte di codice, possiamo usare la funzione \verb|omp_get_num_threads()| (se verrà eseguita in una porzione di codice sequenziale, ritornerà 1), mentre invece per avere il rank del thread bisognerà usare la funzione \verb|omp_get_thread_num()|.
+\nl
+Una differenza sostanziale con PThreads è che OpenMP potrebbe, se lo ritiene necessario, creare dei threads fin dall'inizio dell'esecuzione del codice e lasciarli in \verb|sleep| fino a che non servano, il che è sostanzialmente diverso da come funziona PThreads (può anche succedere, se una sezione di codice vada eseguita in sequenziale, che i threads vengano interrotti e messi in \verb|sleep| fino al momento in cui servano nuovamente).
+\nl
+Come abbiamo detto, non tutti i compilatori di C supportano OpenMP, e se un compilatore non supportasse la libreria potremmo avere problemi se provassimo a chiamare delle funzioni della libreria stessa. Come possiamo risolvere questo problema? Possiamo usare delle pragma specifiche per definire dei corsi d'azione diversi in base al fatto che il compilatore supporti OpenMP o meno:
+\pagebreak
+\begin{codeblock}{OpenMPCheck.c}
+    \begin{lstlisting}[language = C]
+// Inclusione delle librerie...
+#ifdef _OPEN_MP
+#include <omp.h>
+#endif
+
+void parallelFunc() {
+    // Nella funzione che verrà eseguita in parallelo
+
+    #ifdef _OPEN_MP
+        int my_rank = omp_get_thread_num();
+        int thread_count = omp_get_num_threads();
+    #else
+        int my_rank = 0;
+        int thread_count = 1;
+    #endif
+
+    // Altro codice...
+}
+
+int main() {
+    // Codice del main...
+    
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+Come possiamo garantire invece ciò che su PThreads avevamo con le mutex? Si può usare la pragma \verb|#pragma omp critical|: tale pragma considererà il blocco sotto di essa come un blocco di codice che deve essere gestito da una mutex, e che quindi solo un thread alla volta potrà eseguire.
+\nl
+Possiamo anche usare un'altra pragma, che può essere usata solo in alcuni casi: la pragma \verb|#pragma omp atomic|. Ci sono alcune operazioni che le CPU supportano che sono definite come \textbf{atomiche}: queste istruzioni permettono di \textbf{eseguire molteplici istruzioni} di Assembly \textbf{come una singola istruzione}. Ad esempio, se avessimo un'istruzione di C tipo \verb|y += 1;|, allora le istruzioni che Assembly farebbe sarebbero generalmente \verb|LOAD|, \verb|ADD| e \verb|STORE|. Tuttavia, se l'addizione venisse supportata come operazione atomica dalla CPU, allora si potrebbe fare l'addizione, a livello Assembly, con una singola operazione. Un esempio segue:
+
+\begin{codeblock}{Critical.c}
+    \begin{lstlisting}[language = C]
+int y = 0;      // Variabile pubblica per tutti i threads
+#pragma omp critical
+{   
+    int my_rank = omp_get_thread_num();     // Variabile privata del thread
+    y += my_rank;
+}\end{lstlisting}
+\end{codeblock}
+\pagebreak
+\begin{codeblock}{Atomic.c}
+    \begin{lstlisting}[language = C]
+// Tramite la pragma atomic sarebbe così:
+int y = 0;
+
+#pragma omp parallel
+{
+    int my_rank = omp_get_thread_num();
+
+    #pragma omp atomic
+    y += my_rank;
+}\end{lstlisting}
+\end{codeblock}
+
+È importante far sì che l'istruzione che vogliamo eseguire atomicamente non richieda l'esecuzione di una funzione: se avessimo qualcosa tipo \verb|y += sum_trapezoid()|, e se \verb|sum_trapezoid()| richiedesse di fare vari calcoli che potrebbero comprendere all'interno sezioni critiche, allora la funzione verrebbe eseguita in parallelo da ogni thread senza controllo sulle sezioni critiche, e l'unica operazione atomica sarebbe la somma finale sulla variabile \verb|y|.
+
+\subsection{Operazioni di riduzione}
+
+Anche OpenMP permette di avere operazioni di riduzione, che vengono specificate nelle pragma che specificano quali blocchi di codice vadano eseguiti in parallelo. Ad esempio, supponiamo di avere una funzione \verb|local_sum(int a, int b, int n)|, e che dobbiamo far sommare in un'unica variabile \verb|result| tutti i risultati di \verb|local_sum()|. Potremmo fare qualcosa del genere:
+
+\begin{codeblock}{Reductions.c}
+    \begin{lstlisting}[langauge = c]
+int result = 0;
+#pragma omp parallel
+{
+    #pragma omp critical
+    result += local_sum(a, b, n);
+}\end{lstlisting}
+\end{codeblock}
+
+Tuttavia, in questo modo tutti i threads eseguirebbero la funzione in sequenziale, e questo non sarebbe efficiente. Se ci salvassimo il risultato di \verb|local_sum()| in una variabile privata, staremmo comunque facendo un'operazione di riduzione. Tuttavia, OpenMP ha un modo per definire delle operazioni di riduzione, tramite la clausola \verb|reduction(<operatore>: <variabile_critica>)|:
+
+\begin{codeblock}{Reductions.c}
+    \begin{lstlisting}[langauge = c]
+int result = 0;
+#pragma omp parallel reduction(+: result)
+result += local_sum(a, b, n);\end{lstlisting}
+\end{codeblock}
+
+È importante specificare la clausola \verb|reduction|, altrimenti si avrebbero problemi di forza critica.
