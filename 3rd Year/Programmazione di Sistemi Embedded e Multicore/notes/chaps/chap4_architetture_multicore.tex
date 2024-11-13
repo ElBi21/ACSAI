@@ -153,7 +153,7 @@ int main() {
 
 Come possiamo garantire invece ciò che su PThreads avevamo con le mutex? Si può usare la pragma \verb|#pragma omp critical|: tale pragma considererà il blocco sotto di essa come un blocco di codice che deve essere gestito da una mutex, e che quindi solo un thread alla volta potrà eseguire.
 \nl
-Possiamo anche usare un'altra pragma, che può essere usata solo in alcuni casi: la pragma \verb|#pragma omp atomic|. Ci sono alcune operazioni che le CPU supportano che sono definite come \textbf{atomiche}: queste istruzioni permettono di \textbf{eseguire molteplici istruzioni} di Assembly \textbf{come una singola istruzione}. Ad esempio, se avessimo un'istruzione di C tipo \verb|y += 1;|, allora le istruzioni che Assembly farebbe sarebbero generalmente \verb|LOAD|, \verb|ADD| e \verb|STORE|. Tuttavia, se l'addizione venisse supportata come operazione atomica dalla CPU, allora si potrebbe fare l'addizione, a livello Assembly, con una singola operazione. Un esempio segue:
+Possiamo anche usare un'altra pragma, che può essere usata solo in alcuni casi: la pragma \verb|#pragma omp atomic|. Ci sono alcune operazioni che le CPU supportano che sono definite come \textbf{atomiche}: queste istruzioni permettono di \textbf{eseguire molteplici istruzioni} di Assembly \textbf{come una singola istruzione}. Ad esempio, se volessimo eseguire un'istruzione di C tipo \verb|y += 1;|, allora le istruzioni che Assembly genererebbe sarebbero generalmente \verb|LOAD|, \verb|ADD| e \verb|STORE|. Tuttavia, se l'addizione venisse supportata come operazione atomica dalla CPU, allora si potrebbe fare l'addizione, a livello Assembly, con una singola operazione. Un esempio segue:
 
 \begin{codeblock}{Critical.c}
     \begin{lstlisting}[language = C]
@@ -195,7 +195,12 @@ int result = 0;
 }\end{lstlisting}
 \end{codeblock}
 
-Tuttavia, in questo modo tutti i threads eseguirebbero la funzione in sequenziale, e questo non sarebbe efficiente. Se ci salvassimo il risultato di \verb|local_sum()| in una variabile privata, staremmo comunque facendo un'operazione di riduzione. Tuttavia, OpenMP ha un modo per definire delle operazioni di riduzione, tramite la clausola \verb|reduction(<operatore>: <variabile_critica>)|:
+Tuttavia, in questo modo tutti i threads eseguirebbero la funzione in sequenziale, e questo non sarebbe efficiente. Se ci salvassimo il risultato di \verb|local_sum()| in una variabile privata, staremmo comunque facendo un'operazione di riduzione. Tuttavia, OpenMP ha un modo per definire delle operazioni di riduzione, tramite la seguente clausola:
+\begin{center}
+    \verb|reduction(<operatore>: <variabile_critica>)|
+\end{center}
+
+Segue un esempio d'uso:
 
 \begin{codeblock}{Reductions.c}
     \begin{lstlisting}[langauge = c]

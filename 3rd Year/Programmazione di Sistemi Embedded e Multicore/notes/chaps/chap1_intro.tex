@@ -1,7 +1,499 @@
-\chapter{Programmazione Parallela}
+\chapter{Programmazione Parallela \texorpdfstring{\&}{&} C}
 
 Ad oggi, molte tasks e molti programmi necessitano di grandi capacità di calcolo, soprattutto nel campo delle AI, e costruire centri di elaborazione sempre più grandi può non sempre costituire una soluzione. Certo, negli ultimi anni abbiamo assistito a una grande evoluzione dei microprocessori e delle loro potenze, ma non è abbastanza avere hardware sempre più potente, serve saperlo impiegare bene.
-\\\\
-La società Nvidia, produttrice di \textbf{GPU}s (Graphical Processing Units) è riuscita, in questi anni, a produrre schede grafiche contenenti sempre più milioni di transistors, rendendo una GPU un oggetto estremamente complicato.
-\\\\
-Come detto in precedenza, avere oggetti così potenti non è abbastanza, serve saper usare questi ultimi nel modo migliore possibile, ed è proprio questo l'obiettivo di questo corso.
+\nl
+La società Nvidia, produttrice di \textbf{GPU}s (Graphical Processing Units) è riuscita, in questi anni, a produrre schede grafiche contenenti sempre più milioni di transistors, rendendo una GPU un oggetto estremamente complicato ma anche estremamente potente e versatile. Per la legge di Moore, il \textbf{numero di transistors} che si trovano all'interno di un circuito \textbf{raddoppia} sempre ogni anno, tuttavia ci sono dei limiti fisici che non possono essere valicati. Inoltre, avere più transistors all'interno di un circuito non è sempre positivo: più transistors equivale sì a una prestazione più alta, ma equivale anche a quantità maggiori di calore generato, e grandi quantità di calore rischiano di creare incosistenza nel circuito.
+\nl
+Come detto in precedenza, avere oggetti così potenti non è abbastanza, serve saper usare questi ultimi nel modo migliore possibile, ed è proprio questo l'obiettivo di questo corso: cercare di \textbf{programmare} nel modo \textbf{quanto più efficiente possibile} dei circuiti che possano eseguire codice in parallelo.
+\nl
+Per farlo, non possiamo usare linguaggi troppo ad alto livello come Python o Java: benché siano molto famosi e semplici da scrivere, non garantiscono un buon controllo sull'hardware. Una buona scelta sono i linguaggi a basso livello come \textbf{C}, \textbf{C++} o \textbf{Rust}, che offrono un ottimo compromesso tra facilità di scrittura del codice ed efficienza (altrimenti dovremmo scrivere il tutto in Assembly, il che risulterebbe forse troppo tedioso).
+
+\section{Da Sequenziale in Parallelo}
+
+Immaginiamo di voler fare un programma seriale in C che conti tutti i valori in un intervallo specifico $\{ 1, \; 2, \; \dots, \; n\}$. Un modo semplice per farlo sarebbe sommare, attraverso un \verb|for| loop, tutti gli elementi da $1$ a $n$:
+
+\begin{codeblock}{Sum.c}
+    \begin{lstlisting}[language = c]
+sum = 0;
+for (i = 0; i < n; i++) {
+	x = compute_next_value(i);
+	sum += x;
+}   \end{lstlisting}
+\end{codeblock}
+
+Tuttavia con valori di $n$ molto larghi possiamo ottenere tempi enormi (immaginiamo con $10^{16}$, o numeri di questa magnitudine). Per renderlo parallelo, immaginiamo di avere $p$ cores (dove $p \ll n$), dove ogni core esegue il seguente codice:
+
+\begin{codeblock}{SumForEachCore.c}
+    \begin{lstlisting}[language = c]
+// Variabili private di ogni core
+sum_core_i = 0;
+first_i = ...;
+last_i = ...;
+
+for (value_i = first_i; value_i < last_i; value_i++) {
+	x_i = compute_next_value(i);
+	sum_core_i += x_i;
+}   \end{lstlisting}
+\end{codeblock}
+
+Generalmente, si hanno 2 modi per scrivere del codice parallelo:
+
+\begin{definition}{Task e Data Parallelism}
+    Definiamo come \textbf{task parallelism} quando una task principale viene spezzata in $k$ sotto-tasks e distribuita ai vari $p$ cores, i quali portano avanti le loro tasks autonomamente.
+    \nl
+    Definiamo invece con \textbf{data parallelism} quando i dati vengono divisi in $k$ sottogruppi, che vengono affidati poi ai diversi $p$ cores, che eseguono tutti quanti la stessa operazione.
+\end{definition}
+
+Normalmente, se ogni core potesse eseguire codice indipendentemente, non sarebbe diverso scrivere codice seriale dallo scrivere codice parallelo. Tuttavia, come possiamo far sì che i core completino completare una task comune? Non hanno modo di passarsi dei dati in questo modo. Di base, ci deve essere una \textbf{comunicazione} tra i core, principalmente per i seguenti motivi:
+\begin{itemize}
+    \item \textbf{Comunicazione}: se ad esempio i core devono condividere dei dati;
+    \item \textbf{Divisione del carico}: far sì che i cores possano lavorare assieme, così da bilanciare il carico di lavoro;
+    \item \textbf{Sincronizzazione}: siccome ogni core può avere tempi di esecuzione diversi, è importante che si sincronizzino a tratti, così da non creare concorrenza.
+\end{itemize}
+
+Come si possono scrivere programmi paralleli? Ci sono 4 librerie che verranno viste:
+\begin{itemize}
+    \item \textbf{Message-Passing Interface} (MPI)$_{L}$;
+    \item \textbf{Posix Threads} (PThreads)$_{L}$;
+    \item \textbf{OpenMP}$_{L + C}$;
+    \item \textbf{CUDA}$_{L + C}$
+\end{itemize}
+
+Dove $X_L$ indica che la voce è una libreria e $X_{L + C}$ indica che la voce è sia una libreria che un compiler.
+
+\begin{definition}{Classificazione di sistemi paralleli}
+    I sistemi paralleli sono classificabili in multiple categorie. Una prima categorizzazione è la seguente:
+    \begin{itemize}
+        \item a \textbf{memoria condivisa}: i cores hanno accesso alla stessa porzione di memoria, e si sincronizzano per quanto riguarda la posizione dei dati in memoria;
+        \item a \textbf{memoria distribuita}: ogni core ha una sua memoria privata, e per scambiare dati con gli altri core c'è bisogno che un core mandi un messaggio agli altri cores.
+    \end{itemize}
+
+    Un'altra possibile modalità di categorizzazione è la seguente:
+    \begin{itemize}
+        \item \textbf{Multiple Instruction Multiple Data} (\textbf{MIMD}): ogni core ha una sua unità di controllo, può eseguire istruzioni diverse ed è indipendente dagli altri cores;
+        \item \textbf{Single Instruction Multiple Data} (\textbf{SIMD}): i cores hanno una stessa unità di controllo (quindi o eseguono tutti la stessa istruzione o sono tutti in idle). Un esempio di sistema SIMD è la GPU.
+    \end{itemize}
+\end{definition}
+
+\begin{center}
+    \begin{tabular}{|c||c|c|}
+        \hline
+         & \makecell{\textbf{Shared Memory}} & \textbf{Distributed Memory} \\
+        \hline \hline
+        \textbf{SIMD} & \makecell{CUDA$_{L + C}$} & \\
+        \hline
+        \makecell{\textbf{MIMD}} & \makecell{Posix Threads (PThreads)$_L$ \\ OpenMP$_{L + C}$ \\ CUDA$_{L + C}$} & Message-Passing Interface (MPI)$_{L}$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\subsection{Concorrenza, parallelismo e distribuzione}
+
+Non c'è un'unica definizione, ma generalmente noi possiamo dire che:
+\begin{itemize}
+    \item un sistema in concorrenza permette di eseguire tasks diverse ad un dato momento $t$ di esecuzione del sistema (ad esempio, il sistema operativo);
+    \item un sistema in parallelo permette di eseguire multiple tasks (anche diverse) per risolvere un problema comune;
+    \item un sistema distribuito permette di distribuire le tasks su diverse entità, che però potrebbero (come non potrebbero) collaborare.
+\end{itemize}
+
+ Generalmente, la differenza tra un sistema distribuito e un sistema parallelo si vede nella collaborazione del sistema, tuttavia il confine è molto labile.
+
+
+\subsection{Review dell'architettura di Von Neumann}
+
+L'architettura di Von Neumann è caratterizzata dalla presenza dei seguenti elementi:
+\begin{itemize}
+    \item \textbf{Memoria}: insieme di posizioni (locations), ognuna con un indirizzo (address). In una posizione ci possono essere o dati o istruzioni;
+    \item \textbf{CPU} o \textbf{processore}: un'unità di controllo che decide quali istruzioni eseguire e una sezione di \textbf{datapath} che esegue le istruzioni. In una CPU, lo stato delle variabili è salvato in dei registri, ovverosia un tipo di memoria estremamente veloce (utilizza flip-flops); un registro importante è il \textbf{program counter} (\textbf{PC}), che salva l'indirizzo della prossima istruzione da eseguire;
+    \item \textbf{Interconnect}: è il mezzo attraverso il quale la CPU scambia dati con la memoria. Generalmente è un bus, ma può essere anche di un altro tipo (a volte più complesso del semplice bus).
+\end{itemize}
+
+Le architetture di Von Neumann hanno un \textbf{bottleneck}, dato dal necessario spostamento dei dati: accedere a un dato in una cache di tipo $L_1$ (una cache molto veloce situata vicino ai core della CPU) potrà forse costare $0.5ns$, tuttavia portare un dato dalla memoria ai registri costa $100ns$. La maggior parte del tempo speso in questo tipo di architetture, viene speso nel suddetto spostamento di dati.
+\nl
+Un modo per mitigare questi problemi è usare le \textbf{cache}, che permettono di salvare temporaneamente dei dati. Più è recente un dato, più è probabile trovarlo nella cache. Programmare una cache è molto complicato, ma è possibile e se ben fatto permette di ridurre drasticamente i tempi di accesso in memoria.
+
+\section{Il linguaggio C}
+
+Scritto nel 1972 come linguaggio di programmazione che sostituisse Assembly, C è un linguaggio a basso livello che permette di avere un controllo granulare delle risorse usate, e che viene usato spesso per disegnare e creare software che deve essere veloce e performante. In C, ogni istruzione è scritta nel formato \verb|istruzione;|, dove il \texttt{;} separa un'istruzione da quella successiva. Come molti linguaggi, anche in C è possibile usare commenti (attraverso i simboli \verb|//| per il commento a linea singola e \verb|/* ... */| per il commento a multiple linee).
+\nl
+Per poter includere alcune funzioni di input e output, bisogna includere un file header. Il file responsabile per l'I/O è \verb|stdio.h|, e va incluso con il comando \verb|#include <stdio.h>|. L'inclusione di librerie esterne avviene in un momento di pre-processing, dove anche avviene ad esempio la rimozione dei commenti dai file di codice. Tale sessione di pre-processing viene fatta da un'entità chiamata \textbf{pre-processore}.
+\nl
+Ogni programma di C \textbf{deve} avere una funzione \verb|main|, ma può anche avere più funzioni. L'importante è che ci sia una funzione \verb|main|, poiché è da essa che parte l'esecuzione del codice. La funzione \verb|main| peraltro \textbf{deve} finire con l'istruzione \verb|return 0;|, poiché essa determina che il programma è stato eseguito con successo. Segue un esempio di programma in C:
+
+\begin{codeblock}{HelloWorld.c}
+    \begin{lstlisting}[language = c]
+#include <stdio.h>
+
+int main () {
+    printf("First C program!");
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+La funzione \verb|printf()| fa parte della libreria \verb|stdio|, che è stata inclusa in testa al file.
+
+\subsection{Variabili, \texttt{printf} e \texttt{scanf}}
+
+In C si possono definire delle variabili, e assegnargli un valore, grazie alla seguente sintassi: \verb|<tipo variabile> <nome variabile> = <valore variabile>;|. Seguono degli esempi:
+
+\begin{codeblock}{Variables.c}
+    \begin{lstlisting}[language = c]
+int a = 0;        // Dichiarazione di un intero (int)
+float b = 4.65;   // Dichiarazione di un decimale a virgola mobile (float)
+char c = 'c';     // Dichiarazione di un carattere (char)
+
+int x, y;         // Dichiarazione di due interi senza aver 
+                  // assegnato un valore
+x = 4;            // Assegnamento di un valore alla variabile x
+y = 5;            // Ugualmente alla riga precedente, y riceve un valore\end{lstlisting}
+\end{codeblock}
+
+Nell'ultima riga, abbiamo solo definito due variabili, ma non gli abbiamo assegnato alcun valore. Questa cosa è possibile in C, e torna utile quando dobbiamo definire una variabile ma non sappiamo ancora quale valore preciso dovrà essere inserito.
+\nl
+C permette anche di eseguire operazioni attraverso certi operatori. Segue una lista di tutte le operazioni disponibili:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Operatore} & \textbf{Operazione} & \textbf{Sintassi} \\
+        \hline
+        \verb|+| & Somma & \verb|a + b| \\
+        \verb|-| & Differenza & \verb|a - b| \\
+        \verb|*| & Moltiplicazione & \verb|a * b| \\
+        \verb|/| & Divisione (intera) & \verb|a / b| \\
+        \verb|%| & Modulo (resto della divisione) & \verb|a % b| \\
+        \verb|(| \verb|)| & Parentesi & \verb|(a + b) * c| \\
+        \verb|++| & Incremento (di 1) & \verb|a++| \\
+        \verb|--| & Decremento (di 1) & \verb|a--| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+La funzione \verb|printf| accetta molteplici argomenti, e permette anche di stampare il valore delle variabili a schermo:
+
+\begin{codeblock}{Printf.c}
+    \begin{lstlisting}[language = c]
+// Uso di printf con molteplici argomenti
+printf("String 1");
+printf("String 1", "String 2");
+printf("String 1", ..., "String n");
+
+// Stampa di variabili
+int x = 4;
+printf("Value of x: %d", x);\end{lstlisting}
+\end{codeblock}
+
+Si può usare il carattere \verb|%| seguito da una lettera per determinare il placeholder per la variabile che vuole essere stampata. Segue una lista dei possibili placeholders:
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Placeholder} & \textbf{Tipo variabile} \\
+        \hline
+        \verb|%d| & Interi (\verb|int|) \\
+        \verb|%f| & Decimali a virgola mobile (\verb|float|) \\
+        \verb|%c| & Caratteri (\verb|char|) \\
+        \verb|%s| & Stringhe \\
+        \verb|%u| & Interi senza segno \\
+        \verb|%ld| & Interi lunghi (32 bits) \\
+        \verb|%lu| & Interi lunghi senza segno (32 bits) \\
+        \verb|%lld| & Interi grandi (64 bits) \\
+        \verb|%llu| & Interi grandi senza segno (64 bits) \\
+        \verb|%x| & Interi esadecimali con lettere minuscole \\
+        \verb|%X| & Interi esadecimali con lettere maiuscole \\
+        \verb|%o| & Interi ottali \\
+        \verb|%e| & Notazione scientifica con lettere minuscole \\
+        \verb|%E| & Notazione scientifica con lettere maiuscole \\
+        \verb|%g| & Rappresentazione ristretta di \verb|%f| e \verb|%e| \\
+        \verb|%G| & Rappresentazione ristretta di \verb|%f| e \verb|%E| \\
+        \verb|%%| & Stampa di un simbolo \verb|%| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+La funzione \verb|scanf| permette di ricevere dall'utente in input dei valori. La sintassi della funzione è \verb|scanf("<descrizione>", <lista indirizzi in memoria>)|. Nella descrizione devono figurare i placeholder con i corretti tipi di dati che vogliamo richiedere. Un esempio è:
+
+\begin{codeblock}{PrintfWithPointers.c}
+    \begin{lstlisting}[language = c]
+int x;
+
+// Il simbolo & ritorna l'indirizzo in memoria della variabile x,
+// che specifica dove vogliamo salvare i dati raccolti con scanf
+int* address = &x;
+
+// Chiamando scanf, chiediamo all'utente di inserire un valore intero
+scanf("Inserisci un intero: %d", address)
+    \end{lstlisting}
+\end{codeblock}
+
+Nella sezione sui puntatori, verrà spiegato meglio il concetto di indirizzo di memoria.
+\nl
+Come in tutti gli altri linguaggi di programmazione, C segue uno specifico ordine di esecuzione: tutte le istruzioni vengono eseguite in ordine sequenziale, una dopo l'altra. Supponiamo di avere queste righe di codice:
+
+\begin{codeblock}{ExecutionOrder.c}
+    \begin{lstlisting}[language = c]
+int x = 40;
+int y = 60;
+y = y + x;
+x = x - (y / 2);
+    \end{lstlisting}
+\end{codeblock}
+
+Il risultato finale di \verb|x| sarà \verb|-10|, poiché prima gli viene assegnato \verb|40|, e poi gli viene sottratto il valore di \verb|(y + x) / 2|.
+
+\subsection{Tipi primitivi, promozione e casting}
+
+Un computer non può memorizzare numeri infinitamente grandi o piccoli, in quanto si ha una precisione e una memoria limitata. Questo comporta che ci sono vari tipi di numeri, che possono occupare più o meno spazio in memoria rispetto ad altri. Questi tipi di variabili sono detti \textbf{tipi primitivi}, poiché sono definiti da C stesso. Una lista di tipi primitivi è la seguente:
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Tipo primitivo} & \textbf{Spazio in memoria occupato} \\
+        \hline
+        \verb|char| & 8 bits \\
+        \verb|short| & 16 bits \\
+        \verb|int| & 32 bits \\
+        \verb|long| & 32 bits \\
+        \verb|long long| & 64 bits \\
+        \verb|float| & 32 bits \\
+        \verb|double| & 64 bits \\
+        \verb|long double| & 128 bits \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Esistono anche delle versioni \verb|unsigned| dei primi 5 tipi, che, come suggerisce il nome, sono privi di segno, e possono essere dunque solo positivi.
+\nl
+Quando si esegue un'operazione tra due variabili di tipo diverso, C effettua una conversione della variabile con tipo più piccolo (a livello di bits) a una variabile di tipo più grande. Questa conversione è chiamata \textbf{promozione}.
+\nl
+Nel caso si volesse cambiare in corso d'opera il tipo di una variabile, si può effettuare il \textbf{casting}, ovverosia il cambio di tipo. Per esempio, supponiamo di avere due interi e volerne fare la divisione. Un modo per sfruttare il casting sarebbe il seguente:
+
+\begin{codeblock}{CastingAndPromotion.c}
+    \begin{lstlisting}[language = c]
+int x, y;
+x = 10;
+y = 3;
+z = (float) x / y;\end{lstlisting}
+\end{codeblock}
+
+\subsection{Logica e cicli}
+
+Quando si vuole eseguire un'azione piuttosto che un altra, in base ad una certa condizione, si possono usare vari controlli condizionali. Ci sono due tipi di controlli condizionali: l'\verb|if-else if-else| e lo \verb|switch|. L'\verb|if-else if-else| è strutturato in questo modo:
+
+\begin{codeblock}{IfElse.c}
+    \begin{lstlisting}[language = c]
+if (<condizione>) {
+    // Codice...
+} else if (<condizione>) {
+    // Codice...
+} else {
+    // Codice...
+}\end{lstlisting}
+\end{codeblock}
+
+Lo \verb|switch| invece è strutturato nel seguente modo:
+
+\begin{codeblock}{Switch.c}
+    \begin{lstlisting}[language = c]
+switch (<variabile>) {
+    case <valore>:
+        // Codice...
+        break;
+    case <valore>:
+        // Codice...
+        break;
+    // Tanti case quanti sono i casi che vogliamo gestire...
+
+    default:
+        // Codice...
+        break;
+}\end{lstlisting}
+\end{codeblock}
+
+Sia l'\verb|if| che lo \verb|switch| si avvalgono delle operazioni logiche per funzionare. Tali operazioni sono basate sul fatto che una condizione a un certo punto sia o vera o falsa. Infatti, esistono i valori booleani: \verb|true| e \verb|false|.
+\nl
+Per poter creare espressioni logiche, possiamo usare i seguenti operatori:
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Operatore} & \textbf{Nome} & \textbf{Sintassi} \\
+        \hline
+        \verb|<| & Minore & \verb|a < b| \\
+        \verb|>| & Maggiore & \verb|a > b| \\
+        \verb|<=| & Minore o uguale & \verb|a <= b| \\
+        \verb|>=| & Maggiore o uguale & \verb|a >= b| \\
+        \verb|==| & Uguale & \verb|a == b| \\
+        \verb|!=| & Diverso & \verb|a != b| \\
+        \verb|&&| & E (AND) & \verb|a && b| \\
+        \verb+||+ & O (OR) & \verb|a || b| \\
+        \verb|!| & Non (NOT) & \verb|!a| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Altri strumenti che usano la logica sono i cicli, che permettono di eseguire codice fino a che una certa condizione non si avvera / finché una certa condizione non diventa falsa. I tre cicli che ci sono in C sono il \verb|for|, il \verb|while| e il \verb|do-while|.
+\nl
+Il \verb|for| ripete un'operazione per un numero finito di volte, fino a che la condizione non diventa falsa. La cosa comoda del ciclo \verb|for| è che permette di tener conto dell'iterazione in cui ci si trova.
+
+\begin{codeblock}{ForLoop.c}
+    \begin{lstlisting}[language = c]
+for (inizializzazione ciclo; condizione ciclo; incremento ciclo) {
+    // Codice...
+}
+
+// Ad esempio...
+for (int i = 0; i < 10; i++) {
+    // Codice...
+}\end{lstlisting}
+\end{codeblock}
+
+Il ciclo \verb|while| e il \verb|do-while| sono simili concettualmente: entrambi eseguono il codice al loro interno fino a che la condizione iniziale non diventa falsa. La differenza fra i due è che il \verb|do-while| esegue almeno una volta il codice all'interno del blocco \verb|do|, mentre il \verb|while| non assicura che il codice al suo interno venga eseguito.
+
+\begin{codeblock}{DoAndDoWhile.c}
+    \begin{lstlisting}[language = c]
+// Ciclo while
+while (<condizione>) {
+    // Codice...
+}
+
+// Ciclo do-while
+do {
+    // Codice...
+} while (<condizione>)\end{lstlisting}
+\end{codeblock}
+
+Si possono usare anche due keywords importanti: \verb|break| farà uscire il codice dal ciclo in cui si trova, in modo anticipato (ad esempio se una sotto-condizione viene raggiunta); \verb|continue| farà saltare un'iterazione del ciclo.
+
+\begin{exercise}
+    Si scriva un programma che legge in input due numeri interi.
+    \begin{itemize}
+        \item [1)] Il programma deve stampare se il primo numero è maggiore, minore o uguale al secondo.
+        \item [2)] Il programma deve stampare la somma e il prodotto dei due numeri.
+    \end{itemize}
+\end{exercise}
+
+La soluzione sarebbe la seguente:
+
+\begin{codeblock}{Exercise1\_2\_0.c}
+    \begin{lstlisting}[language = c]
+#include <stdio.h>
+
+int main () {
+    int a, b;
+    printf("Inserisci il tuo primo numero a: ");
+    scanf("%d", &a);
+    printf("Inserisci in tuo secondo numero b: ");
+    scanf("%d", &b);
+
+    if (a < b) {
+        printf("%d è maggiore di %d\n", a, b);
+    } else if (a == b) {
+        printf("%d è uguale a %d\n", a, b);
+    } else {
+        printf("%d è minore di %d\n", a, b);
+    }
+
+    int sum = a + b;
+    int product = a * b;
+    printf("La somma è uguale a %d\nIl prodotto è uguale a %d", sum, product);
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+\begin{exercise}
+    Si scriva un programma che legge in input un numero intero \verb|a|.
+    \begin{itemize}
+        \item [1)] Il programma stampa tutti i numeri da 0 ad \verb|a| in ordine crescente.
+        \item [2)] Il programma stampa tutti i numeri da 0 ad \verb|a| in ordine decrescente.
+    \end{itemize}
+    Per svolgere l'esercizio si utilizzino cicli \verb|for|
+\end{exercise}
+
+La soluzione sarebbe la seguente:
+
+\begin{codeblock}{Exercise1\_2\_1.c}
+    \begin{lstlisting}[language = c]
+#include <stdio.h>
+
+int main () {
+    int a;
+    printf("Inserisci il tuo numero a: ");
+    scanf("%d", &a);
+
+    for (int i = 0; i <= a; i++) {
+        printf("%d\n", i);
+    }
+
+    for (int i = a; i <= 0; a--) {
+        printf("%d\n", a);
+    }
+
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+\begin{exercise}
+    Si scriva un programma che legge in input un numero intero \verb|a|.
+    \begin{itemize}
+        \item [1)] Il programma stampa tutti i numeri da 0 ad \verb|a| in ordine crescente.
+        \item [2)] Il programma stampa tutti i numeri da 0 ad \verb|a| in ordine decrescente.
+    \end{itemize}
+    Per svolgere l'esercizio si utilizzino cicli \verb|while|
+\end{exercise}
+
+La soluzione sarebbe la seguente:
+\pagebreak
+\begin{codeblock}{Exercise1\_2\_2.c}
+    \begin{lstlisting}[language = c]
+#include <stdio.h>
+
+int main () {
+    int a, i;
+    printf("Inserisci il tuo numero a: ");
+    scanf("%d", &a);
+    i = 0;
+
+    while (i <= a) {
+        printf("%d\n", i);
+        i++;
+    }
+
+    i = a;
+    while (i >= 0) {
+        printf("%d\n", i);
+        i--;
+    }
+
+    return 0;
+}\end{lstlisting}
+\end{codeblock}
+
+\subsection{Array, stringhe e matrici}
+
+Un array è una collezione ordinata di elementi dello stesso tipo.
+
+\subsection{Puntatori \texorpdfstring{\&}{&} gestione della memoria}
+
+In C, è possibile accedere direttamente all'indirizzo di memoria dove è salvata una variabile. Per farlo, bisogna usare la sintassi 
+
+\begin{center}
+    \verb|<tipo variabile>* <nome variabile> = &<nome variabile>|
+\end{center}
+
+La memoria è divisa in 2 tipi:
+\begin{itemize}
+    \item \verb|STACK|: è una parte \textbf{statica} della memoria, che viene usata per l'esecuzione delle funzioni;
+    \item \verb|HEAP|: è una parte \textbf{dinamica} della memoria, che permette di allocare oggetti ed elementi di dimensione variabile. In C, va allocata manualmente;
+\end{itemize}
+
+L'allocazione di memoria viene fatta tramite l'uso della libreria \verb|stdlib.h|, che comprende principalmente 4 funzioni:
+\begin{itemize}
+    \item \verb|void* malloc(int size)|: permette di allocare un blocco di memoria contiguo, il cui spazio totale è determinato da \verb|size|;
+    \item \verb|void* realloc(void* ptr, int size)|: realloca a memoria localizzata dal puntatore \verb|ptr| a una dimensione determinata da \verb|size|. Questa funzione può essere usata quando si necessita di riallocare in memoria una sezione di spazio contiguo più grande dello spazio originariamente richiesto. Non sempre è possibile estendere un blocco di memoria: potrebbe essere necessario che il sistema operativo riallochi tutto il blocco di memoria in un secondo spazio. Infatti, se questo dovesse essere il caso, verrà ritornato un puntatore nuovo;
+    \item \verb|void* calloc(int numElements, int size)|: permette di riservare una porzione di memoria di dimensione uguale a \verb|numElements * size|, dove \verb|size| è la dimensione dell'elemento singolo che vuole essere allocato;
+    \item \verb|void* free(void* ptr)|: libera la memoria, indicata dal puntatore \verb|ptr|, riservata precedentemente con una delle precedenti funzioni.
+\end{itemize}
+
+È molto importante ricordarsi di liberare memoria quanto più possibile, proprio perché C non è dotato di un garbage collector, ed è compito del programmatore ricordarsi di liberare la memoria quando necessario.
+\nl
+Se serve sapere quanti bytes serve allocare per certi oggetti o elementi, potremmo voler usare la funzione \verb|sizeof()|. Tale funzione restituisce, in bytes, la dimensione dell'elemento. Questa funzione è comoda perché non sempre possiamo sapere con precisione il numero di bytes necessari per allocare qualcosa.
