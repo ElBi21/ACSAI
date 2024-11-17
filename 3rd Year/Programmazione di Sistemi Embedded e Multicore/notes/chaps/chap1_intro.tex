@@ -470,7 +470,39 @@ int main () {
 
 \subsection{Array, stringhe e matrici}
 
-Un array è una collezione ordinata di elementi dello stesso tipo.
+Un array è una \textbf{collezione ordinata} di elementi dello \textbf{stesso tipo}, e ogni array richiede che venga specificata la grandezza quando l'array viene dichiarato. La sintassi per creare un array è 
+\begin{center}
+    \verb|<tipo> <nome_array> [<grandezza>]|
+\end{center}
+
+Ad esempio, un array di 3 interi viene specificato con \verb|int my_array [3]|. Per stampare il contenuto di un array non possiamo passare direttamente la variabile dell'array a \verb|printf()|, ma bisogna usare un \verb|for| loop per iterare attraverso l'intero array. Se passassimo un array alla funzione \verb|printf()| non potremmo predirre direttamente il risultato di tale funzione.
+\nl
+Si possono anche creare \textbf{array multidimensionali}, per poter rappresentare tabelle o matrici. La sintassi per creare un array multidimensionale è la stessa di Python, dove la sintassi è
+\begin{center}
+    \verb|<tipo> <variabile> [<grandezza righe>][<grandezza colonne>]|
+\end{center}
+
+In linguaggi più ad alti livelli, le stringhe sono considerate come un tipo a sé stante, ma in C questo non è il caso. Infatti, queste sono viste come \textbf{array di caratteri}. Ipotizziamo quindi di voler immagazzinare in una stringa di C la frase "\textit{Hello world}", come lo faremmo in C? Semplicemente scrivendo
+\begin{center}
+    \verb|char string[12] = "Hello world";|
+\end{center}
+
+Ma perché abbiamo dato una lunghezza di 12 caratteri e non 11? Perché al termine di ogni stringa c'è un carattere chiamato \textbf{terminatore}, identificato con \verb|\0|. Dunque nella memoria avremmo i seguenti caratteri:
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline
+        \verb|H| & \verb|e| & \verb|l| & \verb|l| & \verb|o| & & \verb|w| & \verb|o| & \verb|r| & \verb|l| & \verb|d| & \verb|\0| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Per eseguire operazioni particolari sulle stringhe, possiamo anche usare la libreria \verb|string.h|. Alcune delle funzioni più utilizzate sono \begin{itemize}
+    \item \verb|strlen(<stringa>)|: per ottenere la lunghezza di una stringa
+    \item \verb|strcpy(<destinazione>, <source>)|: per copiare una stringa;
+    \item \verb|strcat(<destinazione>, <source>)|: per concatenare la stringa definita da \verb|<source>| nella stringa definita da \verb|<destinazione>|;
+    \item \verb|strcmp(<stringa_1>, <stringa_2>)|: per comparare due stringhe.
+\end{itemize}
 
 \subsection{Puntatori \texorpdfstring{\&}{&} gestione della memoria}
 
@@ -480,11 +512,21 @@ In C, è possibile accedere direttamente all'indirizzo di memoria dove è salvat
     \verb|<tipo variabile>* <nome variabile> = &<nome variabile>|
 \end{center}
 
-La memoria è divisa in 2 tipi:
+Ci sono due operatori che possiamo usare assieme ai puntatori, ovverosia \verb|*| e \verb|&|:
 \begin{itemize}
-    \item \verb|STACK|: è una parte \textbf{statica} della memoria, che viene usata per l'esecuzione delle funzioni;
-    \item \verb|HEAP|: è una parte \textbf{dinamica} della memoria, che permette di allocare oggetti ed elementi di dimensione variabile. In C, va allocata manualmente;
+    \item l'operatore \verb|*| restituisce il contenuto della cella di memoria indicata dal puntatore;
+    \item l'operatore \verb|&| restituisce il puntatore di una variabile.
 \end{itemize}
+
+La memoria può anche essere gestita liberamente dal programmatore in C. Tuttavia va fatta una distinzione tra due parti della memoria diverse, ovverosia lo stack e l'heap.
+
+\begin{definition}{Stack \& Heap}
+    La memoria di un computer è divisa in 2 tipi:
+    \begin{itemize}
+        \item \verb|STACK|: è una parte \textbf{statica} della memoria, che viene usata per l'esecuzione delle funzioni;
+        \item \verb|HEAP|: è una parte \textbf{dinamica} della memoria, che permette di allocare oggetti ed elementi di dimensione variabile. In C, va allocata manualmente;
+    \end{itemize}
+\end{definition}
 
 L'allocazione di memoria viene fatta tramite l'uso della libreria \verb|stdlib.h|, che comprende principalmente 4 funzioni:
 \begin{itemize}
