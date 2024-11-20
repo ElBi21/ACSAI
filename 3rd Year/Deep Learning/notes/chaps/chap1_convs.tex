@@ -116,7 +116,7 @@ From this previous example we had a way to illustrate how the convolution works,
         \draw[step=1cm,gray,very thin] (0, 0) grid (4, -4);
         \draw[black, ->] (-0.5, -2) -- (4.5, -2) node [anchor = west] {$l$};
         \draw[black, ->] (2, 0.5) -- (2, -4.5) node [anchor = north] {$k$};
-        \fill[black] (2, -2) circle (2pt) node [anchor = south west] {$(0, \; 0)$}
+        \fill[black] (2, -2) circle (2pt) node [anchor = south west] {$(0, \; 0)$};
     \end{tikzpicture}
 \end{center}
 
@@ -290,9 +290,40 @@ We can here compare the results of the average and Gaussian filters:
     \end{tabular}
 \end{center}
 
-% 004: standard
-% 005: Gaussian
-% 006: average
+The utility of the box filter and the Gaussian filters is that they are \textbf{separable}, which means that we can first convolve the rows with a one dimensional filter and then convolve the columns with another one dimensional filter. This is very \textbf{efficient} when it comes to computing the filters, because with the full box filter for instance we would have to do $k^2 \cdot n$ operations, but with the separated box filters we would only have to do $2k \cdot n$ operations. This is possible because the \textbf{convolution is linear}, so we can use the associative and commutative operations.
 
+\[ (f_x \otimes f_y) \otimes I \eq f_x \otimes (f_y \otimes I) \]
 
 \subsection{Edges and Derivatives}
+
+When we have an image with abrupt changes of values, we say that we have an \textbf{edge}. But how can we detect such edges mathematically? Suppose that we have the following image:
+
+\begin{center}
+    \begin{tabular}{c c}
+        \begin{tikzpicture}
+            \draw[black, thick] (0, 0) rectangle (6, 4);
+            \fill[black] (2, 0) rectangle (4, 4);
+        \end{tikzpicture} &
+        \raisebox{54pt}{$\begin{bmatrix}
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+            255 & ... & 255 & 0 & ... & 0 & 255 & ... & 255 \\
+        \end{bmatrix}$}
+    \end{tabular}
+\end{center}
+
+We see how we have an abrupt change of values from $255$ to $0$. We can exploit derivatives to see the behaviour of the function. Indeed, if we compute the first derivative, we obtain the following matrix:
+\nl
+\[\begin{bmatrix}
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+    0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
+\end{bmatrix}\]
+\nl
+As we can see, the values $255$ and $-255$ denote where we have a change of values in the image. This allows us to detect eventual changes in the image. We can also compute the second derivative, which will allow us to gain further intel about which color is changing to which.
