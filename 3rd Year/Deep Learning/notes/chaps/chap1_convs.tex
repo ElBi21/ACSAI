@@ -330,18 +330,27 @@ As we can see, the values $255$ and $-255$ denote where we have a change of valu
 
 \section{Classifying Images}
 
-Classifying data is a task that in the recent years has been an active field of development. The reason why this is the case is because, unlike with a more standard algorithm such as sorting, there exists no obvious way for a computer to do it. While for us humans it's pretty easy to recognize the contents of an image, for a computer it changes drastically.
+Classifying data is a task that in the recent years has been an active field of development. The reason why this is the case is because, unlike with a more standard algorithm such as sorting, there exists \textbf{no obvious way} for a computer to do it. While for us humans it's pretty easy to recognize the contents of an image, for a computer it changes drastically.
 \nl
-Machine Learning presents us a more data-driven approach, where classification happens through a trained model. Usually, for this step we must have a dataset of images and labels, then a model must be trained and finally the model must be evaluated on never-seen-before images.
+Machine Learning presents us a more \textbf{data-driven approach}, where classification happens through a \textbf{trained model}. Usually, for this step we must have a dataset of images and labels, then a model must be trained and finally the model must be evaluated on never-seen-before images.
 \nl
 The idea is then to have what we call a \textbf{linear classifier}: starting from an image of size $h \times w \times c$ (where $h$ and $w$ are height and width respectively and $c$ is the number of channels), a function such as
 \[ f \; : \; x, \; W \; \longmapsto \; n \]
 
-where $x$ is the input image, $W$ is the set of parameters (or weights) and $n$ is the set of class scores. The size of $n$ is the number of classes that the model can recognize.
+where $x$ is the \textbf{input image}, $W$ is the \textbf{set of parameters} (or \textbf{weights}) and $n$ is the set of \textbf{class scores}. The size of $n$ is the number of classes that the model can recognize.
 \nl
-But we know that models can suffer from overfitting, which would make the whole model unusable (since it wouldn't be able to generalize anymore), so what can we do? We can add a bias $b$, which would create some noise. Our final function of the linear classifier would then have the following structure:
+But we know that models can suffer from overfitting, which would make the whole model unusable (since it wouldn't be able to generalize anymore), so what can we do? We can add a \textbf{bias} $b$, which would create some noise. Our final function of the linear classifier would then have the following structure:
 \[ f(x, \; W) \eq W \cdot x + b \]
 
 At the end of the classifier, we will obtain a set of scores, one for each classes. Usually, the higher the score, the higher the probability that the image belongs to the respective class.
 \nl
-There is a bunch of problems with this approach though. Let's try to run our model on some images
+There is a bunch of problems with this approach though. Let's try to run our model on some images, and see what its generalization looks like it brought to an image:
+
+\begin{center}
+    \begin{tabular}{c c c}
+        \includegraphics[height=3cm]{imgs/007.png} & \includegraphics[height=3cm]{imgs/008.png} & \includegraphics[height=3cm]{imgs/009.png} \\
+        Plane & Car & Bird
+    \end{tabular}
+\end{center}
+
+What we can see in the previous images are the generalizations that the model learned for each of the indicated classes. But, as we can see, they do not really resemble anything in particular: indeed, maybe the only recognizable item is the car. But from this we can recover an important point: \textbf{generalization happens} only from a \textbf{specific point of view}. We can clearly see that the car would be recognized only if the picture was taken at the front, but what if we had a side picture? We can't know for certain, but it most likely won't be labelled as a car (or at least, not with the same precision of a front picture).
