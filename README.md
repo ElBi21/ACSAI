@@ -66,7 +66,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
   </tr>
   <tr>
     <td align="center">Cybersecurity<br><sub>Prof. Angelo Spognardi</sub></td>
-    <td align="center">✓</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Cybersecurity/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
     <td align="center">N/A</td>
   </tr>

@@ -1,0 +1,122 @@
+\chapter{Introduction} 
+
+Nowadays, there is a great attention regarding computer security and how to ensure privacy, mostly because of the rapid growth of internet and telecommunication systems. It has also become more important to secure data on machines, may they be connected to the internet or not. A word usually pops up when discussing computer security, and that is \textbf{cybersecurity}. Nowadays we have many definitions, but we'll stick to the one provided by the \textbf{NIST} (\textbf{National Institute of Standards and Technology}):
+
+\begin{definition}{Cybersecurity}
+    Prevention of damage to, protection of, and restoration of computers, electronic communications systems, electronic communications services, wire communication, and electronic communication, including information contained therein, to ensure its availability, integrity, authentication, confidentiality, and nonrepudiation.
+\end{definition}
+
+In general, cybersecurity aims to ensure \textbf{computer security}, so deploying \textbf{confidentiality controls}, \textbf{integrity controls} and \textbf{availability controls} of the data and of the \textbf{computers' assets}, such as software, hardware and firmware. But what do we define as an \textbf{asset}?
+
+\begin{definition}{Asset}
+    An \textbf{asset} is an important object or collection of objects that are important for a specific entity, and that must be protected. Examples of assets may be the hardware, the software, the data or the network.
+\end{definition}
+
+An example of used attack on the firmware the \textit{meltdown attack}, which attacked the pipeline of the computer's CPUs; software attacks could be when there is a \textit{man-in-the-middle}, so when eavesdropping happens; an instance of hardware attack could instead be the \textit{voltage glitching}.
+\nl
+An information system is extremely complex, and works only thanks to the interaction of several elements. This is why protecting an information system is also complex. But we can't protect everything, so where should we put the priority?
+\nl
+The most important thing to protect is \textbf{data}, be it personal or company related. We can have a complete definition of what personal data is thanks to the GDPR (to make a parenthesis, privacy is something defined just recently. We could say that privacy is the right to decide who can access to your own data).
+\nl
+In the cybersecurity scenery, we have multiple factors that are involved. Some of them have precise definitions. Here there is a list of some useful key concepts:
+
+\begin{definition}{Security Concepts}
+    \begin{itemize}
+        \item \textbf{Threat agent} (or \textbf{adversary}): the entity who conducts detrimental activities;
+        \item \textbf{Countermeasure}: a procedure which involves a device or special techniques that must impair the adversarial activity;
+        \item \textbf{Risk}: a measure which denotes how much an entity is threatened by a given circumstance or event;
+        \item \textbf{Threat}: any circumstance that may pose a risk to an entity by a malicious agent;
+        \item \textbf{Vulnerability}: is something that can be exploited or triggered by an adversarial entity.
+    \end{itemize}    
+\end{definition}
+
+Threats from a malicious agent can have multiple forms. We mostly recognise 4 types of attacks:
+\begin{itemize}
+    \item \textbf{Active attack}: an attempt to alter one or multiple resources of a system or affect their operations;
+    \item \textbf{Passive attack}: an attempt to learn information from a system, without altering the system's resources;
+    \item \textbf{Inside attack}: an attempt to alter one or multiple system resources from an entity which is within the security perimeter of the system. Such an entity is authorized to access the system resources, but it uses them for non-intended purposes (usually malicious ones);
+    \item \textbf{Outside attack}: an attempt to alter one or multiple system resources by an entity located outside the security perimeter, which is not authorized to use the system's resources;
+\end{itemize}
+
+\section{C.I.A.}
+
+Cybersecurity aims to provide 3 major key points, which are shared under the C.I.A. acronym: \textbf{Confidentiality}, \textbf{Integrity}, and \textbf{Availability}.
+
+\begin{definition}{Confidentiality}
+    We define with \textbf{confidentiality} the avoidance of unauthorized disclosed information
+\end{definition}
+
+Some tools that can enforce confidentiality are:
+\begin{itemize}
+    \item \textbf{Encryption}, which is the transformation of a piece of information by using a secret, called \textbf{encryption key}, so that the message can be read again in its decrypted form only by using another secret, called \textbf{decryption key} (in some cases, the encryption key is the same as the decryption key). Clearly, the longer the key, the longer it may take for a malicious agent to guess it and break the encryption;
+    \item \textbf{Access control}: the establishment of rules and policies that limit access to some assets to a restricted amount of users and/or systems with a "\textit{need-to-know}";
+    \item \textbf{Authentication}: the determination of the identity or role that a given user has. There are multiple ways to do this, and it usually employs a combination of:
+    \begin{itemize}
+        \item the usage of a physical item that the user has;
+        \item the usage of an information that the user should know;
+        \item the usage of information regarding the user (such as the fingerprint, the face landmarks positions, etc.).
+    \end{itemize}
+    \item \textbf{Authorization}: the action of determining if a user is allowed to access a system's information or data (in general, a system's assets), which is determined by an access control policy;
+    \item \textbf{Physical security}: the establishment of physical barriers to protect the system's assets.
+\end{itemize}
+
+\begin{definition}{Integrity}
+    \textbf{Integrity} is the property that an asset has not been altered in an unauthorized way
+\end{definition}
+
+Some ways for ensuring integrity are \textbf{backups} (the periodic copy of data), \textbf{checksums} (the mapping of a file or collection of files to a unique numerical value. By adding, removing, or modifying the data, the checksum changes as well), and \textbf{data correcting codes} (methods that allow detecting and quickly fixing eventual errors within data).
+
+
+\begin{definition}{Availability}
+    \textbf{Availability} is the property that an asset can be accessed and modified in a timely fashion by only the users authorized to do so
+\end{definition}
+
+Some tools that can enforce availability are \textbf{physical protections} over the system and \textbf{computational redundancies}, ensuring the availability of a given data or collection of data on multiple instances of the system to serve as fallbacks in case of failures.
+
+% 01 - Recover from slide 20
+% *Man in the middle* can be stopped with TLS
+
+\section{Authentication}
+
+We said that one of the key concepts of cybersecurity is to detect who is authorized to perform certain actions and who's not. We also need a way to assess that such user is actually authorized. This is where authentication comes into play.
+\nl
+The NIST defines the concept of authentication as follows (from NIST SP-800-63-4):
+
+\begin{definition}{Authentication}
+    \textbf{Authentication} is the process of \textbf{establishing confidence} in user identities that are presented electronically to an information system
+\end{definition}
+
+Some examples of authentication could be biometrics (although this kind of authentication has a great margin of error) or the use of physical cards. There are two basic authentication requirements:
+\begin{itemize}
+    \item \textbf{Uniquely identify the information} of some users, processes, or devices, who could be acting on behalf of someone else;
+    \item \textbf{Authenticate} (or \textbf{verify}) if the identity of the users, processes, or devices is genuine.
+\end{itemize}
+\nl
+After these basic requirements, we can also implement other secondary security requirements, such as asking for a 2FA (Two-Factor Authentication) code, enforcing a minimum length for the password or the requirement of some characters to be used, the encrypting of the password, etc...
+\nl
+How can we store passwords though? We can't store them in plaintext, since a breach into the system containing a batch of passwords would leak them, so we have to "hide" them. We can instead encrypt them through some function: this way, even if the password got leaked, then only the encoded version would be leaked, making it harder (if not impossible) to recover the true password. This is the case of \textbf{hash functions}.
+
+\begin{definition}{Cryptographic Hash Functions}
+    A \textbf{hash function} is a function $f$ which maps a string of any length $n$ to a string $o$ of finite length (it is made of a number $L$ of bits) plus some padding $p$ (so the following holds: $|o| \eq L + p$). Such function is a \textbf{one-way function}: the output can't be reverted.
+    \[ f \; : \; n \; \longmapsto \; l \]
+\end{definition}
+
+Hash functions have some key properties:
+\begin{itemize}
+    \item the length $|o|$ of the output is constant, and has a fixed size, \textbf{independently from the input length};
+    \item it's \textbf{impossible} to revert;
+    \item it's \textbf{efficient} to compute;
+    \item although possible, it's \textbf{hard} to find two input values which will produce the same output.
+\end{itemize}
+
+These key properties make the hash function widely employed in the cybersecurity field. Hashing though may not be enough: UNIX instead takes a slightly more complicated approach.
+\nl
+The UNIX Legacy method has that, when storing a new password, UNIX takes the password and a \textbf{12-bits salt}, which is a 12 bits code, needed to slightly modify the password before hashing it. Why do we need the salt? Because if two users, for instance, had the same password, then the hash would be identical. With different salts instead, we slightly modify the password, making the hash different even if someone had the same password. Once hashed, UNIX would save into a table the \textbf{user ID}, the \textbf{salt}, and the \textbf{hash code}.
+\nl
+Another reason why we should use salts is that we can slow down the brute forcing of a password, because for each brute force attempt to convert one password, we would need to also guess the right salt.
+\nl
+Nowadays, UNIX uses a loop of 1000 MD5 crypting routines, has no limitations on the input length, and produces a 128 bits hash value. Such hashes are stored in the \verb|/etc/shadow| file (previously in \verb|/etc/passwd|) in such a format:
+
+%```bash
+%$6$
+%```
