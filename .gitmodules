@@ -1,3 +1,6 @@
 [submodule "NoTeX"]
 	path = NoTeX
 	url = https://github.com/ElBi21/NoTeX.git
+[submodule "3rd Year/Programmazione di Sistemi Embedded e Multicore/repo"]
+	path = 3rd Year/Programmazione di Sistemi Embedded e Multicore/repo
+	url = https://github.com/DanieleDeSensi/multicore-programming.git
