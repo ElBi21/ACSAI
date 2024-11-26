@@ -186,7 +186,7 @@ int y = 0;
 Anche OpenMP permette di avere operazioni di riduzione, che vengono specificate nelle pragma che specificano quali blocchi di codice vadano eseguiti in parallelo. Ad esempio, supponiamo di avere una funzione \verb|local_sum(int a, int b, int n)|, e che dobbiamo far sommare in un'unica variabile \verb|result| tutti i risultati di \verb|local_sum()|. Potremmo fare qualcosa del genere:
 
 \begin{codeblock}{Reductions.c}
-    \begin{lstlisting}[langauge = c]
+    \begin{lstlisting}[language = C]
 int result = 0;
 #pragma omp parallel
 {
@@ -203,10 +203,91 @@ Tuttavia, in questo modo tutti i threads eseguirebbero la funzione in sequenzial
 Segue un esempio d'uso:
 
 \begin{codeblock}{Reductions.c}
-    \begin{lstlisting}[langauge = c]
+    \begin{lstlisting}[language = C]
 int result = 0;
 #pragma omp parallel reduction(+: result)
 result += local_sum(a, b, n);\end{lstlisting}
 \end{codeblock}
 
 È importante specificare la clausola \verb|reduction|, altrimenti si avrebbero problemi di corsa critica.
+
+\subsection{Ciclo \texttt{for} parallelo}
+
+Uno dei motivi del perché OpenMP è molto utilizzato è anche grazie alla sua implementazione del \verb|for| parallelo. Semplicemente, OpenMP esegue una \verb|fork()| di un gruppo di threads, che eseguiranno il blocco del \verb|for|, e poi divide le iterazioni tra i threads. L'idea è di usare la seguente pragma:
+
+\begin{center}
+    \verb|#pragma omp parallel for num_threads(<n_threads>) reduction(<op>: <var>)|
+\end{center}
+
+L'uso del \verb|for| parallelo è possibile solo in alcune situazioni, qui elencate:
+
+\begin{center}
+    \verb|for| \begin{pmatrix}
+        & & \verb|index++| \\
+        & & \verb|++index| \\
+        & \verb|index < end| & \verb|index--| \\
+        & \verb|index <= end| & \verb|--index| \\
+        \verb|index = start|; & \verb|index >= end|; & \verb|index += incr| \\
+        & \verb|index > end| & \verb|index -= decr| \\
+        & & \verb|index = index + incr| \\
+        & & \verb|index = incr + index| \\
+        & & \verb|index = index - decr| \\
+    \end{pmatrix}
+\end{center}
+
+% metti matrice for parallelo
+
+Questo è richiesto perché prima di parallelizzare il ciclo \verb|for|, OpenMP vuole sapere il numero di iterazioni che il ciclo \verb|for| eseguirà. Inoltre, non si possono usare le istruzioni \verb|break| e \verb|return|, e non si può tantomeno manomettere l'index dell'iterazione del \verb|for| loop. Si può tuttavia usare l'istruzione \verb|exit|, che fa terminare l'esecuzione del programma.
+\nl
+Come ci comportiamo nel caso di cicli \verb|for| annidati? In quel caso basterebbe mettere una pragma sopra il ciclo \verb|for| più esterno, e OpenMP farebbe partire abbastanza thread per dare un numero equo di iterazioni a ogni thread, distribuendo le iterazioni in stile round robin. Questo è comodo se il numero di threads disponibili può dividere senza resto il numero di iterazioni del ciclo \verb|for| più esterno. Tuttavia, se il numero non fosse divisibile, ci ritroveremmo un carico di lavoro sbilanciato fra i threads. Supponiamo di avere il seguente codice:
+
+\begin{codeblock}{OpenMPNestedFor.c}
+    \begin{lstlisting}[language = C]
+#pragma omp parallel for
+for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 6; ++j) {
+        c(i, j);
+    }
+}\end{lstlisting}
+\end{codeblock}
+
+In questo caso, se il numero di threads disponibili fosse 4, allora avremmo il thread 3 che non eseguirebbe nulla. Come possiamo fare? Un'idea potrebbe essere quella di mettere la pragma legata al ciclo interno, ma in quel caso creeremmo delle bolle tra i vari threads. Infatti, la pragma distribuirebbe 6 iterazioni tra 4 threads (per 3 volte), lasciando due thread con un'iterazione in più, e siccome prima di passare alla prossima iterazione del ciclo più esterno bisognerebbe aspettare che le iterazioni del ciclo più interno finiscano, avremmo dei problemi.
+\nl
+C'è la possibilità di unire i due cicli, tramite una direttiva ulteriore che viene aggiunta alla pragma. Questa direttiva è \verb|collapse()|, e si usa nel seguente modo:
+
+\begin{codeblock}{OpenMPNestedForCollapsed.c}
+    \begin{lstlisting}[language = C]
+#pragma omp parallel for collapse(2)
+for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 6; ++j) {
+        c(i, j);
+    }
+}\end{lstlisting}
+\end{codeblock}
+
+Un'operazione che OpenMP vieta è l'usare due pragma di parallelizzazione per i cicli \verb|for|. Ad esempio:
+
+\begin{codeblock}{OpenMPDisabledNestedFor.c}
+    \begin{lstlisting}[language = C]
+#pragma omp parallel for
+for (int i = 0; i < 3; ++i) {
+    #pragma omp parallel for
+    for (int j = 0; j < 6; ++j) {
+        c(i, j);
+    }
+}\end{lstlisting}
+\end{codeblock}
+
+\subsection{Dipendenze dei dati}
+
+C'è una cosa da tenere bene a mente quando usiamo il ciclo \verb|for| parallelo: ci potrebbero essere delle dipendenze tra i dati. Ad esempio, quando calcoliamo la sequenza di Fibonacci, noi abbiamo bisogno, per calcolare un numero $i$, del numero $i - 1$ e $i - 2$. Infatti, avremmo un codice del genere:
+
+\begin{codeblock}{OpenMPFibonacci.c}
+    \begin{lstlisting}[language = C]
+fibo[0] = fibo[1] = 1;
+for (int i = 2; i < n; i++) {
+    fibo[i] = fibo[i - 1] + fibo[i - 2];
+}\end{lstlisting}
+\end{codeblock}
+
+Noi non potremmo usare la pragma per parallelizzare il \verb|for| loop perché non avremo la garanzia che il risultato sia corretto.
