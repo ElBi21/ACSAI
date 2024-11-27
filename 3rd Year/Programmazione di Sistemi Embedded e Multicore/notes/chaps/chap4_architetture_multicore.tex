@@ -210,3 +210,35 @@ result += local_sum(a, b, n);\end{lstlisting}
 \end{codeblock}
 
 È importante specificare la clausola \verb|reduction|, altrimenti si avrebbero problemi di corsa critica.
+
+% recover
+
+\subsection{Scheduling dei loop}
+
+Una volta che decidiamo di voler parallelizzare un ciclo \verb|for|, come possiamo distribuire le varie iterazioni ai vari nodi? Ci sono vari modi: il modo più classico è quello di distribuire le iterazioni \textbf{a blocchi} (quindi, se abbiamo $n$ iterazioni e $k$ nodi, ad ogni nodo assegnamo una quantità sequenziale di $\nicefrac{n}{k}$ iterazioni). Tuttavia, un altro modo che possiamo utlizzare è quello di distribuire le iterazioni \textbf{ciclicamente}, ovverosia alla round robin. In questo modo ogni thread esegue comunque $\nicefrac{n}{k}$ iterazioni, ma saranno tutte sparse in modo diverso. Questo torna comodo ad esempio quando le ultime iterazioni di un ciclo sono quelle più costose a livello di calcolo.
+\nl
+Per poter specificare lo scheduling dei loop, serve usare la clausola \verb|schedule(type, chunksize)| all'interno della pragma. La clausola specifica, tramite il parametro \verb|type|, di assegnare staticamente le iterazioni ai threads, e ne assegna \verb|chunksize| alla volta ad ogni thread prima di passare al prossimo thread a cui assegnare.
+\nl
+La clausola ammette diversi valori di \verb|type|:
+\begin{itemize}
+    \item \verb|static|: le iterazioni vengono assegnate ai threads prima dell'esecuzione delle iterazioni stesse;
+    \item \verb|dynamic| o \verb|guided|: le iterazioni vengono assegnate ai threads durante l'esecuzione delle esecuzioni, quindi quando un thread si libera gli viene assegnata un'iterazione. Lo scheduling \verb|guided| è simile al \verb|dynamic|, ma riduce, ad ogni chunk assegnato, il numero di iterazioni assegnate ai threads. Possiamo specificare comunque un numero minimo di iterazioni da assegnare ad ogni thread, così da evitare overhead;
+    \item \verb|auto|: il tipo di scheduling viene assegnato al runtime dallo scheduler o dal compiler;
+    \item \verb|runtime|: il tipo di scheduling viene determinato al runtime.
+\end{itemize}
+
+Il valore di \verb|chunksize| è importante perché permette di distribuire più granularmente le iterazioni a ogni thread, ed è sempre un valore intero positivo. Bisogna sempre considerare bene il valore di \verb|chunksize|: se troppo piccolo, avremo un maggiore overhead per inizializzare il \verb|for| parallelo, mentre se troppo grande, allora caricheremmo troppo il peso dei singoli thread.
+\nl
+Un altro modo di specificare lo scheduling di OpenMP è esportando una variabile d'ambiente chiamata \verb|OMP_SCHEDULE|. Ad esempio, potremmo specificare la seguente:\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+$ gcc -g -Wall -fopenmp -o hello_world HelloWorld.c
+$ ./hello_world 4
+    \end{lstlisting}
+    \begin{tcolorbox}
+        \begin{lstlisting}[basewidth=0.44em, numbers=none]
+Hello dal thread 1 di 4
+Hello dal thread 0 di 4
+Hello dal thread 2 di 4
+Hello dal thread 3 di 4\end{lstlisting}
+    \end{tcolorbox}
+\end{terminal}
