@@ -298,7 +298,12 @@ Noi non potremmo usare la pragma per parallelizzare il \verb|for| loop perché n
 
 Una volta che decidiamo di voler parallelizzare un ciclo \verb|for|, come possiamo distribuire le varie iterazioni ai vari nodi? Ci sono vari modi: il modo più classico è quello di distribuire le iterazioni \textbf{a blocchi} (quindi, se abbiamo $n$ iterazioni e $k$ nodi, ad ogni nodo assegnamo una quantità sequenziale di $\nicefrac{n}{k}$ iterazioni). Tuttavia, un altro modo che possiamo utlizzare è quello di distribuire le iterazioni \textbf{ciclicamente}, ovverosia alla round robin. In questo modo ogni thread esegue comunque $\nicefrac{n}{k}$ iterazioni, ma saranno tutte sparse in modo diverso. Questo torna comodo ad esempio quando le ultime iterazioni di un ciclo sono quelle più costose a livello di calcolo.
 \nl
-Per poter specificare lo scheduling dei loop, serve usare la clausola \verb|schedule(type, chunksize)| all'interno della pragma. La clausola specifica, tramite il parametro \verb|type|, di assegnare staticamente le iterazioni ai threads, e ne assegna \verb|chunksize| alla volta ad ogni thread prima di passare al prossimo thread a cui assegnare.
+Per poter specificare lo scheduling dei loop, serve usare la clausola 
+\begin{center}
+    \verb|schedule(type, chunksize)|
+\end{center}
+
+all'interno della pragma. La clausola specifica, tramite il parametro \verb|type|, di assegnare staticamente le iterazioni ai threads, e ne assegna \verb|chunksize| alla volta ad ogni thread prima di passare al prossimo thread a cui assegnare.
 \nl
 La clausola ammette diversi valori di \verb|type|:
 \begin{itemize}
@@ -323,3 +328,6 @@ Hello dal thread 2 di 4
 Hello dal thread 3 di 4\end{lstlisting}
     \end{tcolorbox}
 \end{terminal}
+
+% recover false sharing
+

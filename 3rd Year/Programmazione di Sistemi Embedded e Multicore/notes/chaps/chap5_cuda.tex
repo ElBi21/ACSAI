@@ -1,0 +1,64 @@
+\chapter{Programmazione di GPU e CUDA}
+
+Una componente essenziale in tutti i computer è la CPU, che è nata essenzialmente per eseguire calcolo sequenziale nel più breve tempo possibile. Fin dalla loro creazione, l'idea era di ottimizzare quanto più possibile l'efficienza e la riduzione della latenza. Un computer necessita di una CPU per poter funzionare, ma non necessita strettamente invece di una GPU.
+
+\begin{definition}{Graphics Processing Unit}
+    Una \textbf{Graphics Processing Unit} (\textbf{GPU}) è una componente ideata per condurre tasks di grafica, ideata per eseguire operazioni in parallelo
+\end{definition}
+
+La struttura di una GPU è molto diversa da quella di una CPU: quest'ultima infatti è pensata per eseguire codice sequenziale, non parallelo. Una GPU è composta dalle seguenti componenti:
+\begin{itemize}
+    \item una sezione ridotta di cache, che puntano a massimizzare il throughput della memoria;
+    \item una sezione massiva di ALUs (più lenti di quelli nelle CPU), che però sono collegati da una pipeline pemsata apposta per svolgere compiti in parallelo;
+    \item una memoria di tipo HBM (High Bandwidth Memory) chiamata VRAM (\textbf{Video RAM}).
+\end{itemize}
+
+Su questo corso ci concentreremo sulle architetture delle GPU CUDA, create da NVIDIA. In questo tipo di architettura ci sono vari cores, chiamati \textbf{streaming processors} (\textbf{SP}), che sono uniti in più blocchi, chiamati \textbf{streaming multiprocessors} (\textbf{SM}). Ogni streaming multiprocessor è controllato da una stessa unità di controllo: questo vuol dire che ogni streaming processor in uno stesso multiprocessor eseguirà la stessa istruzione di Assembly in un dato momento.
+\nl
+Ci sono alcuni caveat quando si programmano le GPU: la memoria della GPU e quella della CPU sono diverse, e quindi per poter usare un dato sulla GPU che risiede nella memoria della CPU, questo dato andrà prima caricato sulla memoria della GPU.
+
+\section{CUDA}
+
+Abbiamo spesso parlato di CUDA, ma di cosa parliamo quando usiamo questo termine? CUDA è un acronimo che sta per \textbf{Compute Unified Device Architecture}, che intende generalmente l'architettura delle schede GPU di NVIDIA. CUDA offre due API diverse, una più low level e una più high level per i 3 grandi sistemi operativi.
+\nl
+CUDA va oltre il semplice linguaggio di programmazione: è una \textbf{piattaforma di calcolo} a tutti gli effetti. Le piattaforme CUDA vengono considerate come \textbf{co-processori} della CPU, non come sostituzioni. Infatti, per funzionare, la GPU necessita della CPU.
+\nl
+Al giorno d'oggi ci sono due grandi competitors nel mercato delle GPU: NVIDIA e AMD. Al momento, NVIDIA è la società più quotata, ma anche AMD offre hardware performante. ADM offre un'API proprietara chiamata HIP, che nella maggior parte delle istruzioni è simile a CUDA. Ci sono anche altre due API open source, chiamate OpenCL e OpenACC.
+\nl
+CUDA organizza i suoi thread in una struttura a sei dimensioni: ogni thread è posizionato in un blocco che va da una a tre dimensioni, e ogni blocco è posizionato in una griglia che va anch'essa da una a tre dimensioni. Dunque ogni thread può sapere la sua posizione in questo spazio a sei dimensioni, chiamando opportune funzioni offerte dall'API di CUDA.
+\nl
+Ogni piattaforma CUDA ha una sua capacità di calcolo, che viene chiamata \textbf{CUDA compute capability}. La capacità viene rappresentata da un numero di versione chiamato \textbf{SM version}.
+
+\subsection{Scrivere un programma di CUDA}
+
+La struttura di un programma CUDA è la seguente:
+\begin{itemize}
+    \item [1)] \textbf{allocare la memoria} sulla piattaforma CUDA;
+    \item [2)] \textbf{trasferire i dati} dalla DRAM alla VRAM della piattaforma;
+    \item [3)] \textbf{eseguire un kernel CUDA}, ovverosia una funzione;
+    \item [4)] una volta terminato il kernel, serivrà \textbf{copiare i dati} processati dalla VRAM della piattaforma nella DRAM.
+\end{itemize}
+
+Per scrivere un programma di CUDA bisogna specificare una funzione, chiamata \textbf{kernel}, che andrà eseguita su tutti i threads. Chiaramente non è pensabile specificare, thread per thread, cosa ogni thread dovrà eseguire, qundi l'idea è quella di specificare come arrangiare i threads in blocchi e griglie. Di norma, la GPU ha già una sua struttura di blocchi e griglie, tuttavia noi abbiamo la possibilità di scegliere una nostra struttura che sia compatibile con l'architettura della nostra GPU.
+\nl
+Per eseguire una funzione su una GPU NVIDIA, servirà specificare appunto la dimensione dei blocchi e della griglia, e ciò si fa attraverso le seguenti linee di codice:
+
+\begin{codeblock}{CUDAStartKernel.cu}
+    \begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <cuda.h>
+
+__global__ void hello() {
+    printf("Hello world");
+}
+
+int main() {
+    dim3 block(3, 2);
+    dim3 grid(4, 3, 2);
+    hello <<<grid, block>>>();
+    cudaDeviceSynchronize();
+    return 0;
+}
+
+my_function<<grid, block>>();\end{lstlisting}
+\end{codeblock}
