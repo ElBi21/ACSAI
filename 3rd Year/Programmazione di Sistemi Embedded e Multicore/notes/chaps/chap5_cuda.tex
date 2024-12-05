@@ -1,42 +1,58 @@
 \chapter{Programmazione di GPU e CUDA}
 
-Una componente essenziale in tutti i computer è la CPU, che è nata essenzialmente per eseguire calcolo sequenziale nel più breve tempo possibile. Fin dalla loro creazione, l'idea era di ottimizzare quanto più possibile l'efficienza e la riduzione della latenza. Un computer necessita di una CPU per poter funzionare, ma non necessita strettamente invece di una GPU.
+Una componente essenziale in tutti i computer è la CPU, che è nata essenzialmente per eseguire calcoli sequenziali nel più breve tempo possibile. Fin dalla loro creazione, l'idea era di \textbf{ottimizzare} quanto più possibile la \textbf{riduzione della latenza} tra un calcolo e l'altro, usando meccanismi come branch predictors, istruzioni atomiche di operazioni congiunte, etc... Un computer necessita di una CPU per poter funzionare e per garantire alcune funzioni base, tuttavia le sue capacità possono essere espanse attraverso altre componenti secondarie. Una di queste componenti è la \textbf{Graphics Processing Unit}, altresì detta \textbf{GPU}.
 
-\begin{definition}{Graphics Processing Unit}
-    Una \textbf{Graphics Processing Unit} (\textbf{GPU}) è una componente ideata per condurre tasks di grafica, ideata per eseguire operazioni in parallelo
+\begin{definition}{Graphics Processing Unit (GPU)}
+    Una \textbf{Graphics Processing Unit} (\textbf{GPU}) è una \textbf{componente secondaria} di un computer, che venne inizialmente ideata per condurre compiti di grafica, ma che venne poi usata per \textbf{eseguire operazioni in parallelo} una volta scoperta la potenzialità di queste architetture
 \end{definition}
 
-La struttura di una GPU è molto diversa da quella di una CPU: quest'ultima infatti è pensata per eseguire codice sequenziale, non parallelo. Una GPU è composta dalle seguenti componenti:
-\begin{itemize}
-    \item una sezione ridotta di cache, che puntano a massimizzare il throughput della memoria;
-    \item una sezione massiva di ALUs (più lenti di quelli nelle CPU), che però sono collegati da una pipeline pemsata apposta per svolgere compiti in parallelo;
-    \item una memoria di tipo HBM (High Bandwidth Memory) chiamata VRAM (\textbf{Video RAM}).
-\end{itemize}
-
-Su questo corso ci concentreremo sulle architetture delle GPU CUDA, create da NVIDIA. In questo tipo di architettura ci sono vari cores, chiamati \textbf{streaming processors} (\textbf{SP}), che sono uniti in più blocchi, chiamati \textbf{streaming multiprocessors} (\textbf{SM}). Ogni streaming multiprocessor è controllato da una stessa unità di controllo: questo vuol dire che ogni streaming processor in uno stesso multiprocessor eseguirà la stessa istruzione di Assembly in un dato momento.
-\nl
-Ci sono alcuni caveat quando si programmano le GPU: la memoria della GPU e quella della CPU sono diverse, e quindi per poter usare un dato sulla GPU che risiede nella memoria della CPU, questo dato andrà prima caricato sulla memoria della GPU.
+La struttura di una GPU è molto diversa da quella di una CPU: mentre quest'ultima infatti è pensata per eseguire codice sequenziale, la prima è ideata per eseguire semplici operazioni in parallelo. In generale, si vuole \textbf{usare una CPU} quando si vuole avere una \textbf{latenza ridotta}, mentre invece si \textbf{usare una GPU} quando si vuole avere un \textbf{throughput maggiore}.
 
 \section{CUDA}
 
-Abbiamo spesso parlato di CUDA, ma di cosa parliamo quando usiamo questo termine? CUDA è un acronimo che sta per \textbf{Compute Unified Device Architecture}, che intende generalmente l'architettura delle schede GPU di NVIDIA. CUDA offre due API diverse, una più low level e una più high level per i 3 grandi sistemi operativi.
+In questo corso ci concentreremo sulle architetture delle GPU con architettura CUDA, create da NVIDIA. La società statunitense si è ormai affermata come leader mondiale nel campo del calcolo parallelo, sviluppando GPU e altre componenti che rappresentano lo stato dell'arte del campo del calcolo ad alte prestazioni; da qui il motivo del perché ci concentreremo sulle loro piattaforme.
 \nl
-CUDA va oltre il semplice linguaggio di programmazione: è una \textbf{piattaforma di calcolo} a tutti gli effetti. Le piattaforme CUDA vengono considerate come \textbf{co-processori} della CPU, non come sostituzioni. Infatti, per funzionare, la GPU necessita della CPU.
+Al giorno d'oggi però sono due i grandi competitors nel mercato delle GPU: NVIDIA e AMD. Sebbene NVIDIA sia la società più quotata, AMD offre comunque hardware performante, e rimane una valida alternativa a NVIDIA. AMD offre un'API proprietara chiamata HIP, che nella maggior parte delle istruzioni è simile a CUDA. Ci sono anche altre due API open source, chiamate OpenCL e OpenACC:
+\begin{itemize}
+    \item Open Computing Language (OpenCL) è uno standard di programmazione che punta allo sviluppare codice che possa essere eseguito su una varietà corposa di piattaforme, come CPU, GPU, DSP e altri tipi di processori. Sia NVIDIA che AMD supportano questo standard, ed è molto vicino alle API di CUDA;
+    \item OpenACC è una specifica per un'API simile a OpenMP: l'idea è di usare delle pragma per parallelizzare i programmi sequenziali e farli eseguire su piattaforme che possano svolgere calcoli in parallelo, come le GPU.
+\end{itemize}
+
+Abbiamo spesso parlato di CUDA, ma di cosa parliamo quando usiamo questo termine? 
+
+\begin{definition}{CUDA}
+    \textbf{CUDA} è un acronimo che sta per \textbf{Compute Unified Device Architecture}, il quale denota l'\textbf{architettura} delle schede GPU di NVIDIA. CUDA offre due API diverse, che permettono di avere un controllo più granulare sulle piattaforme di NVIDIA
+\end{definition}
+
+CUDA va oltre il semplice linguaggio di programmazione: è una \textbf{piattaforma di calcolo} a tutti gli effetti. Le piattaforme CUDA vengono considerate come \textbf{co-processori} della CPU, non come sostituzioni. Ricordiamo che infatti, per funzionare, la GPU necessita della CPU.
 \nl
-Al giorno d'oggi ci sono due grandi competitors nel mercato delle GPU: NVIDIA e AMD. Al momento, NVIDIA è la società più quotata, ma anche AMD offre hardware performante. ADM offre un'API proprietara chiamata HIP, che nella maggior parte delle istruzioni è simile a CUDA. Ci sono anche altre due API open source, chiamate OpenCL e OpenACC.
+Una GPU basata su CUDA è composta dalle seguenti componenti:
+\begin{itemize}
+    \item una \textbf{sezione ridotta di cache}, che puntano a massimizzare il throughput della memoria;
+    \item una \textbf{sezione massiva di ALUs} (più lenti ed economici di quelli nelle CPU), che sono però collegati da una pipeline pensata apposta per svolgere compiti in parallelo;
+    \item una memoria di tipo HBM (High Bandwidth Memory) chiamata VRAM (\textbf{Video RAM}), che è esclusiva alla GPU.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[scale = 0.27]{imgs/001.png}
+\end{center}
+
+L'architettura CUDA prevede la seguente struttura: ogni ALU è racchiuso in un core, chiamato \textbf{streaming processor} (\textbf{SP}); gli SP sono uniti in più blocchi, chiamati \textbf{streaming multiprocessors} (\textbf{SM}). Ogni streaming multiprocessor è controllato da una \textbf{stessa unità di controllo}: questo vuol dire che ogni streaming processor in uno stesso multiprocessor eseguirà la \textbf{stessa istruzione di Assembly} in un dato momento. Ogni SM ha anche una sua cache e una memoria \verb|texture|, che però non verrà esaminata.
 \nl
+Ci sono alcuni caveat quando si programmano le GPU: il primo è che la memoria della GPU e quella della CPU sono diverse, e quindi per poter usare un dato sulla GPU che risiede nella memoria della CPU bisognerà prima caricarlo sulla memoria della GPU; il secondo è che le GPU potebbero aderire a standard diversi, soprattutto quando si parla di numeri a virgola mobile. Questo si verifica generalmente quando bisogna arrotondare numeri particolari.
+
+\subsection{Struttura di un programma CUDA}
+
 CUDA organizza i suoi thread in una struttura a sei dimensioni: ogni thread è posizionato in un blocco che va da una a tre dimensioni, e ogni blocco è posizionato in una griglia che va anch'essa da una a tre dimensioni. Dunque ogni thread può sapere la sua posizione in questo spazio a sei dimensioni, chiamando opportune funzioni offerte dall'API di CUDA.
 \nl
-Ogni piattaforma CUDA ha una sua capacità di calcolo, che viene chiamata \textbf{CUDA compute capability}. La capacità viene rappresentata da un numero di versione chiamato \textbf{SM version}.
-
-\subsection{Scrivere un programma di CUDA}
-
-La struttura di un programma CUDA è la seguente:
+Ogni piattaforma CUDA ha una sua capacità di calcolo, che viene chiamata \textbf{CUDA compute capability}. La capacità viene rappresentata da un numero di versione chiamato \textbf{SM version}. Le tipologie di architetture compatibili con CUDA sono parecchie e variano da GPU a GPU: quelle più professionali e più mirate per compiti ad alta precisione avranno un valore di compute capability più alto rispetto alle GPU desktop che si possono trovare nei computer di fascia media-alta. 
+\nl
+Ora che sappiamo come i threads sono organizzati in un programma CUDA, possiamo iniziare a vedere come scrivere un programma. La struttura di un programma CUDA è la seguente:
 \begin{itemize}
     \item [1)] \textbf{allocare la memoria} sulla piattaforma CUDA;
     \item [2)] \textbf{trasferire i dati} dalla DRAM alla VRAM della piattaforma;
     \item [3)] \textbf{eseguire un kernel CUDA}, ovverosia una funzione;
-    \item [4)] una volta terminato il kernel, serivrà \textbf{copiare i dati} processati dalla VRAM della piattaforma nella DRAM.
+    \item [4)] una volta terminato il kernel, servirà \textbf{copiare i dati} processati dalla GPU; questi saranno disponibili sulla VRAM della piattaforma, e andranno copiati nella DRAM.
 \end{itemize}
 
 Per scrivere un programma di CUDA bisogna specificare una funzione, chiamata \textbf{kernel}, che andrà eseguita su tutti i threads. Chiaramente non è pensabile specificare, thread per thread, cosa ogni thread dovrà eseguire, qundi l'idea è quella di specificare come arrangiare i threads in blocchi e griglie. Di norma, la GPU ha già una sua struttura di blocchi e griglie, tuttavia noi abbiamo la possibilità di scegliere una nostra struttura che sia compatibile con l'architettura della nostra GPU.
