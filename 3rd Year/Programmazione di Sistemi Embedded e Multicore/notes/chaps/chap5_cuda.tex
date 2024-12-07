@@ -55,7 +55,31 @@ Ora che sappiamo come i threads sono organizzati in un programma CUDA, possiamo 
     \item [4)] una volta terminato il kernel, servirà \textbf{copiare i dati} processati dalla GPU; questi saranno disponibili sulla VRAM della piattaforma, e andranno copiati nella DRAM.
 \end{itemize}
 
-Per scrivere un programma di CUDA bisogna specificare una funzione, chiamata \textbf{kernel}, che andrà eseguita su tutti i threads. Chiaramente non è pensabile specificare, thread per thread, cosa ogni thread dovrà eseguire, qundi l'idea è quella di specificare come arrangiare i threads in blocchi e griglie. Di norma, la GPU ha già una sua struttura di blocchi e griglie, tuttavia noi abbiamo la possibilità di scegliere una nostra struttura che sia compatibile con l'architettura della nostra GPU.
+Per scrivere un programma di CUDA bisogna specificare una funzione, chiamata \textbf{kernel}, che andrà eseguita su tutti i threads. Chiaramente non è pensabile specificare, thread per thread, cosa ogni thread dovrà eseguire, qundi l'idea è quella di specificare come arrangiare i threads in blocchi e griglie e far eseguire a gruppi di threads la stessa funzione.
+\nl
+Di norma, la GPU ha già una sua struttura di blocchi e griglie, tuttavia noi abbiamo la possibilità di scegliere una nostra struttura che sia compatibile con l'architettura della nostra GPU. Ciò è possibile attraverso la specifica di blocchi / griglie custom, di tipo \verb|dim3|, che è un vettore di interi. Possiamo creare griglie e blocchi usando il seguente codice:
+
+\begin{codeblock}{CUDAGridsAndBlocks.cu}
+    \begin{lstlisting}[language = C]
+#include <stdio.h>
+#include <cuda.h>
+
+int main() {
+    // Creazione di un blocco di dimensioni 3 x 2 x 1
+    dim3 block(3, 2);
+
+    // Creazione di una griglia di dimensioni 4 x 3 x 2
+    dim3 grid(4, 3, 2);
+}\end{lstlisting}
+\end{codeblock}
+
+Il fatto che un vettore specifichi una griglia o un blocco viene definito dall'ordine in cui vengono chiamati quando viene eseguito il kernel. Infatti, si usa la seguente sintassi:
+
+\begin{center}
+    \verb|kernel<<<grid, block>>>();|
+\end{center}
+
+Nel caso in cui non si determini un valore quando si specifica un vettore di tipo \verb|dim3|, il valore automatico che verrà usato è 1. CUDA tuttavia ritornerà errori nel caso in cui si cerchi di usare un valore illegale per le dimensioni: se ad esempio ci trovassimo su una GPU con compute capability \verb|5.x|, potremmo usare massimo 1024 threads per blocco, e chiedere a CUDA di allocare 2048 threads in un blocco sarebbe illegale.
 \nl
 Per eseguire una funzione su una GPU NVIDIA, servirà specificare appunto la dimensione dei blocchi e della griglia, e ciò si fa attraverso le seguenti linee di codice:
 
@@ -74,7 +98,22 @@ int main() {
     hello <<<grid, block>>>();
     cudaDeviceSynchronize();
     return 0;
-}
-
-my_function<<<grid, block>>>();\end{lstlisting}
+}\end{lstlisting}
 \end{codeblock}
+
+Analizziamo riga per riga come funziona il codice che abbiamo appena scritto:
+\begin{itemize}
+    \item [1)] con \verb|#include <cuda.h>| specifichiamo l'inclusione della libreria di CUDA all'interno del nostro programma;
+    \item [2)] la direttiva \verb|__global__| determina che la funzione specificata successivamente può essere \textbf{chiamata} sia dall'host (sulla CPU) che sul device esterno (la GPU), tuttavia può essere eseguita solo sul device (quindi sulla GPU);
+    \item [3)] la funzione \verb|printf()| è supportata sulle piattaforme CUDA con compute capability superiore a \verb|2.0|, ma è generalmente sconsigliato far stampare elementi in console dal device. In fase di testing è possibile usarlo per fare debugging, ma non andrebbe usato in altri casi;
+    \item [4)] con \verb|hello<<<grid, block>>>()| faremmo eseguire la funzione \verb|hello()| su una griglia $4 \times 3 \times 2$ di blocchi di threads la cui dimensione è $3 \times 2 \times 1$;
+    \item [5)] la funzione \verb|cudaDeviceSynchronize()| è una sorta di barriera, che fa continuare l'esecuzione del codice solo quando il kernel avrà finito di essere eseguito.
+\end{itemize}
+
+Per compilare codice di CUDA è necessario usare \verb|nvcc|, il compilatore di CUDA. Un esempio segue:
+
+\begin{terminal}
+    \begin{lstlisting}[style = notexterm]
+$ nvcc -arch=2.0 CUDAStartKernel.cu -o CUDAHello
+$ ./CUDAHello\end{lstlisting}
+\end{terminal}
