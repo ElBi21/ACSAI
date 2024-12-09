@@ -331,3 +331,43 @@ Hello dal thread 3 di 4\end{lstlisting}
 
 % recover false sharing
 
+\section{False sharing}
+
+È possibile che, quando viene scritto un programma, due variabili siano grandi abbastanza da entrare in un singolo blocco di cache. Tuttavia, ci potrebbe essere un problema quando due thread diversi cercano di modificare entrambe le due variabili.
+\nl
+Supponiamo che un thread $t_1$ voglia modificare una variabile \verb|my_var_1|, e che un altro thread $t_2$ voglia modificare una variabile \verb|my_var_2|. Quando il programma viene avviato, le variabili vengono create in memoria con un valore standard e vengono poi caricate nella cache.
+\nl
+Quando un thread dovrà modificare la propria variabile (supponiamo che $t_1$ modifichi \verb|my_var_1|), allora questo modificherà il valore nella memoria. Tuttavia, nella cache ci sta ancora il valore vecchio di \verb|my_var_1|. Se $t_2$ dovesse poi usare \verb|my_var_2|, allora questo dovrebbe ricaricare il dato della cache, risultando in un miss di quest'ultima. Questo fenomeno viene chiamato \textbf{false sharing}.
+\nl
+Ci sono varie soluzioni a questo problema: si può aggiungere un padding ai dati (quindi facendo sì che le variabili siano grandi quanto una linea di cache), assegnare un mapping specifico dei dati ai singoli cores, o usare variabili private o locali. Consideriamo un esempio: se originalmente il codice sarebbe il seguente, in cui avremmo una situazione di false sharing:
+
+\begin{codeblock}{OpenMPFalseSharing.c}
+    \begin{lstlisting}[language = C]
+double x[n];
+#pragma omp parallel for schedule(static, 1)
+for(int i = 0; i < n; i++) {
+    x[i] = function(x[i]);
+}\end{lstlisting}
+\end{codeblock}
+
+Allora se volessimo risolvere il problema attraverso il padding potremmo avere una situazione del genere:
+
+\begin{codeblock}{OpenMPFalseSharingFixed.c}
+    \begin{lstlisting}[language = C]
+double x[n][8];
+#pragma omp parallel for schedule(static, 1)
+for(int i = 0; i < n; i++) {
+    x[i][0] = function(x[i][0]);
+}\end{lstlisting}
+\end{codeblock}
+
+L'idea di usare un padding andrebbe evitata quanto più possibile perché minimizza l'efficacia della cache, sprecando memoria. Un'altra idea è quella di avere un \textbf{data mapping cache}, in cui si cerca di distribuire ad ogni loop, tramite la direttiva \verb|schedule|, abbastanza elementi per riempire una linea di cache. Ad esempio, se avessimo una cache con 64 bytes per blocco, potremmo metterci solo 8 numeri di tipo \verb|double|.
+
+\begin{codeblock}{OpenMPDataMapping.c}
+    \begin{lstlisting}[language = C]
+double x[n];
+#pragma omp parallel for schedule(static, 8)
+for(int i = 0; i < n; i++) {
+    x[i] = function(x[i]);
+}\end{lstlisting}
+\end{codeblock}
