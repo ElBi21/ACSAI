@@ -83,3 +83,31 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">N/A</td>
   </tr>
 </table>
+
+### Projects
+
+From time to time, some courses required us to develop some projects and to present them to the class. I am planning to upload all of them, at least the reports, in the `Projects` folder. Go check them out! Here is a list of all of them:
+
+<table align="center">
+  <tr>
+    <th align="center">Year</th>
+    <th align="center">Semester</th>
+    <th align="center">Course</th>
+    <th align="center">Project Title</th>
+    <th align="center">Project Description</th>
+  </tr>
+  <tr>
+    <td align="center">2nd Year</td>
+    <td align="center">2nd Semester</td>
+    <td align="center">AI Lab: Computer Vision and NLP<br><sub>Prof. Daniele Pannone</sub></td>
+    <td align="center">Lipperoni<br><sub><a href="https://github.com/GnkYzk">@GnkYzk</a><br>[<a href="https://github.com/GnkYzk/Lipperoni">Repo</a>]</sub></td>
+    <td align="center">Tentative implementation of a STCNN for recognizing labial</td>
+  </tr>
+  <tr>
+    <td align="center">3rd Year</td>
+    <td align="center">1st Semester</td>
+    <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco R. Marini</sub></td>
+    <td align="center">doFireTick<br><sub><a href="https://github.com/SanCigo">@SanCigo</a> <a href="https://github.com/Lorenzo-3">@Lorenzo-3</a><br>[<a href="https://github.com/GnkYzk/Lipperoni">Repo</a>]</sub></td>
+    <td align="center">Creation of a binary classifier for recognizing fire</td>
+  </tr>
+</table>

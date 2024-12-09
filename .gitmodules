@@ -4,3 +4,9 @@
 [submodule "3rd Year/Programmazione di Sistemi Embedded e Multicore/repo"]
 	path = 3rd Year/Programmazione di Sistemi Embedded e Multicore/repo
 	url = https://github.com/DanieleDeSensi/multicore-programming.git
+[submodule "Projects/Lipperoni"]
+	path = Projects/Lipperoni
+	url = https://github.com/GnkYzk/Lipperoni.git
+[submodule "Projects/doFireTick"]
+	path = Projects/doFireTick
+	url = https://github.com/ElBi21/doFireTick.git
