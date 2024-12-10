@@ -117,3 +117,31 @@ Per compilare codice di CUDA è necessario usare \verb|nvcc|, il compilatore di 
 $ nvcc -arch=2.0 CUDAStartKernel.cu -o CUDAHello
 $ ./CUDAHello\end{lstlisting}
 \end{terminal}
+
+\section{Memoria di una GPU}
+
+% recover
+
+\subsection{Shared memory}
+
+Consideriamo l'esempio dello stencil: uno stencil non è altro che una funzione che, dato un'array, calcola il valore di un elemento di un'array in base al valore degli elementi adiacenti. Supponiamo di avere un thread di $n$ elementi, e che lo stencil necessiti dei 3 elementi adiacenti a un elemento $i$. 
+\nl
+
+\subsection{Costant memory}
+
+La costant memory è un tipo di memoria fatta per immagazzinare costanti, ma è diverso concettualmente da una ROM: l'host infatti può scriverci all'interno. Ci sono vari vantaggi nell'usare la costant memory:
+\begin{itemize}
+    \item ha una \textbf{sua cache}, chiamata \textbf{costant cache} (o "\textbf{cache costante}");
+    \item supporta il \textbf{broadcasting} dei valori salvati al suo interno a tutti i threads interni a un warp.
+\end{itemize}
+
+Facciamo un esempio: supponiamo di avere un certo numero di warps, e supponiamo che tutti i warps richiedano la stessa variabile. Se la variabile è nella memoria globale, allora questa verrà caricata, la prima volta che viene richiesta, nella cache L2. Tuttavia, se altri threads richiedessero altri dati dalla memoria globale, il dato potrebbe essere sovrascritto, richiedendo alla GPU di ricaricare in memoria il dato. Questo chiaramente richiede più cicli e più tempo, risultando in un'applicazione inefficiente.
+\nl
+Se il dato venisse caricato nella costant memory, allora il dato verrebbe copiato, dopo la prima richiesta, nella cache costante, e siccome ci sono, solitamente, meno richieste dalla costant memory, è meno probabile che il dato venga cancellato dalla cache.
+
+\section{Calcolo delle performance}
+
+Quando si considerano gli hardware per calcoli paralleli, la performance viene generalmente calcolata in \textbf{FLOPs}, ovverosia in quante \textbf{floating point operations} vengono eseguite in un certo amount di tempo. Fin da quando venne definito questo standard, si considerano le operazioni con numeri a virgola mobile a 64 bits, tuttavia per alcune ragioni di marketing a volte si trovano le performance calcolate su numeri a virgola mobile a 32, 16 o 8 bits.
+\nl
+C'è ancora grande \textbf{incertezza} su quale sia il giusto \textbf{simbolo} per identificare queste operazioni: alcuni usano \verb|FLOPs|, altri \verb|FLOP/s| e altri ancora \verb|FLOPs/s|. È (ad oggi) abbastanza indifferente quale simbolo venga usato, tuttavia è consigliato usare \verb|FLOP| per indicare un numero di operazioni a virgola mobile in una finestra di tempo non determinata, e usare invece \verb|FLOP/s| per indicare un numero di operazioni a virgola mobile in un secondo.
+\nl
