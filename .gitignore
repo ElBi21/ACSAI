@@ -12,3 +12,6 @@
 
 # VSCode
 .vscode
+
+# Cluster Condor logs
+cuda_job.*
