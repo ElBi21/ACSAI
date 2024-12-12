@@ -1,3 +1,5 @@
+//#include <__clang_cuda_builtin_vars.h>
+#include <cmath>
 #include <sys/time.h>
 #include <cstdio>
 #include "error_checks.h"
@@ -33,10 +35,14 @@ __global__
 void sweepGPU(double *phi, const double *phiPrev, const double *source, 
               double h2, int N) {
     // TODO: Add here the GPU implementation
-                //              THREAD                     BLOCK               
-    int my_index = (threadIdx.x + threadIdx.y * N) + (blockIdx.x * N) ;
+    //                        THREAD                     BLOCK               
+    int my_index = (threadIdx.x + threadIdx.y * N) + (blockIdx.x * N);
+    int upper = (threadIdx.x + (threadIdx.y - 1) * N) + (blockIdx.x * N);
+    int lower = (threadIdx.x + (threadIdx.y + 1) * N) + (blockIdx.x * N);
+    int left = (threadIdx.x - 1 + (threadIdx.y) * N) + (blockIdx.x * N);
+    int right = (threadIdx.x + 1 + (threadIdx.y) * N) + (blockIdx.x * N);
 
-
+    phi[my_index] = 0.25 * (phiPrev[upper] + phiPrev[lower] + phiPrev[left] + phiPrev[right] - h2 * source[my_index]);
 }
 
 
@@ -63,8 +69,18 @@ double diffCPU(const double *phi, const double *phiPrev, int N) {
     return sqrt(diffsum/sum);
 }
 
-__global__ double diffGPU(const double *phi, const double *phiPrev, int N) {
+__global__ void diffGPU(const double *phi, const double *phiPrev, int N, double* to_return_sum, int block_size) {
     // TODO
+    __shared__ double sum, diffsum;
+    sum = diffsum = 0;
+    int my_index = (threadIdx.x + threadIdx.y * N) + (blockIdx.x * N);
+    
+    diffsum += (phi[my_index] - phiPrev[my_index]) * (phi[my_index] - phiPrev[my_index]);
+    sum += (phi[my_index] * phi[my_index]);
+
+    if(threadIdx.x == 0 && threadIdx.y == 0) {
+        to_return_sum[blockIdx.x + blockIdx.y * block_size] = sqrt(diffsum/sum);
+    }
 }
 
 
@@ -156,7 +172,11 @@ int main()
     diff = tolerance * 2;
     iterations = 0;
 
+    int b_size = ((N + blocksize - 1) / blocksize);
+
     gettimeofday(&t1, NULL);
+
+    double diffs[((N + blocksize - 1) / blocksize) * ((N + blocksize - 1) / blocksize)];
 
     while (diff > tolerance && iterations < MAX_ITERATIONS) {
         // See above how the CPU update kernel is called
@@ -164,11 +184,14 @@ int main()
 
         //// Add routines here
         // TODO: Add GPU kernel calls here (see CPU version above)
+        sweepGPU<<<dimGrid, dimBlock>>>(phi, phiPrev, source, h * h, N);
+        sweepGPU<<<dimGrid, dimBlock>>>(phiPrev, phi, source, h * h, N);
 
         iterations += 2;
         
         if (iterations % 100 == 0) {
             // TODO: Add GPU kernel calls here (see CPU version above)
+            diffGPU<<<dimGrid, dimBlock>>>(phi, phiPrev, N, diffs, b_size);
             CHECK_ERROR_MSG("Difference computation");
             printf("%d %g\n", iterations, diff);
         }
