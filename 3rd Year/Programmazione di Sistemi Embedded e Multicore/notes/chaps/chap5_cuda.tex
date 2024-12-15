@@ -118,6 +118,20 @@ $ nvcc -arch=2.0 CUDAStartKernel.cu -o CUDAHello
 $ ./CUDAHello\end{lstlisting}
 \end{terminal}
 
+\subsection{Scheduling dei threads e Warps}
+
+Una volta definiti i kernel e i dati da calcolare, i thread che eseguiranno i kernel devono però essere schedulati sui vari SP. Ricordiamo che tutti i cores di uno stesso SM condividono la stessa unità di controllo, e che quindi devono eseguire tutti sincronizzati la stessa operazione; diversi SM possono però eseguire operazioni diverse.
+\nl
+Per come è stata ideada l'architettura CUDA, su uno stesso SM può essere eseguito \textbf{solo un blocco} di threads. Non è possibile che più blocchi vengano eseguiti allo stesso momento su uno stesso SM. Una volta che un blocco verrà eseguito, la GPU passerà al blocco successivo.
+\nl
+Oltre alla suddivisione dei threads in blocchi, che vengono poi assegnati a un SM, c'è anche un'ulteriore suddivisione, che è quella in \textbf{warps}.
+
+\begin{definition}{Warp}
+    Un \textbf{warp} è un \textbf{gruppo di threads} all'interno di un blocco (nelle GPU moderne ogni 32 threads costituiscono un warp), e \textbf{ogni thread} all'interno di un warp agisce seguendo il paradigma \textbf{Single-Instruction Multiple-Data} (\textbf{SIMD})
+\end{definition}
+
+Il concetto di warp è importante soprattutto quando il codice esegue branching: siccome le istruzioni sono comuni per tutto l'SM, allora una branch verrebbe eseguita da tutto un SM. 
+
 \section{Memoria di una GPU}
 
 % recover
