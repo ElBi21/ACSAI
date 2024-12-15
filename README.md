@@ -107,7 +107,7 @@ From time to time, some courses required us to develop some projects and to pres
     <td align="center">3rd Year</td>
     <td align="center">1st Semester</td>
     <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco R. Marini</sub></td>
-    <td align="center">doFireTick<br><sub><a href="https://github.com/SanCigo">@SanCigo</a> <a href="https://github.com/Lorenzo-3">@Lorenzo-3</a><br>[<a href="https://github.com/GnkYzk/Lipperoni">Repo</a>]</sub></td>
+    <td align="center">doFireTick<br><sub><a href="https://github.com/SanCigo">@SanCigo</a> <a href="https://github.com/Lorenzo-3">@Lorenzo-3</a><br>[<a href="https://github.com/ElBi21/doFireTick">Repo</a>]</sub></td>
     <td align="center">Creation of a binary classifier for recognizing fire</td>
   </tr>
 </table>
