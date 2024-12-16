@@ -72,14 +72,14 @@ double diffCPU(const double *phi, const double *phiPrev, int N) {
 
 __global__ void diffGPU(const double *phi, const double *phiPrev, int N, double* to_return_diff, int block_size) {
     // TODO
-    __shared__ double sum, diffsum;
-    sum = diffsum = 0;
+    __shared__ double sum, diffsum, diff;
+    sum = diffsum = diff = 0;
     int my_index = (threadIdx.x + threadIdx.y * N) + (blockIdx.x * N);
     
     diffsum += (phi[my_index] - phiPrev[my_index]) * (phi[my_index] - phiPrev[my_index]);
     sum += (phi[my_index] * phi[my_index]);
 
-    atomicAdd(to_return_diff, sqrt(diffsum / sum));
+    atomicAdd(&diff, sqrt(diffsum / sum));
 }
 
 
