@@ -70,16 +70,13 @@ double diffCPU(const double *phi, const double *phiPrev, int N) {
     return sqrt(diffsum/sum);
 }
 
-__global__ void diffGPU(const double *phi, const double *phiPrev, int N, double* to_return_diff, int block_size) {
+__global__ void diffGPU(const double *phi, const double *phiPrev, int N, double* sum, double* diff_sum) {
     // TODO
-    __shared__ double sum, diffsum;
-    sum = diffsum = 0;
     int my_index = (threadIdx.x + threadIdx.y * N) + (blockIdx.x * N);
     
-    diffsum += (phi[my_index] - phiPrev[my_index]) * (phi[my_index] - phiPrev[my_index]);
-    sum += (phi[my_index] * phi[my_index]);
-
-    atomicAdd(to_return_diff, sqrt(diffsum / sum));
+    atomicAdd(diff_sum, (phi[my_index] - phiPrev[my_index]) * (phi[my_index] - phiPrev[my_index]));
+    atomicAdd(sum, (phi[my_index] * phi[my_index]));
+    //atomicAdd(to_return_diff, sqrt(diffsum / sum));
 }
 
 
@@ -190,7 +187,9 @@ int main()
         
         if (iterations % 100 == 0) {
             // TODO: Add GPU kernel calls here (see CPU version above)
-            diffGPU<<<dimGrid, dimBlock>>>(phi, phiPrev, N, &diff, b_size);
+            double sum_temp, diff_temp;
+            diffGPU<<<dimGrid, dimBlock>>>(phi, phiPrev, N, &sum_temp, &diff);
+            diff = sqrt(diff_temp / sum_temp);
             CHECK_ERROR_MSG("Difference computation");
             printf("%d %g\n", iterations, diff);
         }
