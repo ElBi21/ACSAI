@@ -10,3 +10,6 @@
 [submodule "Projects/doFireTick"]
 	path = Projects/doFireTick
 	url = https://github.com/ElBi21/doFireTick.git
+[submodule "Projects/PSEM-kmeans"]
+	path = Projects/PSEM-kmeans
+	url = https://github.com/ElBi21/PSEM-kmeans.git
