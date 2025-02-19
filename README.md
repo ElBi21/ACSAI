@@ -45,7 +45,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
   <tr>
     <td align="center" rowspan=6>3rd Year</td>
     <td align="center" rowspan=5>1st Semester</td>
-    <td align="center">Programmazione di Sistemi<br>Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
+    <td align="center">Programmazione di Sistemi Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
     <td align="center">🇮🇹</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/notes/main.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
