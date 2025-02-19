@@ -44,42 +44,44 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
   </tr>
   <tr>
     <td align="center" rowspan=6>3rd Year</td>
-    <td align="center" rowspan=6>1st Semester</td>
+    <td align="center" rowspan=5>1st Semester</td>
     <td align="center">Programmazione di Sistemi<br>Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
     <td align="center">🇮🇹</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/notes/main.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center">Foundations of<br>Computer Science<br><sub>Prof. Daniele Gorla</sub></td>
-    <td align="center" rowspan=5>🇬🇧</td>
+    <td align="center" rowspan=4>🇬🇧</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Foundations%20of%20Computer%20Science/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco Raoul Marini</sub></td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Deep%20Learning/notes/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center">Cybersecurity<br><sub>Prof. Angelo Spognardi</sub></td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Cybersecurity/main.pdf">PDF</a>]</td>
     <td align="center">×</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
     <td align="center">Web and Software<br>Architecture<br><sub>Prof. Emanuele Panizzi</sub></td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Web%20and%20Software%20Architecture/notes/main.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Web%20and%20Software%20Architecture/code">Code</a>]</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
   <tr>
-    <td align="center">Business and Computer Science<br><sub>Prof. Riccardo Savio</sub></td>
-    <td align="center">×</td>
-    <td align="center">×</td>
+    <td align="center" rowspan=1>2nd Semester</td>
+    <td align="center">Analisi e Calcolo Numerico<br><sub>Prof. Domenico Vitulano</sub></td>
+    <td align="center">🇮🇹</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/notes/main.pdf">PDF</a>]</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
     <td align="center">N/A</td>
   </tr>
 </table>
