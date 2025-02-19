@@ -106,10 +106,15 @@ From time to time, some courses required us to develop some projects and to pres
     <td align="center">Tentative implementation of a STCNN for recognizing labial</td>
   </tr>
   <tr>
-    <td align="center">3rd Year</td>
-    <td align="center">1st Semester</td>
+    <td align="center" rowspan=2>3rd Year</td>
+    <td align="center" rowspan=2>1st Semester</td>
     <td align="center">Deep Learning<br><sub>Prof. Fabio Galasso and Marco R. Marini</sub></td>
     <td align="center">doFireTick<br><sub><a href="https://github.com/SanCigo">@SanCigo</a> <a href="https://github.com/Lorenzo-3">@Lorenzo-3</a><br>[<a href="https://github.com/ElBi21/doFireTick">Repo</a>]</sub></td>
     <td align="center">Creation of a binary classifier for recognizing fire</td>
+  </tr>
+  <tr>
+    <td align="center">Programmazione di Sistemi Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
+    <td align="center">PSEM-kmeans<br><sub><a href="https://github.com/r0mania">@r0mania</a><br>[<a href="https://github.com/ElBi21/PSEM-kmeans">Repo</a>]</sub></td>
+    <td align="center">Parallelizing the k-means algorithm</td>
   </tr>
 </table>
