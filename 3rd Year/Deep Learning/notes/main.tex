@@ -1,12 +1,29 @@
 \documentclass{../../../NoTeX/notex}
 \usepackage{../../../NoTeX/notexmacros}
 
-\title{\textsc{Deep Learning}}
-\author{Leonardo Biason}
+\renewcommand{\titleheader}{
+{\Large \textbf{\textsc{Sapienza, University of Rome}}}
+\linebreak
+{\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+
+\vspace{0.05cm}
+{\normal \textsc{3rd Year, 1st Semester}}
+}
+\renewcommand{\titlecourse}{Deep Learning}
+\renewcommand{\titlecover}{../../../Assets/DL-bg.png}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Fabio Galasso and Marco Raoul Marini}
+\renewcommand{\titlefooter}{
+\begin{tabular}{c c c}
+    \includegraphics[height=1.5cm]{../../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../../Assets/icon.png}
+\end{tabular}
+}
 
 \begin{document}
+    \input{../../../NoTeX/notextitle.tex}
+
     \maincol{HTML}{30706A}
-    \maketitle
+    \input{before.tex}
     \notextoc
 
     \input{chaps/chap1_convs.tex}

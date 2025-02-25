@@ -4,27 +4,38 @@
 
 \renewcommand{\sectionname}{Sezione}
 
-%\renewcommand*\ttdefault{cmvtt}
-
-\title{\textsc{Programmazione di Sistemi Embedded e Multicore}}
-\author{Leonardo Biason}
+\renewcommand{\titleheader}{
+    {\Large \textbf{\textsc{Sapienza, University of Rome}}}
+    \linebreak
+    {\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+    
+    \vspace{0.05cm}
+    {\normal \textsc{3rd Year, 1st Semester}}
+    }
+\renewcommand{\titlecourse}{Programmazione di Sistemi Embedded e Multicore}
+\renewcommand{\titlecover}{../../../Assets/PSEM-bg.png}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Daniele De Sensi}
+\renewcommand{\titlefooter}{
+    \begin{tabular}{c c c}
+        \includegraphics[height=1.5cm]{../../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../../Assets/icon.png}
+    \end{tabular}
+}
 
 \begin{document}
+    \maincol{HTML}{1E4C86}
+    \input{../../../NoTeX/notextitle.tex}
 
-\maincol{HTML}{1E4C86}
+    \input{before.tex}
+    \notextoc
 
-\maketitle
-\input{before.tex}
-\notextoc
-
-\input{chaps/chap1_intro.tex}
-\pagebreak
-\input{chaps/chap2_mpi.tex}
-\pagebreak
-\input{chaps/chap3_pthreads.tex}
-\pagebreak
-\input{chaps/chap4_architetture_multicore.tex}
-\pagebreak
-\input{chaps/chap5_cuda.tex}
-
+    \input{chaps/chap1_intro.tex}
+    \pagebreak
+    \input{chaps/chap2_mpi.tex}
+    \pagebreak
+    \input{chaps/chap3_pthreads.tex}
+    \pagebreak
+    \input{chaps/chap4_architetture_multicore.tex}
+    \pagebreak
+    \input{chaps/chap5_cuda.tex}
 \end{document}

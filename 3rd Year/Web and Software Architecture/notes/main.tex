@@ -1,11 +1,29 @@
 \documentclass{../../../NoTeX/notex}
 \usepackage{../../../NoTeX/notexmacros}
 
-\title{\textsc{Web and Software Architecture}}
-\author{Leonardo Biason}
+\renewcommand{\titleheader}{
+{\Large \textbf{\textsc{Sapienza, University of Rome}}}
+\linebreak
+{\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+
+\vspace{0.05cm}
+{\normal \textsc{3rd Year, 1st Semester}}
+}
+\renewcommand{\titlecourse}{Web and Software Architecture}
+\renewcommand{\titlecover}{../../../Assets/WASA-bg.jpg}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Emanuele Panizzi}
+\renewcommand{\titlefooter}{
+\begin{tabular}{c c c}
+    \includegraphics[height=1.5cm]{../../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../../Assets/icon.png}
+\end{tabular}
+}
 
 \begin{document}
-    \maketitle	
+    \input{../../../NoTeX/notextitle.tex}
+    
+    \input{before.tex}
+    \notextoc
 
     \input{chaps/chap1_introduction.tex}
     \pagebreak

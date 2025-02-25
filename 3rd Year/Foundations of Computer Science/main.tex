@@ -5,16 +5,35 @@
 \title{\textsc{Foundations of Computer Science}}
 \author{Leonardo Biason}
 
+\renewcommand{\titleheader}{
+    {\Large \textbf{\textsc{Sapienza, University of Rome}}}
+    \linebreak
+    {\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+    
+    \vspace{0.05cm}
+    {\normal \textsc{3rd Year, 1st Semester}}
+    }
+\renewcommand{\titlecourse}{Foundations of Computer Science}
+\renewcommand{\titlecover}{../../Assets/FOCS-bg.png}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Daniele Gorla}
+\renewcommand{\titlefooter}{
+    \begin{tabular}{c c c}
+        \includegraphics[height=1.5cm]{../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../Assets/icon.png}
+    \end{tabular}
+}
+
 \begin{document}
+    \input{../../NoTeX/notextitle.tex}
 
-\maketitle
+    \input{before.tex}
+    \notextoc
 
-\input{chaps/chap1_languages.tex}
-\pagebreak
-\input{chaps/chap2_non_reg_langs.tex}
-\pagebreak
-\input{chaps/chap3_turing_machines.tex}
-\pagebreak
-\input{chaps/chap4_p_np.tex}
-
+    \input{chaps/chap1_languages.tex}
+    \pagebreak
+    \input{chaps/chap2_non_reg_langs.tex}
+    \pagebreak
+    \input{chaps/chap3_turing_machines.tex}
+    \pagebreak
+    \input{chaps/chap4_p_np.tex}
 \end{document}

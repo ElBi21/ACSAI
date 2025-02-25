@@ -1,20 +1,30 @@
 \documentclass[]{../../NoTeX/notex}
 \usepackage{../../NoTeX/notexmacros}
 
-%\renewcommand*\ttdefault{cmvtt}
-
-\title{\textsc{Cybersecurity}}
-\author{Leonardo Biason}
+\renewcommand{\titleheader}{
+    {\Large \textbf{\textsc{Sapienza, University of Rome}}}
+    \linebreak
+    {\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+    
+    \vspace{0.05cm}
+    {\normal \textsc{3rd Year, 1st Semester}}
+    }
+\renewcommand{\titlecourse}{Cybersecurity}
+\renewcommand{\titlecover}{../../Assets/CYBER-bg.png}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Angelo Spognardi}
+\renewcommand{\titlefooter}{
+    \begin{tabular}{c c c}
+        \includegraphics[height=1.5cm]{../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../Assets/icon.png}
+    \end{tabular}
+}
 
 \begin{document}
+    \maincol{HTML}{64A973}
+    \input{../../NoTeX/notextitle.tex}
 
-\maincol{HTML}{64a973}
+    \input{before.tex}
+    \notextoc
 
-\maketitle
-\input{before.tex}
-\notextoc
-
-\input{chaps/chap1_intro.tex}
-\pagebreak
-
+    \input{chaps/chap1_intro.tex}
 \end{document}
