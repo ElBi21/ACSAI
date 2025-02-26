@@ -80,8 +80,8 @@ for i, expect in [(1, 0), (1.0001, 10**(-28))]:
     # Approssimazione del numero alla 10a cifra decimale
     res1, res2 = "{0:.10g}".format(q1(i)), "{0:.10g}".format(q2(i))
     err1, err2 = rounding_error(expect, res1), rounding_error(expect, res2)
-    print(f"With x = {i}\nQ1 = {res1} | E1 = {err1}\nQ2 = {res2} | E2 = {err2}\n")
-        \end{lstlisting}
+    print(f"With x = {i}\nQ1 = {res1} | E1 = {err1}\nQ2 = {res2} | E2 = {err2}\n")\end{lstlisting}
+        \nl
         \begin{tcolorbox}[colback = black!95!Periwinkle!90]
             \begin{lstlisting}[style = notexterm]
 Out[1]: With x = 1
