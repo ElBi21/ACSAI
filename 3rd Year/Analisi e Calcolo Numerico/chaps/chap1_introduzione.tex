@@ -58,7 +58,7 @@ Riguardo lo scopo di queste note: MATLAB verrà usato durante il corso per imple
 Consideriamo un esempio per comprendere l'importanza degli errori di arrotondamento:
 \begin{example}
     Si considerino le due funzioni seguenti, che sono algebricamente equivalenti:
-    \[ q_1(x) \eq (x - 1)^7 \quad q_2(x) \eq x^7 - 7x^6 + 21x^5 - 35x^4 + 35x^3 - 21x^2 + 7x - 1 \]
+    \[ q_1(x) \eq (x - 1)^7 \quad \quad q_2(x) \eq x^7 - 7x^6 + 21x^5 - 35x^4 + 35x^3 - 21x^2 + 7x - 1 \]
 
     Vogliamo calcolare il valore numerico di $q_1(x)$ e $q_2(x)$ con due valori di $x$, ovverosia $1$ e $1,0001$, e confrontare il loro valore esatto con l'errore di arrotondamento. Vogliamo inoltre usare una macchina che lavori con 10 cifre significative. Usando il seguente script in Python, possiamo ottenere i nostri risultati:
     \begin{codeblock}{ApproxExample.py}
