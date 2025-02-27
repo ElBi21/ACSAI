@@ -101,7 +101,7 @@ Out[1]: With x = 1, expect 0
         \includegraphics[width = \linewidth]{assets/image-001.png}
     \end{center}
 
-    Notiamo infatti che, mentre $q_1(x)$ ha un comportamento più lineare, $q_2(x)$ è molto più scabro, e questo proprio a causa degli errori di approssimazione.
+    Notiamo infatti che, mentre $q_1(x)$ ha un comportamento più lineare, $q_2(x)$ è molto più scabro, e questo accade proprio a causa degli errori di approssimazione.
 \end{example}
 
 \section{Rappresentazione IEEE 754}
@@ -115,3 +115,23 @@ L'idea è che per esprimere un qualsiasi numero $x$ in una base $\beta$, possiam
 \[ x \eq x_m \cdot \beta^m + x_{m-1} \cdot \beta^{m-1} + ... + x_{1} \cdot \beta^{1} + x_{0} \cdot \beta^{0} + x_{-1} \cdot \beta^{-1} + ... + x_{-m} \cdot \beta^{-m} \]
 
 dove $0 \leq x_i \leq \beta - 1, \; \forall \; i \in [m, \; -m]$.
+\nl
+Sappiamo che i computer funzionano in codice binario, quindi non possono interpretare i numeri in base decimale come facciamo noi umani. Per poter far sì che un computer riconosca un numero, questo va prima convertito in base 2. Ci sono vari modi per rappresentare un numero in binario: che sia con o senza segno, a virgola mobile o meno... C'è tuttavia uno standard che i computer adottano, che è stato sviluppato dall'IEEE, che viene usato per rappresentare tutti i numeri in binario, che abbiano un segno o che siano a virgola mobile: l'\textbf{IEEE 754}.
+\nl
+Per questo standard, ogni numero può essere espresso nella seguente rappresentazione:
+\[ x \eq \underbrace{\pm}_{\text{Segno}} \underbrace{(1 + a_{-1} \cdot 2^{-1} + a_{-2} \cdot 2^{-2} + a_{-3} \cdot 2^{-3} + ... + a_{-m} \cdot 2^{-m})}_{\text{Mantissa normalizzata}} \cdot \underbrace{2^e}_{\text{Esponente}} \]
+
+dove il segno viene rappresentato con 1 bit, la mantissa con $m$ bits e l'esponente con $n$ bits. Generalmente i numeri in IEEE 754 si possono esprimere con 16 (precisione dimezzata), 32 (singola precisione) o 64 bits (precisione doppia). Segue una tabella che segna quanti bits vengono assegnati ad ogni formato:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \textbf{Formato} & \textbf{Segno} & \textbf{Esponente} & \textbf{Mantissa} & \textbf{Bias} & \makecell{\textbf{Numero totale}\\\textbf{di bits}} \\
+        \hline\hline
+        \textbf{Precisione mezza} & 1 & 5 & 10 & 15 & 16 \\
+        \hline
+        \textbf{Singola precisione} & 1 & 8 & 23 & 127 & 32 \\
+        \hline
+        \textbf{Doppia precisione} & 1 & 11 & 52 & 1023 & 64 \\
+        \hline
+    \end{tabular}
+\end{center}
