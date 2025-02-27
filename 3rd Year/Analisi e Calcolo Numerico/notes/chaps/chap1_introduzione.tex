@@ -100,5 +100,18 @@ Out[1]: With x = 1, expect 0
     \begin{center}
         \includegraphics[width = \linewidth]{assets/image-001.png}
     \end{center}
+
+    Notiamo infatti che, mentre $q_1(x)$ ha un comportamento più lineare, $q_2(x)$ è molto più scabro, e questo proprio a causa degli errori di approssimazione.
 \end{example}
 
+\section{Rappresentazione IEEE 754}
+
+Ogni numero reale $x$ può essere espresso come una sequenza di infinite cifre, e tale sequenza dipende dalla \textbf{base di rappresentazione} $\beta$. Di norma, la base con cui noi esseri umani facciamo calcoli è $\beta = 10$.
+\nl
+Qualsiasi cifra può essere espressa in qualsiasi base. Per farlo, faremo un esempio con $\pi$. Il numero infatti può essere scritto come segue:
+\[ \pi \eq 3,14159... \eq \frac{3}{10^0} + \frac{1}{10^{-1}} + \frac{4}{10^{-2}} + \frac{1}{10^{-3}} + \frac{5}{10^{-4}} + \frac{9}{10^{-5}} + ... \]
+
+L'idea è che per esprimere un qualsiasi numero $x$ in una base $\beta$, possiamo scrivere il numero come
+\[ x \eq x_m \cdot \beta^m + x_{m-1} \cdot \beta^{m-1} + ... + x_{1} \cdot \beta^{1} + x_{0} \cdot \beta^{0} + x_{-1} \cdot \beta^{-1} + ... + x_{-m} \cdot \beta^{-m} \]
+
+dove $0 \leq x_i \leq \beta - 1, \; \forall \; i \in [m, \; -m]$.
