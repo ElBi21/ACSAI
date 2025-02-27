@@ -60,7 +60,7 @@ Consideriamo un esempio per comprendere l'importanza degli errori di arrotondame
     Si considerino le due funzioni seguenti, che sono algebricamente equivalenti:
     \[ q_1(x) \eq (x - 1)^7 \quad \quad q_2(x) \eq x^7 - 7x^6 + 21x^5 - 35x^4 + 35x^3 - 21x^2 + 7x - 1 \]
 
-    Vogliamo calcolare il valore numerico di $q_1(x)$ e $q_2(x)$ con due valori di $x$, ovverosia $1$ e $1,0001$, e confrontare il loro valore esatto con l'errore di arrotondamento. Vogliamo inoltre usare una macchina che lavori con 10 cifre significative. Usando il seguente script in Python, possiamo ottenere i nostri risultati:
+    Vogliamo calcolare il valore numerico di $q_1(x)$ e $q_2(x)$ con due valori di $x$, ovverosia $1$ e $1,0001$, e confrontare il loro valore esatto con l'errore di arrotondamento. Vogliamo inoltre usare una macchina che lavori con 15 cifre significative. Usando il seguente script in Python, possiamo ottenere i nostri risultati:
     \begin{codeblock}{ApproxExample.py}
         \begin{lstlisting}[language = Python, numbers = none]
 from math import pow
@@ -80,17 +80,25 @@ for i, expect in [(1, 0), (1.0001, 10**(-28))]:
     # Approssimazione del numero alla 10a cifra decimale
     res1, res2 = "{0:.10g}".format(q1(i)), "{0:.10g}".format(q2(i))
     err1, err2 = rounding_error(expect, res1), rounding_error(expect, res2)
-    print(f"With x = {i}\nQ1 = {res1} | E1 = {err1}\nQ2 = {res2} | E2 = {err2}\n")\end{lstlisting}
+    print(f"With x = {i}, expect {expect}\nQ1 = {res1} | E1 = {err1}\nQ2 = {res2} | E2 = {err2}\n")\end{lstlisting}
         \nl
         \begin{tcolorbox}[colback = black!95!Periwinkle!90]
             \begin{lstlisting}[style = notexterm]
-Out[1]: With x = 1
+Out[1]: With x = 1, expect 0
         Q1 = 0 | E1 = 0.0
         Q2 = 0 | E2 = 0.0
 
-        With x = 1.0001
+        With x = 1.0001, expect 1e-28
         Q1 = 1e-28 | E1 = 0.0
         Q2 = 1.776356839e-15 | E2 = -1.7763568389999e-15\end{lstlisting}
         \end{tcolorbox}
     \end{codeblock}
+
+    Come possiamo notare dall'output dello script, con $x = 1$ non c'è alcuna differenza tra $q_1(x)$ e $q_2(x)$, ma con $x = 1,0001$ iniziano ad esserci le prime differenze. Infatti, nel secondo caso abbiamo un errore di arrotondamento di circa $-1,78 \cdot 10^{-15}$. Questo semplice esempio dimostra come due quantità che sono algebricamente uguali possono in realtà portare a due risultati numerici completamente diversi.
+    \nl
+    Questo comportamento può essere inoltre osservato attraverso il seguente grafico:
+    \begin{center}
+        \includegraphics[width = \linewidth]{assets/image-001.png}
+    \end{center}
 \end{example}
+
