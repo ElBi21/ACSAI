@@ -135,3 +135,20 @@ dove il segno viene rappresentato con 1 bit, la mantissa con $m$ bits e l'espone
         \hline
     \end{tabular}
 \end{center}
+
+Dato che i computer hanno una precisione finita, limitata a $p$ cifre, è chiaramente impossibile per questi rappresentare numeri che abbiano più di $p$ cifre. Per poter rappresentare numeri con più cifre, è necessario \textbf{arrotondare} il numero. L'arrotondamento può avvenire in due modi: o tramite \textbf{troncamento} o tramite \textbf{arrotondamento simmetrico}.
+
+\begin{definition}{Troncamento e Arrotondamento simmetrico}
+    Per \textbf{troncamento} si definisce quell'operazione per cui un numero a $n$ cifre viene rappresentato come un numero a $p$ cifre, dove le ultime $n - p$ cifre sono uguali a 0:
+    \[ x^* \eq \text{tronc}(x) \thus x_{-k} \eq 0, \; \forall \; k \geq p \]
+
+    Per \textbf{arrotondamento simmetrico} si definisce un'operazione di troncamento su un numero $x$ a cui può essere aggiunta un'unità alla cifra $x_{-p + 1}$ se la cifra $x_{-p}$ è maggiore o uguale di $\frac{\beta}{2}$:
+    \[ x^* \eq \text{tronc}(x + 0,5 \cdot \beta^{-p+1} \cdot \beta^e) \thus \begin{cases}
+        x_{-p + 1} = x_{-p + 1} & \text{se } x_{-p} < \frac{\beta}{2} \\
+        x_{-p + 1} = x_{-p + 1} + 1 & \text{se } x_{-p} \geq \frac{\beta}{2}
+    \end{cases}\]
+\end{definition}
+
+Arrotondare comporta sempre la presenza di un errore, e tali errori \textbf{non possono essere trascurati}, in quanto possono potenzialmente alterare il risultato finale in modi disastrosi. Un esempio è il caso del processore Intel Pentium (1994), che portava a risultati imperfetti a causa dell'arrotondamento dei numeri alla quinta cifra decimale.
+\nl
+Un altro esempio di errore dato dall'arrotondamento è la \textbf{cancellazione numerica}. 
