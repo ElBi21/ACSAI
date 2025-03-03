@@ -62,7 +62,7 @@ Consideriamo un esempio per comprendere l'importanza degli errori di arrotondame
 
     Vogliamo calcolare il valore numerico di $q_1(x)$ e $q_2(x)$ con due valori di $x$, ovverosia $1$ e $1,0001$, e confrontare il loro valore esatto con l'errore di arrotondamento. Vogliamo inoltre usare una macchina che lavori con 15 cifre significative. Usando il seguente script in Python, possiamo ottenere i nostri risultati:
     \begin{codeblock}{ApproxExample.py}
-        \begin{lstlisting}[language = Python, numbers = none]
+        \begin{lstlisting}[language = Python]
 from math import pow
 
 def q1(x) -> float:
@@ -104,7 +104,7 @@ Out[1]: With x = 1, expect 0
     Notiamo infatti che, mentre $q_1(x)$ ha un comportamento più lineare, $q_2(x)$ è molto più scabro, e questo accade proprio a causa degli errori di approssimazione.
 \end{example}
 
-\section{Rappresentazione IEEE 754}
+\section{La Rappresentazione IEEE 754}
 
 Ogni numero reale $x$ può essere espresso come una sequenza di infinite cifre, e tale sequenza dipende dalla \textbf{base di rappresentazione} $\beta$. Di norma, la base con cui noi esseri umani facciamo calcoli è $\beta = 10$.
 \nl
@@ -120,6 +120,13 @@ Sappiamo che i computer funzionano in codice binario, quindi non possono interpr
 \nl
 Per questo standard, ogni numero può essere espresso nella seguente rappresentazione:
 \[ x \eq \underbrace{\pm}_{\text{Segno}} \underbrace{(1 + a_{-1} \cdot 2^{-1} + a_{-2} \cdot 2^{-2} + a_{-3} \cdot 2^{-3} + ... + a_{-m} \cdot 2^{-m})}_{\text{Mantissa normalizzata}} \cdot \underbrace{2^e}_{\text{Esponente}} \]
+\begin{center}
+    \begin{tabular}{|c||c||c|}
+        \hline
+        $s$ & \hspace{1cm}$e$\hspace{1cm} & \hspace{3cm}$m$\hspace{3cm} \\
+        \hline
+    \end{tabular}
+\end{center}
 
 dove il segno viene rappresentato con 1 bit, la mantissa con $m$ bits e l'esponente con $n$ bits. Generalmente i numeri in IEEE 754 si possono esprimere con 16 (precisione dimezzata), 32 (singola precisione) o 64 bits (precisione doppia). Segue una tabella che segna quanti bits vengono assegnati ad ogni formato:
 \begin{center}
@@ -232,5 +239,100 @@ Un errore non è mai fine a sé stesso: è possibile (talvolta certo) che si pro
 
         \item \textbf{errore della divisione} $e_{\frac{x}{y}}$:
         \[ \frac{fl(x)}{fl(y)} \eq \frac{x \cdot (1 + e_x)}{y \cdot (1 + e_y)} \eq \frac{x}{y} \cdot (1 + e_x) \cdot (1 - e_y + e^2_y + ...) \; \simeq \; \frac{x}{y} \cdot (1 + \underbrace{e_x - e_y}_{e_{\frac{x}{y}}}) \]
+
+        \item \textbf{errore della somma} $e_{x+y}$:
+        \[ fl(x) + fl(y) \eq x \cdot(1 + e_x) + y \cdot (1 + e_y) \simeq x + y + xe_x + ye_y \eq \]
+        \[ \eq (x + y) \cdot \left(1 + \underbrace{\frac{x}{x + y} \cdot e_x + \frac{y}{x + y} \cdot e_y}_{e_{x+y}} \right) \]
+
+        In quest'ultimo caso, se $x, y > 0$, allora $|e_{x+y}| \leq |e_x| + |e_y|$; se $x, y < 0$, allora le quantità $\left|\frac{x}{x + y}\right|$ e $\left|\frac{y}{x + y}\right|$ possono essere molto grandi
     \end{itemize}
 \end{definition}
+
+\section{Algoritmi e Condizionamento dei problemi}
+
+Fin dall'antica Grecia c'è sempre stata varia ambiguità su cosa fosse un algoritmo e su come definirlo, nonostante ci fosse sempre stata un'intuizione. È solo grazie alla tesi di Church-Turing nel 1936, che fu possibile definire formalmente cosa fosse un algoritmo (definito nella tesi come \textit{metodo efficace}):
+
+\begin{quotebox}{Church-Turing}
+    "Un metodo efficace è un metodo per cui ogni istruzione è precisamente pre-determinata, che è certo di produrre un output entro un numero finito di istruzioni"
+\end{quotebox}
+
+Possiamo tuttavia riformulare la tesi di Church-Turing per definire cosa sia un algoritmo, così da adattarla anche per i nostri scopi:
+
+\begin{definition}{Algoritmo}
+    Un \textbf{algoritmo} è una successione di \textbf{istruzioni} \textbf{finita} e \textbf{non ambigua}, che consente di ottenere risultati numerici a partire dai dati di input
+\end{definition}
+
+Gli algoritmi che formuleremo attraverso queste note verranno implementate su un computer tramite un linguaggio di programmazione. Tutte le istruzioni sono operazioni logiche o aritmetiche, che vengono assegnate al computer seguendo la sintassi del linguaggio che useremo.
+\nl
+Come abbiamo visto in precedenza, la propagazione di un errore può avere effetti disastrosi, anche se l'errore è molto "piccolo". Se l'errore dovesse amplificarsi ad alti livelli, il risultato ottenuto non sarebbe affidabile. In questo caso, diremmo che l'algorimo è \textbf{instabile}. Se invece gli errori di arrotondamento non vengono amplificati durante i calcoli, allora diciamo che l'algoritmo è \textbf{stabile}.
+
+\begin{example}
+    Data la funzione $f(x) = x^2 + 2px - q$, con $p^2 + q \geq 0$, vogliamo calcolare la radice di valore maggiore. Questa è data dalla seguente equazione
+    \[ y = -p + \sqrt{p^2 + q} \]
+
+    Proviamo a creare uno script di Python che esegua questa equazione e che calcoli anche l'errore tra la soluzione del computer e quella prevista (usando la funzione \verb|rounding_error()| dall'esempio 1.1.1)
+
+    \begin{codeblock}{AlgorithmStability-Part1.py}
+        \begin{lstlisting}[language = Python]
+P = 1000
+Q = 0.018000000081
+SOLUTION = 0.9 * pow(10, -5)
+
+def solve_r1(p, q) -> float:
+    return -p + sqrt(pow(p, 2) + q)
+
+r1 = solve_r1(P, Q)
+
+print(f"[Algorithm 1] y = {r1}\n[Algorithm 1] Error = {rounding_error(SOLUTION, r1)}")\end{lstlisting}
+        \nl
+        \begin{tcolorbox}[colback = black!95!Periwinkle!90]
+            \begin{lstlisting}[style = notexterm]
+Out[1]: [Algorithm 1] y = 8.999999977277184e-06
+        [Algorithm 1] Error = 2.2722815857102556e-14\end{lstlisting}
+        \end{tcolorbox}
+    \end{codeblock}
+
+    Come possiamo notare, l'errore è abbastanza cospicuo, e per questo l'algoritmo è detto instabile. Questo perché, per $p \gg q$, la sottrazione tra $p$ e $\sqrt{p^2 + q}$ comporta la cancellazione numerica. Proviamo invece con un altro algoritmo, che cerca di arrivare allo stesso risultato senza usare la sottrazione, così da essere stabile:
+
+    \[ y = -p + \sqrt{p^2 + q} \eq \left(-p + \sqrt{p^2 + q}\right) \cdot \frac{\left(p + \sqrt{p^2 + q}\right)}{\left(p + \sqrt{p^2 + q}\right)} \eq \frac{q}{\left(p + \sqrt{p^2 + q}\right)} \]
+
+    \begin{codeblock}{AlgorithmStability-Part2.py}
+        \begin{lstlisting}[language = Python]
+def solve_r2(p, q) -> float:
+    return q / (p + sqrt(pow(p, 2) + q))
+
+r2 = solve_r2(P, Q)
+
+print(f"[Algorithm 2] y = {r2}\n[Algorithm 2] Error = {rounding_error(SOLUTION, r2)}")\end{lstlisting}
+        \nl
+        \begin{tcolorbox}[colback = black!95!Periwinkle!90]
+            \begin{lstlisting}[style = notexterm]
+Out[1]: [Algorithm 2] y = 9e-06
+        [Algorithm 2] Error = 0.0\end{lstlisting}
+        \end{tcolorbox}
+    \end{codeblock}
+\end{example}
+
+Non solo gli algoritmi possono essere stabili o instabili, ma in base a come vengono posti i problemi ci può essere più o meno suscettibilità alle perturbazioni dei dati. Consideriamo ad esempio il seguente problema: abbiamo una funzione $f \; : \; \mathbb{R} \; \mapsto \; \mathbb{R}$, e vogliamo calcolarne il valore $y$ in un generico punto $x \in \mathbb{R}$. Normalmente avremmo che $x \; \rightarrow \; f(x) \; \rightarrow \; y$.
+\nl
+Ottenuto $y$, vogliamo misurare quale effetto produca una perturbazione $\Delta x = x^* - x$ (dove $x^*$ è un valore a nostra scelta) durante il calcolo di $y$. Possiamo inoltre riconsiderare $\Delta x$ come il seguente: $\Delta y \eq y^* - y = f(x^*) - f(x)$
+\nl
+Usando lo sviluppo in serie di Taylor fino al primo ordine, possiamo riscrivere $\Delta y$ come segue:
+\[ \Delta y \eq f(x^*) - f(x) \eq f'(x) \cdot \underbrace{\Delta x}_{x^* - x} \]
+
+Dividendo ciò che abbiamo ottenuto fino ad ora per $y$, possiamo ricavare l'\textbf{errore relativo}:
+\[ \left| \frac{\Delta y}{y} \right| \; \simeq \; \left| \frac{f'(x)}{f(x)} \right| \cdot \left|\Delta x\right| \eq \underbrace{\left| \frac{f'(x) \cdot x}{f(x)} \right|}_{C_P} \cdot \left|\frac{\Delta x}{x}\right| \]
+
+\begin{definition}{Errore relativo}
+    L'\textbf{errore relativo} $e_r$ è l'errore che c'è tra un valore $x^*$ e un valore comparato $x$, ed è sempre \textbf{espresso in percentuale}. Tale errore si calcola come segue:
+    \[ e_r \eq \frac{\left| x^* - x \right|}{x} \]
+\end{definition}
+
+Nel calcolo precedente abbiamo evidenziato una parte dell'equazione, chiamandola $C_P$. Tale numero è importante per noi, e si chiama \textbf{numero di condizionamento del problema}.
+
+\begin{definition}{Numero di condizionamento del problema}
+    Il \textbf{numero di condizionamento del problema} $C_P$ è un numero che determina se un dato problema è \textbf{malcondizionato} (ovverosia che a \textbf{piccole perturbazioni} dei dati corrispondono \textbf{grandi variazioni} dei risultati) o \textbf{ben condizionato}. Se $C_P$ è \textbf{grande}, allora il problema è \textbf{malcondizionato}, altrimenti è ben condizionato.
+    \[ C_P \eq \left| \frac{f'(x) \cdot x}{f(x)} \right| \]
+\end{definition}
+
+Sebbene la propagazione dell'errore dipenda dall'algoritmo, il condizionamento del problema non dipende né dall'algoritmo, né dagli errori generati. Infatti, il \textbf{condizionamento dipende solo ed unicamente dal problema} e dai dati di input. Se il problema è molto sensibile, e quindi malcondizionato, alle variazioni di input, allora \textbf{non esiste nessun algoritmo} che riesca a ritornare una soluzione stabile al problema.
