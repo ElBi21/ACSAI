@@ -1,0 +1,72 @@
+\chapter{Sistemi di Equazioni Non Lineari}
+
+Fino ad ora siamo sempre stati abituati a problemi analitici dove la soluzione a un problema era data da un'equazione, o al più un piccolo sistema di equazioni non lineari. Tuttavia nella realtà sono molti i casi dove la soluzione viene trovata risolvendo complessi sistemi di equazioni non lineari, che non sempre possono essere svolti a mano. Da qui, la nascita di alcuni metodi di calcolo numerico che aiutano nella risoluzione di tali sistemi. Prima di illustrare questi metodi, ci soffermeremo brevemente su cos'è un'equazione non lineare:
+
+\begin{definition}{Equazione non lineare}
+    Un'\textbf{equazione non lineare} è un'equazione avente la forma
+    \[ f(x) \eq 0 \]
+
+    Chiamamo \textbf{soluzione} $\xi$ (o alternativamente \textbf{radici dell'equazione} o \textbf{zeri della funzione} $f$) di un'equazione non lineare quel valore tale che
+    \[ f(\xi) \eq 0 \]
+\end{definition}
+
+All'interno di questo capitolo ci limiteremo prevalentemente al caso di radici reali. Per applicare un metodo su una funzione tuttavia, ci serve prima sapere le seguenti tre informazioni:
+\begin{itemize}
+    \item [1)] \textbf{quante} sono le radici (in questo caso, reali);
+    \item [2)] \textbf{dove} si trovano, approssimativamente, le radici;
+    \item [3)] se sono presenti delle \textbf{simmetrie} nella funzione.
+\end{itemize}
+
+Ci sono vari metodi per trovare queste informazioni: si può procedere allo \textbf{studio analitico}, alla \textbf{tabulazione} o all'analisi del \textbf{grafico} della funzione stessa. Procederemo ad illustrare tutti e tre i metodi su un'equazione di esempio:
+
+\begin{example}
+    Si consideri la seguente funzione $f(\lambda)$, che modella il tasso di crescita di una popolazione:
+    \[ f(\lambda) \eq e^{\lambda} + \frac{0,435}{\lambda} (e^{\lambda} - 1) - 1,564 \eq 0 \]
+
+    Procediamo a considerare lo \textbf{studio analitico} di questa funzione: notiamo che la funzione risulta definita e continua in $\mathbb{R} / \{0\}$, e studiando il semiasse positivo (non ha senso controllare il semiasse negativo, poiché quest'equazione modella la crescita della popolazione) notiamo che:
+    \[ \lim_{\lambda \to 0} f(\lambda) < 0 \quad\quad \text{e} \quad\quad \lim_{\lambda \to +\infty} f(\lambda) \eq +\infty \]
+
+    Calcolando la derivata prima, otteniamo invece la seguente funzione:
+    \[ f'(\lambda) \eq e^{\lambda} + \left( 1 + 0,435 \frac{\lambda - 1}{\lambda^2} \right) + \frac{0,435}{\lambda^2} > 0 \]
+
+    Notiamo infatti che il comportamento della funzione è positivo oltre lo 0: questo significa che la funzione $f(\lambda)$ è monotona crescente. Possiamo dunque concludere che, nel semiasse positivo, sia presente un unico zero $\xi$.
+    \nl
+    Per il metodo della \textbf{tabulazione}, si considerano i valori ottenuti dalla funzione in corrispondenza di valori equidistanti di $\lambda$, e si osserva dunque il segno dei valori ottenuti. Ad esempio:
+    \begin{center}
+        \begin{tabular}{c|c}
+            $\lambda$ & $f(\lambda)$ \\
+            \hline
+            $0,10$ & $-0,001335588295285$ \\
+            $0,12$ & $0,025672938554613$ \\
+            $0,14$ & $0,053195959592184$ \\
+            $0,16$ & $0,081243551500795$ \\
+            $0,18$ & $0,109825990666185$ \\
+            $0,20$ & $0,138953757158539$ \\
+        \end{tabular}
+    \end{center}
+
+    Come possiamo notare, abbiamo un cambio di segno tra $\lambda \eq 0,10$ e $\lambda \eq 0,12$: questo vuol dire che la radice della funzione si trova nell'intervallo $[0,10, \; 0,12]$. Possiamo anche osservare la radice usando un grafico della funzione:
+    \begin{center}
+        \includegraphics[width=\linewidth]{assets/image-002.png}
+    \end{center}
+\end{example}
+
+Come abbiamo potuto notare dall'esempio, grazie ai tre metodi possiamo trovare una posizione approssimativa delle varie radici di una funzione. Ma come mai ci interessa tanto sapere la posizione di dove la funzione cambia segno? Perché grazie al \textbf{teorema di Bolzano}, questo ci permette di localizzare una radice.
+
+\begin{theorem}{Teorema di Bolzano}
+    Dato un intervallo $[a, \; b]$ e una funzione $f(x)$ continua, se $f(a)$ ha segno discorde rispetto a $f(b)$ (quindi, se $f(a) \cdot f(b) < 0$), allora $f(x)$ interseca almeno una volta l'asse delle $x$
+\end{theorem}
+
+È importante tuttavia sapere anche restringere l'intervallo di osservazione delle radici. Supponiamo di avere in esame la funzione
+\[ p(x) \eq x^4 + 2x^3 + 7x^2 - 11 \eq 0 \]
+
+mostriamo qui due grafici della funzione, in intervalli diversi:
+\begin{center}
+    \includegraphics[width=\linewidth]{assets/image-003.png}
+\end{center}
+
+Notiamo come, in base all'intervallo, è più semplice notare la posizione delle radici. Infatti, $p(x)$ ha 4 radici, di cui due reali e due complesse coniugate.
+
+\section{Metodo di bisezione (o dicotomico)}
+
+Tra i vari metodi utilizzabili per trovare le radici in una funzione, il più semplice e immediato da utilizzare è il \textbf{metodo di bisezione}, o \textbf{metodo dicotomico}
