@@ -1,7 +1,7 @@
 \chapter{Convolutional Neural Networks}
 
 When dealing with \textbf{Multilayer Perceptrons} (\textbf{MLP}s), we mostly used data that didn't have articulate structures. Even in the example of the MNIST digits dataset, we still consider the input image as a stream of flattened vectors. This approach, even though helps for making small examples, would not hold well with actual images, which are more complex in terms of number of channels, possible values of each pixel, and so on...
-\nl
+\nwl
 So how can we deal with that? How can we use images with neural networks, so that to still keep track of relevant informations that would be otherwise lost? The solution is given by the architectural model of the \textbf{Convolutional Neural Network}, CNNs for short. In this first chapter, we'll see how CNNs are made, and what components they have.
 
 \section{Image Filters}
@@ -43,7 +43,7 @@ Image filtering is a technique that is widely used for various reasons: to \text
 
 \begin{definition}{Convolution}
     A \textbf{convolution} is a \textbf{linear filter} which slides a given \textbf{filter kernel} through the image and performs the \textbf{matrix multiplication} between the filter and the overlapped image patch, returning a filtered image.
-    \nl
+    \nwl
     A filtered image $f$ is expressed as follows:
     \[ f[m, \; n] \eq I \otimes g \eq \sum_{k, \; l} I[m - k, \; n - l] \cdot g[k, \; l] \]
 
@@ -121,7 +121,7 @@ From this previous example we had a way to illustrate how the convolution works,
 \end{center}
 
 A simple way to make the computations easier is to flip the kernel along these axes, so that to align it to the image's axes. This way, we would just have to do the element-wise multiplication of the matrices and sum the resulting values.
-\nl
+\nwl
 A special case of convolution is when we use a 1D filter on a 2D image, but we'll see more about this later on.
 
 \subsection{Linear Filters}
@@ -233,7 +233,7 @@ When dealing with images, it's important to also recognize some details, such as
 \end{definition}
 
 Also, it's possible that we can sometimes deal with \textbf{impulses}, so images where only one pixel stores non-zero values.
-\nl
+\nwl
 Generally, it's important to recognize edges in the images because it helps on detecting items. But not in all images the edges are clear to recognize, and sometimes we may need to accentuate, to \textbf{sharp} them. This can be done through a \textbf{sharpening filter}, which usually has the following form:
 
 \begin{center}
@@ -264,7 +264,7 @@ Generally, it's important to recognize edges in the images because it helps on d
 \end{center}
 
 We can notice how the differences of colors are accentuated, and how the costant areas are instead left similar to the original image.
-\nl
+\nwl
 Since these filters are all linear, they also can use the basic properties of the linear systems, which are the following three:
 \begin{itemize}
     \item \textbf{Homogeneity}: $T[a \cdot X] \eq a \cdot T[X]$;
@@ -277,7 +277,7 @@ In general, a system is said to be \textbf{linear} if and only if the \textbf{su
 \subsection{Average and Gaussian Filters}
 
 There are other interesting types of filters that we can use with convolutions, such as the \textbf{average filter}. The task of this filter is to replace each pixel with an average of its neighbours (so for instance, each neighbour of a pixel will contribute to $\nicefrac{1}{9}$ of the total value). The average can also have different \textbf{weights}, so that to give more importance to some pixels than to others. If all the weights are equal, then such filter is also called \textbf{box filter}.
-\nl
+\nwl
 Another type of blur filter is the \textbf{Gaussian Average filter}, which weights the neighbours depending on their distance from the central pixel (the nearer, the greater the weight). The smoothing of the kernel is proportional to the Gaussian function:
 \[ \underbrace{g}_{\text{kernel}} \; \propto \; \underbrace{\frac{1}{2 \pi \sigma^2} \cdot e^{- \frac{x^2 + y^2}{2 \sigma^2}}}_{\text{Gaussian function}} \]
 
@@ -316,7 +316,7 @@ When we have an image with abrupt changes of values, we say that we have an \tex
 \end{center}
 
 We see how we have an abrupt change of values from $255$ to $0$. We can exploit derivatives to see the behaviour of the function. Indeed, if we compute the first derivative, we obtain the following matrix:
-\nl
+\nwl
 \[\begin{bmatrix}
     0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
     0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
@@ -325,25 +325,25 @@ We see how we have an abrupt change of values from $255$ to $0$. We can exploit 
     0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
     0 & ... & 0 & 255 & 0 & ... & 0 & -255 & 0 & ... & 0 \\
 \end{bmatrix}\]
-\nl
+\nwl
 As we can see, the values $255$ and $-255$ denote where we have a change of values in the image. This allows us to detect eventual changes in the image. We can also compute the second derivative, which will allow us to gain further intel about which color is changing to which.
 
 \section{Classifying Images}
 
 Classifying data is a task that in the recent years has been an active field of development. The reason why this is the case is because, unlike with a more standard algorithm such as sorting, there exists \textbf{no obvious way} for a computer to do it. While for us humans it's pretty easy to recognize the contents of an image, for a computer it changes drastically.
-\nl
+\nwl
 Machine Learning presents us a more \textbf{data-driven approach}, where classification happens through a \textbf{trained model}. Usually, for this step we must have a dataset of images and labels, then a model must be trained and finally the model must be evaluated on never-seen-before images.
-\nl
+\nwl
 The idea is then to have what we call a \textbf{linear classifier}: starting from an image of size $h \times w \times c$ (where $h$ and $w$ are height and width respectively and $c$ is the number of channels), a function such as
 \[ f \; : \; x, \; W \; \longmapsto \; n \]
 
 where $x$ is the \textbf{input image}, $W$ is the \textbf{set of parameters} (or \textbf{weights}) and $n$ is the set of \textbf{class scores}. The size of $n$ is the number of classes that the model can recognize.
-\nl
+\nwl
 But we know that models can suffer from overfitting, which would make the whole model unusable (since it wouldn't be able to generalize anymore), so what can we do? We can add a \textbf{bias} $b$, which would create some noise. Our final function of the linear classifier would then have the following structure:
 \[ f(x, \; W) \eq W \cdot x + b \]
 
 At the end of the classifier, we will obtain a set of scores, one for each classes. Usually, the higher the score, the higher the probability that the image belongs to the respective class.
-\nl
+\nwl
 There is a bunch of problems with this approach though. Let's try to run our model on some images, and see what its generalization looks like it brought to an image:
 
 \begin{center}

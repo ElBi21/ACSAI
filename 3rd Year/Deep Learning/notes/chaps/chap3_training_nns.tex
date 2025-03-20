@@ -51,7 +51,7 @@ Finally, let's try with $x \eq -10$:
 \[ \sigma(10) \eq \sim 1 \quad \quad \frac{\partial \sigma}{\partial x} \eq \sigma(10) \cdot (1 - \sigma(10)) \eq 1 \cdot (1 - 1) \eq 0 \]
 
 We can see how the result of the gradient is mostly 0, and this clearly results in a problem because when the value of the gradient fill flow down into the network, then the parameters will never update.
-\nl
+\nwl
 The second problem with the sigmoid function is that the outputs of the sigmoid are \textbf{not centered in zero}.
 
 \section{Data Preprocessing}
@@ -71,9 +71,9 @@ Sometimes, the data, if scattered randomly in the space, can have some patterns 
 \section{Training and Testing Error}
 
 Whenever we train a model, we usually keep track of two important values: the value of the \textbf{loss function} and the value of the \textbf{accuracy}. We already know how to reduce the value of the loss function, so to use better optimization algorithms. For the accuracy instead, that's a different story: we want to maximize it, but we must avoid \textbf{overfitting}. Generally, we see that there is overfitting when the gap between training accuracy and validation accuracy starts to grow.
-\nl
+\nwl
 So how do we deal with this? An idea is to use an \textbf{early stopping} technique: whenever we see that the gap has been augmenting for too much and it also takes greater and greater values, then we want to stop training. This will return a model that could not be overfitting, and it's a technique that should be \textbf{always employed}.
-\nl
+\nwl
 If we had the possibility of training multiple models, we can use the \textbf{model ensemble} technique. By training multiple models, we would have for each model different parameters, and at test time we would average the parameters of each model. This would grant, usually a $\sim 2\%$ performance improvement, which may not seem a lot, but it's actually helpful depending on the cases.
 
 \subsection{Regularization and Dropout}
@@ -87,9 +87,9 @@ The model ensemble technique works only if we have multiple trainable models, bu
 % add loss regularization
 
 The second method, called \textbf{dropout}, is more advanced than the previous method, so adding an extra term to the loss function. For the dropout method, for each forward pass, the output of a neuron is randomly set to 0. This randomness is dictated by a hyperparameter, which is usually $0,5$. This means that around $50\%$ of the neurons will return nothing.
-\nl
+\nwl
 But why is this a good idea? Because this makes the network develop a redundant representation, and this way it wouldn't rely on groups of neurons to determine the output. For instance, we define a cat as an animal which has a tail, ears and furr. Say that for each of these features we have a neuron assigned. Now, if we deactivate at random the neuron which detects the ears, if the model learned that a cat must have all of these three features together, then in might not recognize the cat. If we deactivate some neurons instead, then the model will try to recognize the cat also without the feature of the ears.
-\nl
+\nwl
 The behaviour of dropout is something that we want to have only during training, not during testing. We want to average out the randomness during test time. So what we can do is the following: if we define with $d(x, \; z)$ the function which determines whether a neuron is deactivated or not, then by taking it's expectation value, we can remove it from the testing of the model.
 \[ y \eq \mathbb{E}\left(d(x, \; z)\right) \eq \int p(z) d(x, \; z) \text{d}x \]
 

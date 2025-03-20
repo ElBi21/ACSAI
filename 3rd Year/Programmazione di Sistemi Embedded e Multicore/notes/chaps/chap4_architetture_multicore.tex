@@ -11,16 +11,16 @@ Spesso si parla di cache quando si parla di processori, ma cosa intendiamo di pr
 \end{definition}
 
 Le cache sono fatte con una tecnologia chiamata SRAM, che è molto più rapida della DRAM (la DRAM necessita di essere caricata e scaricata continuamente, risultando in tempi di richiesta molto più alti; la SRAM invece è composta da soli transistors, motivo della velocità della cache stessa). Le memorie in SRAM sono, tuttavia, molto costose, quindi di solito le cache in SRAM sono abbastanza piccole, se comparate alla memoria principale.
-\nl
+\nwl
 Il motivo del perché usiamo le cache è perché, quando si esegue un programma, c'è la possibilità che il programma, in un qualsiasi momento, richieda alcune istruzioni immagazzinate vicino all'istruzione che sta venendo eseguita. Parliamo dunque di \textbf{località temporale} e \textbf{località spaziale}.
-\nl
+\nwl
 I dati sono spostati verso la cache in blocchi (o linee), proprio per il concetto di località. Inoltre, è molto più rapido per una cache fare un'unico spostamento di $n$ elementi piuttosto che fare $n$ spostamenti di un elemento ciascuno.
-\nl
+\nwl
 All'interno di una CPU ci sono 3 tipi di cache, cioè la cache \textbf{Level 1} (o \textbf{L1}), \textbf{Level 2} (o \textbf{L2}) e \textbf{Level 3} (o \textbf{L3}). La cache L1 è la più rapida, ma anche la più piccola, mentre invece la cache L3 è la più lenta, ma anche la più spaziosa. In base al tipo di cache, un dato potrebbe essere immagazzinato sia in una cache (come ad esempio la L1) che in quelle sottostanti, ma generalmente dipende da come viene implementata.
-\nl
+\nwl
 Quando la CPU richiede un dato (diciamo il valore di una variabile \verb|x|), allora quel dato verrà cercato nella cache L1; se non verrà trovato, la CPU cercherà poi il dato nella cache L2; se non venisse trovato cercherà poi nella cache L3 e infine, se non trovasse il dato in nessuna delle cache, lo cercherà nella memoria.
 % inserisci esempio con moltiplicazione tra matrici dal GitHub del corso
-\nl
+\nwl
 Ma come possiamo ottimizzare l'uso delle cache? Di norma, un programmatore non ha accesso alle cache, e non può specificare quale dato va dove. Quindi l'unico modo per ottimizzare un programma è tramite l'uso di varie flags di ottimizzazione di \verb|gcc|.
 
 \subsection{Coerenza delle cache}
@@ -42,24 +42,24 @@ Ma come funzionano le cache quando sono coinvolti più core in un programma? Sup
 \end{center}
 
 Ora, nella cache del core 0 abbiamo che \verb|y_0 = 2| e \verb|x = 7|, ma che cosa avremo nella cache del core 1? Siccome \verb|x| viene modificato solo nella cache del core 0, questa modifica non arriva alla cache del core 1. Questo vuol dire che nella cache del core 1 avremo \verb|y_1 = 6| e \verb|z_1 = 8|, e non \verb|y_1 = 6| e \verb|z_1 = 28|.
-\nl
+\nwl
 Ci sono vari modi per risolvere questo problema, e uno di questi è lo \textbf{snooping cache coherence}. L'idea di base è che i core sono connessi tutti tramite un bus comune, che permette a tutti i core di vedere quali sono i dati che passano tramite tale bus. Ciò viene sfruttato dalle cache come canale di broadcast, per cui ogni volta che una cache viene aggiornata da un core, allora anche gli altri cores lo sapranno. Tuttavia, questo metodo non viene ormai più usato, e questo perché ormai, con processori con 64/128 cores, effettuare un broadcast è costoso.
-\nl
+\nwl
 Un altro metodo, più efficace, è il \textbf{directory based cache coherence}, per cui c'è una una struttura di dati, chiamata \textbf{directory}, che segna lo stato di ogni linea della cache, simile a una bitmap. Quando una variabile viene modificata, allora viene anche modificata la directory, e questa modifica viene propagata anche ai controllori di ogni cache, che invalideranno il contenuto nelle cache di ogni core dove la variabile non è aggiornata.
 
 \subsection{Organizzazione della memoria}
 
 Generalmente la memoria di un sistema può essere organizzata in due modi: può essere o \textbf{Uniform Memory Access} (\textbf{UMA}) o \textbf{Non-Uniform Memory Access} (\textbf{NUMA}). Per l'organizzazione UMA, i core condividono la stessa memoria, mentre per i NUMA, ogni gruppo di core ha una sua sezione di memoria. Con un sistema NUMA, bisogna fare attenzione a dove vengono allocati i dati, perché se dei dati che servono a un core vengono allocati nella parte di memoria nella quale il core non può accedere, allora si creano problemi di latenza: accedere a una memoria "locale" è infatti più economico che accedere a una memoria "remota". Tramite l'uso della libreria \verb|numa.h| è possibile gestire la modalità di allocazione dei dati (in caso si può usare anche l'utilità da terminale \verb|numactl|).
-\nl
+\nwl
 \section{OpenMP}
 
 Un altro framework/API per creare applicazioni a memoria condivisa è \textbf{OpenMP}, che garantisce, rispetto a PThreads, un'interfaccia più ad alto livello. Il sistema su cui viene eseguito un programma di OpenMP è visto come una collezione di cores, dove ogni core ha accesso alla memoria principale.
-\nl
+\nwl
 Rispetto a PThreads, OpenMP cerca di eseguire un codice in maniera parallela partendo da un programma sequenziale, ed è molto più semplice da applicare rispetto al trasformare un programma con PThreads. Per poter usare OpenMP, serve usare delle \textbf{pragma} e un compilatore che supporti la libreria: questo perché ci sono alcune direttive che devono essere eseguite al momento di compilazione. Segue la definizione di una pragma:
 
 \begin{definition}{Pragma}
     Le \textbf{pragma} sono alcune \textbf{direttive} speciali che vengono \textbf{riconosciute} dal \textbf{preprocessore}. In \verb|C|, una pragma ha la forma \verb|#pragma|. Se un compilatore non supportasse le pragma di una libreria, allora le pragma verrebbero ignorate.
-    \nl
+    \nwl
     Le pragma possono usare delle \textbf{clausole}, ovverosia delle \textbf{direttive} che \textbf{modificano le pragma} e la loro esecuzione
 \end{definition}
 
@@ -118,9 +118,9 @@ $ export OMP_NUM_THREADS=<num_threads>     # Per salvare il valore\end{lstlistin
 \end{itemize}
 
 Per sapere quanti threads stanno eseguendo una certa parte di codice, possiamo usare la funzione \verb|omp_get_num_threads()| (se verrà eseguita in una porzione di codice sequenziale, ritornerà 1), mentre invece per avere il rank del thread bisognerà usare la funzione \verb|omp_get_thread_num()|.
-\nl
+\nwl
 Una differenza sostanziale con PThreads è che OpenMP potrebbe, se lo ritiene necessario, creare dei threads fin dall'inizio dell'esecuzione del codice e lasciarli in \verb|sleep| fino a che non servano, il che è sostanzialmente diverso da come funziona PThreads (può anche succedere, se una sezione di codice vada eseguita in sequenziale, che i threads vengano interrotti e messi in \verb|sleep| fino al momento in cui servano nuovamente).
-\nl
+\nwl
 Come abbiamo detto, non tutti i compilatori di C supportano OpenMP, e se un compilatore non supportasse la libreria potremmo avere problemi se provassimo a chiamare delle funzioni della libreria stessa. Come possiamo risolvere questo problema? Possiamo usare delle pragma specifiche per definire dei corsi d'azione diversi in base al fatto che il compilatore supporti OpenMP o meno:
 \pagebreak
 \begin{codeblock}{OpenMPCheck.c}
@@ -152,7 +152,7 @@ int main() {
 \end{codeblock}
 
 Come possiamo garantire invece ciò che su PThreads avevamo con le mutex? Si può usare la pragma \verb|#pragma omp critical|: tale pragma considererà il blocco sotto di essa come un blocco di codice che deve essere gestito da una mutex, e che quindi solo un thread alla volta potrà eseguire.
-\nl
+\nwl
 Possiamo anche usare un'altra pragma, che può essere usata solo in alcuni casi: la pragma \verb|#pragma omp atomic|. Ci sono alcune operazioni che le CPU supportano che sono definite come \textbf{atomiche}: queste istruzioni permettono di \textbf{eseguire molteplici istruzioni} di Assembly \textbf{come una singola istruzione}. Ad esempio, se volessimo eseguire un'istruzione di C tipo \verb|y += 1;|, allora le istruzioni che Assembly genererebbe sarebbero generalmente \verb|LOAD|, \verb|ADD| e \verb|STORE|. Tuttavia, se l'addizione venisse supportata come operazione atomica dalla CPU, allora si potrebbe fare l'addizione, a livello Assembly, con una singola operazione. Un esempio segue:
 
 \begin{codeblock}{Critical.c}
@@ -238,7 +238,7 @@ L'uso del \verb|for| parallelo è possibile solo in alcune situazioni, qui elenc
 % metti matrice for parallelo
 
 Questo è richiesto perché prima di parallelizzare il ciclo \verb|for|, OpenMP vuole sapere il numero di iterazioni che il ciclo \verb|for| eseguirà. Inoltre, non si possono usare le istruzioni \verb|break| e \verb|return|, e non si può tantomeno manomettere l'index dell'iterazione del \verb|for| loop. Si può tuttavia usare l'istruzione \verb|exit|, che fa terminare l'esecuzione del programma.
-\nl
+\nwl
 Come ci comportiamo nel caso di cicli \verb|for| annidati? In quel caso basterebbe mettere una pragma sopra il ciclo \verb|for| più esterno, e OpenMP farebbe partire abbastanza thread per dare un numero equo di iterazioni a ogni thread, distribuendo le iterazioni in stile round robin. Questo è comodo se il numero di threads disponibili può dividere senza resto il numero di iterazioni del ciclo \verb|for| più esterno. Tuttavia, se il numero non fosse divisibile, ci ritroveremmo un carico di lavoro sbilanciato fra i threads. Supponiamo di avere il seguente codice:
 
 \begin{codeblock}{OpenMPNestedFor.c}
@@ -252,7 +252,7 @@ for (int i = 0; i < 3; ++i) {
 \end{codeblock}
 
 In questo caso, se il numero di threads disponibili fosse 4, allora avremmo il thread 3 che non eseguirebbe nulla. Come possiamo fare? Un'idea potrebbe essere quella di mettere la pragma legata al ciclo interno, ma in quel caso creeremmo delle bolle tra i vari threads. Infatti, la pragma distribuirebbe 6 iterazioni tra 4 threads (per 3 volte), lasciando due thread con un'iterazione in più, e siccome prima di passare alla prossima iterazione del ciclo più esterno bisognerebbe aspettare che le iterazioni del ciclo più interno finiscano, avremmo dei problemi.
-\nl
+\nwl
 C'è la possibilità di unire i due cicli, tramite una direttiva ulteriore che viene aggiunta alla pragma. Questa direttiva è \verb|collapse()|, e si usa nel seguente modo:
 
 \begin{codeblock}{OpenMPNestedForCollapsed.c}
@@ -297,14 +297,14 @@ Noi non potremmo usare la pragma per parallelizzare il \verb|for| loop perché n
 \subsection{Scheduling dei loop}
 
 Una volta che decidiamo di voler parallelizzare un ciclo \verb|for|, come possiamo distribuire le varie iterazioni ai vari nodi? Ci sono vari modi: il modo più classico è quello di distribuire le iterazioni \textbf{a blocchi} (quindi, se abbiamo $n$ iterazioni e $k$ nodi, ad ogni nodo assegnamo una quantità sequenziale di $\nicefrac{n}{k}$ iterazioni). Tuttavia, un altro modo che possiamo utlizzare è quello di distribuire le iterazioni \textbf{ciclicamente}, ovverosia alla round robin. In questo modo ogni thread esegue comunque $\nicefrac{n}{k}$ iterazioni, ma saranno tutte sparse in modo diverso. Questo torna comodo ad esempio quando le ultime iterazioni di un ciclo sono quelle più costose a livello di calcolo.
-\nl
+\nwl
 Per poter specificare lo scheduling dei loop, serve usare la clausola 
 \begin{center}
     \verb|schedule(type, chunksize)|
 \end{center}
 
 all'interno della pragma. La clausola specifica, tramite il parametro \verb|type|, di assegnare staticamente le iterazioni ai threads, e ne assegna \verb|chunksize| alla volta ad ogni thread prima di passare al prossimo thread a cui assegnare.
-\nl
+\nwl
 La clausola ammette diversi valori di \verb|type|:
 \begin{itemize}
     \item \verb|static|: le iterazioni vengono assegnate ai threads prima dell'esecuzione delle iterazioni stesse;
@@ -314,7 +314,7 @@ La clausola ammette diversi valori di \verb|type|:
 \end{itemize}
 
 Il valore di \verb|chunksize| è importante perché permette di distribuire più granularmente le iterazioni a ogni thread, ed è sempre un valore intero positivo. Bisogna sempre considerare bene il valore di \verb|chunksize|: se troppo piccolo, avremo un maggiore overhead per inizializzare il \verb|for| parallelo, mentre se troppo grande, allora caricheremmo troppo il peso dei singoli thread.
-\nl
+\nwl
 Un altro modo di specificare lo scheduling di OpenMP è esportando una variabile d'ambiente chiamata \verb|OMP_SCHEDULE|. Ad esempio, potremmo specificare la seguente:\begin{terminal}
     \begin{lstlisting}[style = notexterm]
 $ gcc -g -Wall -fopenmp -o hello_world HelloWorld.c
@@ -334,11 +334,11 @@ Hello dal thread 3 di 4\end{lstlisting}
 \section{False sharing}
 
 È possibile che, quando viene scritto un programma, due variabili siano grandi abbastanza da entrare in un singolo blocco di cache. Tuttavia, ci potrebbe essere un problema quando due thread diversi cercano di modificare entrambe le due variabili.
-\nl
+\nwl
 Supponiamo che un thread $t_1$ voglia modificare una variabile \verb|my_var_1|, e che un altro thread $t_2$ voglia modificare una variabile \verb|my_var_2|. Quando il programma viene avviato, le variabili vengono create in memoria con un valore standard e vengono poi caricate nella cache.
-\nl
+\nwl
 Quando un thread dovrà modificare la propria variabile (supponiamo che $t_1$ modifichi \verb|my_var_1|), allora questo modificherà il valore nella memoria. Tuttavia, nella cache ci sta ancora il valore vecchio di \verb|my_var_1|. Se $t_2$ dovesse poi usare \verb|my_var_2|, allora questo dovrebbe ricaricare il dato della cache, risultando in un miss di quest'ultima. Questo fenomeno viene chiamato \textbf{false sharing}.
-\nl
+\nwl
 Ci sono varie soluzioni a questo problema: si può aggiungere un padding ai dati (quindi facendo sì che le variabili siano grandi quanto una linea di cache), assegnare un mapping specifico dei dati ai singoli cores, o usare variabili private o locali. Consideriamo un esempio: se originalmente il codice sarebbe il seguente, in cui avremmo una situazione di false sharing:
 
 \begin{codeblock}{OpenMPFalseSharing.c}

@@ -1,9 +1,9 @@
 \chapter{Backend and Go}
 
 Go is a statically typed programming language created by Google, and it's made for building high-performance and scalable applications. Widely used in the Web, it allows to build powerful backends with high-level features such as \textbf{garbage collection} and \textbf{memory safety}. Its syntax is similar to the one of C, but it's way simpler. It's also more verbose though, so it's very similar to the choice that also Rust's creators took.
-\nl
+\nwl
 Go is structured in packages, where each package represents a collection of files and folders. A package is declared with the syntax \verb|package <name>|. In a folder, only one package may be declared. Go requires a \verb|main| package, which will contain the first functions to be executed.
-\nl
+\nwl
 Within a package, all the declarations are \textbf{global}: this means that a function declared in a file can be used in another file within the same package. In order to use other packages, we use the \verb|import <package_name>| syntax. Let's see an example of Go code for a simple Hello World program:
 
 \begin{codeblock}{HelloWorld.go}
@@ -39,9 +39,9 @@ Hello World\end{lstlisting}
 \end{terminal}
 
 Go is a statically typed language, so we are encouraged to write down the types of the variables that we create for code security. Variables are defined either through the \verb|var| keyword or through the \verb|:=| operator.
-\nl
+\nwl
 Some types that are allowed in Go are \verb|bool| for booleans, \verb|intXX| and \verb|uintXX| for respectively signed and unsigned integers (the \verb|XX| stands for the number of bits that the number should take, so a value between \verb|8|, \verb|16|, \verb|32| and \verb|64|), \verb|string| for strings, \verb|byte| for the bytes (it's an alias for \verb|uint8|), \verb|rune| for Unicode characters (has a size of \verb|32| bits), \verb|uintptr| for memory pointers, and so on and so forth...
-\nl
+\nwl
 Each variable is initialized to a specific value if no value is assigned. For most of the types, the standard value is 0, for strings, it's an empty string and for booleans it's \verb|false|. Inference is also done if a type is missing. We can also declare constants if we want to. Here is an example of some variables:
 
 \begin{codeblock}{Variables.go}
@@ -83,19 +83,19 @@ var mySum = assignedArray[5] + assignedArray[3]
 \end{codeblock}
 
 Go also uses the concept of slices, which allows to access to portions of the array just like in Python. The syntax is \verb|[initial index (included):final index(excluded)]|, wehre the lowest initial index is \verb|0| and the highest final index is the length of the array. Slices do not contain data, but just point to a section of the array.
-\nl
+\nwl
 There is a way to have dynamic arrays, and it's to use the slices mechanism. For instance, with \verb|bools := []bool{true, false, false}| creates a dynamic array. But why does it use the slices? Because with the previous notation we are just creating an array of not known size and then we created a slice to that array.
-\nl
+\nwl
 Slices have also two important properties: \textbf{length} and \textbf{capacity}.
 
 \begin{definition}{Length and Capacity of a slice}
     The \textbf{length} of a slice denotes the number of elements in the slice.
-    \nl\nl
+    \nwl\nwl
     The \textbf{capacity} of a slice denotes the number of elements that the sliced array contains.
 \end{definition}
 
 Let's make a couple examples, to better grasp the concept: if we define an empty slice with \verb|var a_slice []int|, then we have a slice with both length and capacity equal to \verb|0|. Now though, if we append one element with \verb|a_slice = append(a_slice, 40)|, we now have that both the capacity of the underlying array and its length increased to 1. If we instead created a slice such as \verb|var a_slice = []int{1, 2, 3, 4}|, then we would have a capacity and a length of both \verb|4|.
-\nl
+\nwl
 Go also provides a more granular way to control the creation of slices, and that's through the \verb|make()| function. This function has the following syntax:
 
 \begin{codedefine}

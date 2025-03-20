@@ -13,11 +13,11 @@ In general, cybersecurity aims to ensure \textbf{computer security}, so deployin
 \end{definition}
 
 An example of used attack on the firmware the \textit{meltdown attack}, which attacked the pipeline of the computer's CPUs; software attacks could be when there is a \textit{man-in-the-middle}, so when eavesdropping happens; an instance of hardware attack could instead be the \textit{voltage glitching}.
-\nl
+\nwl
 An information system is extremely complex, and works only thanks to the interaction of several elements. This is why protecting an information system is also complex. But we can't protect everything, so where should we put the priority?
-\nl
+\nwl
 The most important thing to protect is \textbf{data}, be it personal or company related. We can have a complete definition of what personal data is thanks to the GDPR (to make a parenthesis, privacy is something defined just recently. We could say that privacy is the right to decide who can access to your own data).
-\nl
+\nwl
 In the cybersecurity scenery, we have multiple factors that are involved. Some of them have precise definitions. Here there is a list of some useful key concepts:
 
 \begin{definition}{Security Concepts}
@@ -79,7 +79,7 @@ Some tools that can enforce availability are \textbf{physical protections} over 
 \section{Authentication}
 
 We said that one of the key concepts of cybersecurity is to detect who is authorized to perform certain actions and who's not. We also need a way to assess that such user is actually authorized. This is where authentication comes into play.
-\nl
+\nwl
 The NIST defines the concept of authentication as follows (from NIST SP-800-63-4):
 
 \begin{definition}{Authentication}
@@ -91,9 +91,9 @@ Some examples of authentication could be biometrics (although this kind of authe
     \item \textbf{Uniquely identify the information} of some users, processes, or devices, who could be acting on behalf of someone else;
     \item \textbf{Authenticate} (or \textbf{verify}) if the identity of the users, processes, or devices is genuine.
 \end{itemize}
-\nl
+\nwl
 After these basic requirements, we can also implement other secondary security requirements, such as asking for a 2FA (Two-Factor Authentication) code, enforcing a minimum length for the password or the requirement of some characters to be used, the encrypting of the password, etc...
-\nl
+\nwl
 How can we store passwords though? We can't store them in plaintext, since a breach into the system containing a batch of passwords would leak them, so we have to "hide" them. We can instead encrypt them through some function: this way, even if the password got leaked, then only the encoded version would be leaked, making it harder (if not impossible) to recover the true password. This is the case of \textbf{hash functions}.
 
 \begin{definition}{Cryptographic Hash Functions}
@@ -110,11 +110,11 @@ Hash functions have some key properties:
 \end{itemize}
 
 These key properties make the hash function widely employed in the cybersecurity field. Hashing though may not be enough: UNIX instead takes a slightly more complicated approach.
-\nl
+\nwl
 The UNIX Legacy method has that, when storing a new password, UNIX takes the password and a \textbf{12-bits salt}, which is a 12 bits code, needed to slightly modify the password before hashing it. Why do we need the salt? Because if two users, for instance, had the same password, then the hash would be identical. With different salts instead, we slightly modify the password, making the hash different even if someone had the same password. Once hashed, UNIX would save into a table the \textbf{user ID}, the \textbf{salt}, and the \textbf{hash code}.
-\nl
+\nwl
 Another reason why we should use salts is that we can slow down the brute forcing of a password, because for each brute force attempt to convert one password, we would need to also guess the right salt.
-\nl
+\nwl
 Nowadays, UNIX uses a loop of 1000 MD5 crypting routines, has no limitations on the input length, and produces a 128 bits hash value. Such hashes are stored in the \verb|/etc/shadow| file (previously in \verb|/etc/passwd|) in such a format:
 
 %```bash

@@ -1,12 +1,12 @@
 \chapter{PThreads}
 Con MPI, ci siamo sempre occupati di sistemi a memoria distribuita, dove i processi sono collegati da qualche mezzo (come un bus comune, o una connessione internet). Tuttavia come rappresentazione, questa è molto semplificata.
-\nl
+\nwl
 Ogni nodo (o server, o addirittura \textit{blade}) contiene una memoria DRAM e una CPU multicore. In questa CPU, per ogni core sono presenti, assieme all'ALU, anche una cache L1 privata. La CPU ha anche assegnata una cache L2 comune. Assegnato al nodo, può esserci anche una, o più, GPUs (Graphics Processing Unit) e una, o più, NICs (Network Interface Card).
-\nl
+\nwl
 Come possiamo sfruttare un cluster di servers? Sappiamo che ogni server può comunicare attraverso MPI, ma come usarlo al meglio? Dovremmo scrivere un programma di MPI per ogni core? O per ogni nodo?
-\nl
+\nwl
 Di norma, si usa creare un processo MPI per ogni nodo, e poi internamente sfruttare librerie come PThreads e CUDA (per le GPU Nvidia) per gestire rispettivamente i core / threads delle CPU e i core della GPU. Il vantaggio di usare dei threads al posto di processi separati è che i \textbf{threads condividono la memoria DRAM} della CPU.
-\nl
+\nwl
 Ridefiniamo al volo cosa intendiamo con il termine \textbf{processo} e \textbf{thread}, così da poter distinguere la differenza tra un processo e un thread:
 
 \begin{definition}{Processo}
@@ -18,9 +18,9 @@ Ridefiniamo al volo cosa intendiamo con il termine \textbf{processo} e \textbf{t
 \end{definition}
 
 Sui sistemi UNIX, un processo si crea tramite la chiamata di sistema \verb|fork()|. Facendo così, il processo padre viene duplicato e riassegnato al processo figlio. Quando viene creato il processo, viene copiato il codice del processo, la sua memoria, etc... Una volta copiata la memoria del processo, questa viene poi sovrascritta con il codice
-\nl
+\nwl
 Sempre sui processi UNIX, si usa la libreria PThreads, che sta per POSIX Threads. Questa libreria può essere utilizzata tramite C, includendola proprio come veniva fatto per MPI.
-\nl
+\nwl
 Con MPI dovevamo usare un wrapper specifico di \verb|gcc|, ma con PThreads non è necessario: i threads infatti vengono creati automaticamente una volta lanciato il programma. La funzione per creare un thread è la seguente:
 
 \begin{codedefine}
@@ -56,7 +56,7 @@ void main() {
 \end{codeblock}
 
 Le variabili globali sono visibili da tutti i threads, tuttavia è meglio evitarne l'uso a meno che non sia assolutamente necessario.
-\nl
+\nwl
 Per attendere la fine dell'esecuzione di un thread, si usa la funzione \verb|pthread_join()|. Tale funzione richiede in input l'handle del thread, e aspetterà finché il thread non terminerà la sua esecuzione. 
 
 % C'è la possibilità, tramite alcune syscalls, di far sì che un thread venga eseguito specificamente su un core. Questo è comodo quando si ha un programma che crea tanti threads quasi quanto è il numero di core sulla CPU, cosicché il sistema operativo non ridistribuisca magari, dopo un tot di tempo, i threads su un unico core.
@@ -89,7 +89,7 @@ Proviamo a vedere il valore delle varie approssimazioni in base al numero di thr
 \end{center}
 
 Come possiamo notare, più il numero di threads aumenta, più la stima si allontana dal valore reale. Questo però è controintuitivo, in quanto ci aspetteremmo che con più threads la stima dovrebbe essere più accurata. Quindi, come mai succede questo?
-\nl
+\nwl
 Il motivo sta nella riga di codice \verb|sum += factor/(2 * i + 1)|, più nello specifico, nel fatto che la variabile \verb|sum| è condivisa da tutti i threads. Quando si fa l'operazione \verb|+=| non stiamo facendo solo una somma, ma stiamo eseguendo più istruzione.
 
 \subsection{Busy Waiting}
@@ -124,13 +124,13 @@ temp
 % La notazione ciao -> data ritorna il valore contenuto in data
 
 Quando si usa una struttura di dati condivisa, è importante controllare l'accesso a tale struttura. Consideriamo ad esempio una linked list \textbf{ordinata} senza doppi elementi (cioè una lista di elementi dove ogni elemento contiene un valore e un puntatore al prossimo elemento) dove le possibili operationi saranno \verb|Member| (che controlla se un elemento è nella lista), \verb|Insert| (che inserisce un elemento nella lista) e \verb|Delete| (che rimuove un elemento).
-\nl
+\nwl
 Come possiamo far sì che questa lista sia utilizzabile in parallelo? Perché chiaramente scrivere o cancellare elementi da una lista necessita di una sezione critica. Finché più threads leggono solo la lista non è un problema, ma quando si fanno operazioni di scrittura allora si creano vari problemi.
-\nl
+\nwl
 La soluzione più semplice è di usare un lock sulla lista, cosicché se un thread deve usare la lista dovrà prima ottenere il relativo lock, per poi rilasciarlo una volta finito. Questo però serializza la lista, sia in lettura che in scrittura, e soprattutto se la maggior parte delle operazioni fosse di lettura (quindi con \verb|Member|) allora perderemmo una chance di parallelizzare la lista. Nel caso in cui ad esempio si facessero più operazioni di scrittura che di lettura allora non sarebbe così tanto problematico. Chiaramente ci sarebbe un certo tempo necessario per acquisire il lock e per liberarlo, che non è negligibile.
-\nl
+\nwl
 Una seconda idea è quella di usare un lock per ogni nodo della lista, che nonostante sia più complesso da implementare, garantirebbe a tutti di poter usare la lista. Questo approccio però è parecchio lento, siccome ogni volta che bisogna accedere a un nodo serve acquisirne il relativo lock. Inoltre, a livello di memoria si va ad occupare parecchio spazio per immagazzinare ogni lock.
-\nl
+\nwl
 L'idea ottimale sarebbe quella di usare un lock solo in fase di scrittura, e non in fase di lettura. Questo tipo di lock esiste e si chiama \textbf{Read-Write Lock}.
 
 \begin{definition}{Read-Write Lock}
@@ -159,7 +159,7 @@ tbd
 \subsection{Thread Safety su MPI}
 
 Abbiamo visto come MPI viene usato per fare programmi paralleli su memoria distribuita, ma se un programma di MPI viene chiamato su un solo sistema, ogni processo viene considerato come un thread. In tale caso, ci ritroveremmo in una situazione simile a PThreads, con dei problemi di race conditions. La domanda dunque sorge spontanea: le funzioni di MPI sono thread-safe? Ad esempio, potremmo usare, contemporaneamente, la funzione \verb|MPI_Send()|?
-\nl
+\nwl
 La risposta è sì, ma non in tutti i casi. Se vogliamo usare dei threads su MPI, dobbiamo usare una funzione di inizializzazione diversa, chiamata \verb|MPI_Init_thread|, che ha i seguenti parametri:
 \begin{codedefine}
     \begin{lstlisting}[language = C, numbers = none]

@@ -1,13 +1,13 @@
 \chapter{Introduzione al calcolo numerico}
 
 Grazie al costante sviluppo dei computers negli scorsi decenni, la comunità scientifica ha avuto modo di usufruire di strumenti di calcolo sempre più precisi e complessi, necessari per risolvere alcuni problemi di vario tipo. Questo sviluppo ha visto anche un cospicuo interesse verso i metodi di calcolo numerico, che permettono di risolvere in modo non-analitico problemi specifici che non sarebbero, altrimenti, risolvibili. Infatti, seppur non esista sempre una soluzione analitica, \textbf{esiste sempre una soluzione numerica} per un modello matematico \textbf{ben posto} e \textbf{condizionato}, che assuma tuttavia certe assunzioni del corrispondente modello fisico.
-\nl
+\nwl
 La realtà infatti non è sempre modellabile attraverso semplici formule fisiche: a volte ci sono parecchie variabili da tenere in conto quando si cerca di risolvere un problema, e non è sempre plausibile considerare tutte queste variabili assieme, soprattutto se il problema va risolto senza l'assistenza di un calcolatore. Consideriamo il seguente esempio: un giocatore di golf colpisce una pallina con una certa velocità $U$, e noi vogliamo sapere per quale angolo $\alpha$ la distanza che verrebbe percorsa dalla pallina da golf sarebbe massima prima che quest'ultima tocchi terra.
-\nl
+\nwl
 Grazie alla seconda legge di Newton, possiamo calcolare la distanza percorsa dalla pallina, e se trascurassimo la resistenza dell'aria sarebbe abbastanza semplice trovare la soluzione analitica. Tuttavia, considerando questa resistenza, le equazioni del moto si complicano notevolmente, e determinare la soluzione analitica diventa ora impossibile. Tuttavia, la soluzione numerica rimane calcolabile attraverso l'impiego di metodi numerici adatti.
-\nl
+\nwl
 È comunque importante considerare anche il tipo di modello utilizzato: in base al modello matematico di partenza e al metodo utilizzato, si possono ottenere risultati diversi. L'importante è saper scegliere il metodo giusto e l'approssimazione migliore del modello.
-\nl
+\nwl
 Per il calcolo numerico, la risoluzione di un problema avviene attraverso i seguenti steps:
 \begin{itemize}
     \item formulare un \textbf{modello matematico} in base al problema dato, che diventi uno schema per definire il metodo numerico e l'algoritmo di soluzione;
@@ -19,7 +19,7 @@ Per il calcolo numerico, la risoluzione di un problema avviene attraverso i segu
 \section{Errori di approssimazione}
 
 Quando si calcola una soluzione numerica, ci sono varie, possibili fonti di errori che possono condizionare il risultato finale. È possibile avere errori di \textbf{misura} (dati dalla precisione dello strumento), \textbf{inerenti} (creati da un'eccessiva semplificazione del modello reale), di \textbf{troncamento} (generati da una discretizzazione del risultato, generalmente presenti quando si usano metodi numerici che richiedono convergenza), e di \textbf{arrotondamento} (creati dalla macchina che performa i calcoli, in quando la precisione è sempre limitata).
-\nl
+\nwl
 Ogni computer dispone di un sistema numerico piuttosto primitivo: questo infatti dispone di un sistema \textbf{finito} di numeri, la cui lunghezza è anch'essa \textbf{finita}. Se normalmente, in campi analitici, siamo abituati a pensare con un insieme di numeri infinito (come quello dei numeri reali, $\mathbb{R}$), con i computer, quando si performano calcoli di analisi numerica, si considera un insieme ristretto, detto dei \textbf{numeri macchina} $\mathbb{F}$. Consideriamo ad esempio alcune delle costanti più famose nel mondo matematico: $\pi$, $e$ e $\sqrt{2}$. Noi sappiamo che questi numeri sono irrazionali, e che si espandono all'infinito. Proviamo a chiedere a una macchina di dirci quali sono questi numeri. Eseguendo il seguente script di Python, otterremo il seguente risultato:
 
 \begin{codeblock}{Rounding.py}
@@ -52,9 +52,9 @@ Qua notiamo già uno dei primi errori che si incontra quando si usa un calcolato
 \end{definition}
 
 Se un calcolatore approssima tutti i numeri alla $D$esima cifra decimale, allora diciamo che l'errore di arrotondamento è compreso nell'\textbf{intervallo} $[-0,5 \cdot 10^{-D}, \; +0,5 \cdot 10^{-D}]$.
-\nl
+\nwl
 Riguardo lo scopo di queste note: MATLAB verrà usato durante il corso per implementare certi metodi numerici. Tale linguaggio di programmazione lavora con 15 cifre decimali significative. Fino a quando non verrà introdotto MATLAB tuttavia, verrà usato Python, che ne usa fino a 17 (anche se negli esempi precedenti $\pi$ e $e$ hanno usato solo 15 cifre, probabilmente a causa del pacchetto \verb|numpy|).
-\nl
+\nwl
 Consideriamo un esempio per comprendere l'importanza degli errori di arrotondamento:
 \begin{example}
     Si considerino le due funzioni seguenti, che sono algebricamente equivalenti:
@@ -81,7 +81,7 @@ for i, expect in [(1, 0), (1.0001, 10**(-28))]:
     res1, res2 = "{0:.10g}".format(q1(i)), "{0:.10g}".format(q2(i))
     err1, err2 = rounding_error(expect, res1), rounding_error(expect, res2)
     print(f"With x = {i}, expect {expect}\nQ1 = {res1} | E1 = {err1}\nQ2 = {res2} | E2 = {err2}\n")\end{lstlisting}
-        \nl
+        \nwl
         \begin{tcolorbox}[colback = black!95!Periwinkle!90]
             \begin{lstlisting}[style = notexterm]
 Out[1]: With x = 1, expect 0
@@ -95,7 +95,7 @@ Out[1]: With x = 1, expect 0
     \end{codeblock}
 
     Come possiamo notare dall'output dello script, con $x = 1$ non c'è alcuna differenza tra $q_1(x)$ e $q_2(x)$, ma con $x = 1,0001$ iniziano ad esserci le prime differenze. Infatti, nel secondo caso abbiamo un errore di arrotondamento di circa $-1,78 \cdot 10^{-15}$. Questo semplice esempio dimostra come due quantità che sono algebricamente uguali possono in realtà portare a due risultati numerici completamente diversi.
-    \nl
+    \nwl
     Questo comportamento può essere inoltre osservato attraverso il seguente grafico:
     \begin{center}
         \includegraphics[width = \linewidth]{assets/image-001.png}
@@ -107,7 +107,7 @@ Out[1]: With x = 1, expect 0
 \section{La rappresentazione IEEE 754}
 
 Ogni numero reale $x$ può essere espresso come una sequenza di infinite cifre, e tale sequenza dipende dalla \textbf{base di rappresentazione} $\beta$. Di norma, la base con cui noi esseri umani facciamo calcoli è $\beta = 10$.
-\nl
+\nwl
 Qualsiasi cifra può essere espressa in qualsiasi base. Per farlo, faremo un esempio con $\pi$. Il numero infatti può essere scritto come segue:
 \[ \pi \eq 3,14159... \eq \frac{3}{10^0} + \frac{1}{10^{-1}} + \frac{4}{10^{-2}} + \frac{1}{10^{-3}} + \frac{5}{10^{-4}} + \frac{9}{10^{-5}} + ... \]
 
@@ -115,9 +115,9 @@ L'idea è che per esprimere un qualsiasi numero $x$ in una base $\beta$, possiam
 \[ x \eq x_m \cdot \beta^m + x_{m-1} \cdot \beta^{m-1} + ... + x_{1} \cdot \beta^{1} + x_{0} \cdot \beta^{0} + x_{-1} \cdot \beta^{-1} + ... + x_{-m} \cdot \beta^{-m} \]
 
 dove $0 \leq x_i \leq \beta - 1, \; \forall \; i \in [m, \; -m]$.
-\nl
+\nwl
 Sappiamo che i computer funzionano in codice binario, quindi non possono interpretare i numeri in base decimale come facciamo noi umani. Per poter far sì che un computer riconosca un numero, questo va prima convertito in base 2. Ci sono vari modi per rappresentare un numero in binario: che sia con o senza segno, a virgola mobile o meno... C'è tuttavia uno standard che i computer adottano, che è stato sviluppato dall'IEEE, che viene usato per rappresentare tutti i numeri in binario, che abbiano un segno o che siano a virgola mobile: l'\textbf{IEEE 754}.
-\nl
+\nwl
 Per questo standard, ogni numero può essere espresso nella seguente rappresentazione:
 \[ x \eq \underbrace{\pm}_{\text{Segno}} \underbrace{(1 + a_{-1} \cdot 2^{-1} + a_{-2} \cdot 2^{-2} + a_{-3} \cdot 2^{-3} + ... + a_{-m} \cdot 2^{-m})}_{\text{Mantissa normalizzata}} \cdot \underbrace{2^e}_{\text{Esponente}} \]
 \begin{center}
@@ -157,7 +157,7 @@ Dato che i computer hanno una precisione finita, limitata a $p$ cifre, è chiara
 \end{definition}
 
 Arrotondare comporta sempre la presenza di un errore, e tali errori \textbf{non possono essere trascurati}, in quanto possono potenzialmente alterare il risultato finale in modi disastrosi. Un esempio è il caso del processore Intel Pentium (1994), che portava a risultati imperfetti a causa dell'arrotondamento dei numeri alla quinta cifra decimale.
-\nl
+\nwl
 Un altro esempio di errore dato dall'arrotondamento è la \textbf{cancellazione numerica}. Per spiegare meglio questo fenomeno, consideriamo il seguente esempio:
 
 \begin{example}
@@ -221,9 +221,9 @@ for a, b, c in inputs:
     \end{center}
 
     Sebbene per il primo set di inputs (quindi con $a \eq 1$, $b \eq 3$ e $c \eq 4$) i risultati siano gli stessi, con il secondo set i risultati iniziano ad essere diversi da quel che ci aspetteremmo. Infatti, il risultato di $f(x_1)$ e $f(x_2)$ dovrebbe essere uguale a 0, eppure è sempre un numero abbastanza vicino allo zero (nella seconda tabella, il risultato di $f(x_1)$ per il secondo set di inputs è infatti segnato come simile allo zero macchina, $0_m$).
-    \nl
+    \nwl
     Ancora più interessante è il risultato di $x_1$, quando viene usato il secondo set di inputs: il valore infatti è dato da $-b - \sqrt{\Delta}$, che, dati i nostri inputs, corrisponde al calcolo della differenza tra $b$ e $\sqrt{\Delta}$. Questi due numeri però sono molto vicini fra di loro, e la loro differenza è un esempio di cancellazione numerica.
-    \nl
+    \nwl
     Realmente, la loro differenza dovrebbe risultare in un numero infinitesimamente piccolo, ma il computer lo approssima a $0$ per impossibilità di immagazzinare numeri infinitesimamente piccoli.
 \end{example}
 
@@ -263,7 +263,7 @@ Possiamo tuttavia riformulare la tesi di Church-Turing per definire cosa sia un 
 \end{definition}
 
 Gli algoritmi che formuleremo attraverso queste note verranno implementate su un computer tramite un linguaggio di programmazione. Tutte le istruzioni sono operazioni logiche o aritmetiche, che vengono assegnate al computer seguendo la sintassi del linguaggio che useremo.
-\nl
+\nwl
 Come abbiamo visto in precedenza, la propagazione di un errore può avere effetti disastrosi, anche se l'errore è molto "piccolo". Se l'errore dovesse amplificarsi ad alti livelli, il risultato ottenuto non sarebbe affidabile. In questo caso, diremmo che l'algorimo è \textbf{instabile}. Se invece gli errori di arrotondamento non vengono amplificati durante i calcoli, allora diciamo che l'algoritmo è \textbf{stabile}.
 
 \begin{example}
@@ -284,7 +284,7 @@ def solve_r1(p, q) -> float:
 r1 = solve_r1(P, Q)
 
 print(f"[Algorithm 1] y = {r1}\n[Algorithm 1] Error = {rounding_error(SOLUTION, r1)}")\end{lstlisting}
-        \nl
+        \nwl
         \begin{tcolorbox}[colback = black!95!Periwinkle!90]
             \begin{lstlisting}[style = notexterm]
 Out[1]: [Algorithm 1] y = 8.999999977277184e-06
@@ -304,7 +304,7 @@ def solve_r2(p, q) -> float:
 r2 = solve_r2(P, Q)
 
 print(f"[Algorithm 2] y = {r2}\n[Algorithm 2] Error = {rounding_error(SOLUTION, r2)}")\end{lstlisting}
-        \nl
+        \nwl
         \begin{tcolorbox}[colback = black!95!Periwinkle!90]
             \begin{lstlisting}[style = notexterm]
 Out[1]: [Algorithm 2] y = 9e-06
@@ -314,9 +314,9 @@ Out[1]: [Algorithm 2] y = 9e-06
 \end{example}
 
 Non solo gli algoritmi possono essere stabili o instabili, ma in base a come vengono posti i problemi ci può essere più o meno suscettibilità alle perturbazioni dei dati. Consideriamo ad esempio il seguente problema: abbiamo una funzione $f \; : \; \mathbb{R} \; \mapsto \; \mathbb{R}$, e vogliamo calcolarne il valore $y$ in un generico punto $x \in \mathbb{R}$. Normalmente avremmo che $x \; \rightarrow \; f(x) \; \rightarrow \; y$.
-\nl
+\nwl
 Ottenuto $y$, vogliamo misurare quale effetto produca una perturbazione $\Delta x = x^* - x$ (dove $x^*$ è un valore a nostra scelta) durante il calcolo di $y$. Possiamo inoltre riconsiderare $\Delta x$ come il seguente: $\Delta y \eq y^* - y = f(x^*) - f(x)$
-\nl
+\nwl
 Usando lo sviluppo in serie di Taylor fino al primo ordine, possiamo riscrivere $\Delta y$ come segue:
 \[ \Delta y \eq f(x^*) - f(x) \eq f'(x) \cdot \underbrace{\Delta x}_{x^* - x} \]
 

@@ -1,8 +1,8 @@
 \chapter{Message Passing Interface (MPI)}
 \textbf{MPI} (acronimo di \textbf{M}essage \textbf{P}assing \textbf{I}nterface) è una libreria usata per \textbf{programmare sistemi a memoria distribuita}, e delle varie librerie menzionate nell'introduzione è l'unica pensata per sistemi a memoria distribuita. Questo vuol dire che la memoria e il core usato per ogni thread o processo sono \textbf{unici}. Tale core e memoria possono essere collegati attraverso vari metodi: un bus, la rete, etc...
-\nl
+\nwl
 MPI fa uso del paradigma \textbf{Single Program Multiple Data} (\textbf{SPMD}), quindi ci sarà un \textbf{unico programma} che verrà compilato e poi eseguito da vari processi o threads. Per determinare cosa ogni processo o thread deve fare, si usa semplicemente un'istruzione di \textbf{branching}, come l'\texttt{if-else} o lo \texttt{switch}.
-\nl
+\nwl
 Siccome la memoria non è condivisa tra i vari processi, l'unico modo per passarsi dei dati è attraverso l'invio di \textbf{messaggi} (da qui il nome della libreria). Per esempio, abbiamo visto come fare un semplice "Hello world" in C in modo sequenziale, ma possiamo anche renderlo parallelo tramite MPI. Ad esempio:
 \begin{codeblock}{HelloWorld.c}
     \begin{lstlisting}[language = C]
@@ -68,7 +68,7 @@ $ mpirun --oversubscribe -n <numero_core> <programma>
 \end{terminal}
 
 Normalmente MPI esegue il codice solo sui core fisici di una CPU, tuttavia è possibile far sì che questa limitazione non venga considerata. La flag \verb|--oversubscribe| permette di lanciare il programma su $n$ processi, dove $n \geq \text{numero di core fisici}$.
-\nl
+\nwl
 In un programma complesso, è spesso utile sapere quale core esegue quale parte di programma, magari anche per assegnare dei compiti diversi ad ogni core. In questi casi, possiamo differenziare i processi in base al loro \textbf{rank}.
 
 \begin{definition}{Rank}
@@ -85,7 +85,7 @@ int MPI_Comm_size(
 )\end{lstlisting}
     \manlower
     Questa funzione ritorna il numero di processi che usano il comunicatore specificato dal parametro \verb|comm| (di tipo \verb|MPI_Comm|).
-    \nl
+    \nwl
     Parametri di \verb|MPI_Comm_size()|:
     \begin{itemize}
         \item \verb|comm|: il comunicatore di cui vogliamo sapere la dimensione;
@@ -101,7 +101,7 @@ int MPI_Comm_rank(
 )\end{lstlisting}
     \manlower
     Questa funzione ritorna il rank relativo al comunicatore, ovverosia l'indice del processo che ha eseguito la chiamata di questa funzione.
-    \nl
+    \nwl
     Parametri di \verb|MPI_Comm_rank()|:
     \begin{itemize}
         \item \verb|comm|: il comunicatore rispetto cui si vuole conoscere il proprio rank;
@@ -213,7 +213,7 @@ int MPI_Recv(
 \end{codedefine}
 
 In entrambe le funzioni c'è un parametro che non abbiamo spiegato, ovverosia \verb|tag|. Tale parametro permette di distinguere i messaggi mandati su un comunicatore attraverso un tag (in questo caso, un intero), e far sì che i vari processi / threads eseguano parte di codice diverso in base al tag.
-\nl
+\nwl
 Ma possiamo esser certi che, quando inviamo un messaggio, esso sia stato ricevuto correttamente? In genere non possiamo avere la certezza che sia stato ricevuto correttamente usando solo una chiamata di \verb|MPI_Send()| e \verb|MPI_Recv()|, ma per certo il messaggio è stato inviato e ricevuto se le seguenti condizioni sono vere allo stesso momento:
 \begin{itemize}
     \item se \verb|recv_type| $\eq$ \verb|send_type|;
@@ -221,7 +221,7 @@ Ma possiamo esser certi che, quando inviamo un messaggio, esso sia stato ricevut
 \end{itemize}
 
 Il destinatario può anche ricevere un messaggio \textbf{senza sapere} la \textbf{quantità di dati} nel messaggio, il \textbf{mittente} del messaggio (usando \verb|MPI_ANY_SOURCE|) e il \textbf{tag} del messaggio (\verb|MPI_ANY_TAG|).
-\nl
+\nwl
 Supponiamo che in un momento del codice non ci interessi sapere chi manda il messaggio, ma che in un secondo momento ci interessi saperlo. Per poter vedere in un momento successivo il mittente o altri dati del messaggio possiamo usare il parametro \verb|status|, di tipo \verb|MPI_Status|, che permette di salvare in memoria lo status del messaggio (quindi vedremo che il parametro è scritto come \verb|MPI_Status* &status|). I possibili valori di \verb|status| sono i seguenti:
 \begin{itemize}
     \item \verb|MPI_Source|: indica il mittente del messaggio;
@@ -236,9 +236,9 @@ Un'altra funzione utile relativa ai messaggi è \verb|MPI_Get_count()|, che indi
 \section{Misurazione delle Prestazioni}
 
 Una volta che sviluppiamo un programma con MPI, è importante misurarne le prestazioni. Esistono vari modi per controllare l'efficienza di un programma, e qui ne vedremo alcuni.
-\nl
+\nwl
 Un modo molto semplice per capire l'efficienza di un programma consiste nel misurare il tempo di esecuzione, e possiamo farlo tramite la funzione \verb|MPI_Wtime()|, la quale ritorna un timestamp che misura il tempo dal momento in cui il programma viene eseguito. Per poter ottenere il tempo di esecuzione, bisognerà sottrarre dal tempo a fine esecuzione il tempo di quanto la funzione viene chiamata.
-\nl
+\nwl
 In un programma parallelo, ogni processo calcola il suo tempo, ma può essere che alcuni processi impieghino meno tempo, soprattutto se ogni processo esegue operazioni diverse. Per questo motivo, l'efficienza si calcola considerando il tempo maggiore. Per ovviare a questo problema, tutti i processi possono mandare a un solo processo i loro tempi, e tramite una chiamata di \verb|MPI_Reduce()| si può ritornare solo il tempo maggiore.
 
 \begin{codeblock}
@@ -259,11 +259,11 @@ if (rank == 0) {
 \end{codeblock}
 
 Tuttavia, un altro problema si presenta: \textbf{non tutti i processi possono iniziare allo stesso tempo}. E questo chiaramente è un problema, soprattutto se il processo che inizia in ritardo inizia parecchio in ritardo. Un modo per far sì che tutti i processi inizino assieme è tramite l'uso di una funzione chiamata \verb|MPI_Barrier()|. Tale funzione è una \textbf{funzione collettiva}, che si propaga a tutti i processi, e che li blocca fino al momento in cui tutti non raggiungono tale barriera. Possiamo considerare questa funzione come una sorta di checkpoint, che \textbf{posta all'inizio del programma} fa sì che tutti i processi inizino ad eseguire il loro codice "assieme".
-\nl
+\nwl
 Tuttavia, se anche questa collettiva generasse ritardi venendo propagata, non avremmo più un inizio collettivo. Riuscire a sincronizzare tutti i processi assieme è complicato, e richiederebbe l'uso di clock interni per ogni core. Tuttavia, in casi in cui non sia fondamentale avere grande precisione, \verb|MPI_Barrier()| \textbf{garantisce} una \textbf{buona approssimazione}.
-\nl
+\nwl
 Ma è abbastanza eseguire l'applicazione solo una volta per avere una buona misurazione? Generalmente no, e ci sono vari motivi: sappiamo che il sistema operativo, di tanto in tanto, può effettuare dei cambi di contesto, per cui uno o più core vengono usati per eseguire delle operazioni dell'OS. Questo chiaramente può aumentare i tempi per alcune esecuzioni. In altri casi invece potrebbe essere che lo scheduler della memoria liberi la cache prima del necessario, etc...
-\nl
+\nwl
 Tali motivi di ritardo vengono chiamati \textbf{rumore} (o \textbf{noise}). In genere, per misurare l'efficienza di un programma, \textbf{conviene sempre basarsi su tutte le esecuzioni di un programma}, considerando media, mediana, il tipo di distribuzione, eventuali intervalli di confidenza, etc... Il tempo di esecuzione minimo, da solo, non indica molto, poiché per vari motivi di interferenza può non sempre (e in realtà non accade quasi mai) indicare la vera efficienza del programma.
 
 \subsection{Speed-Up ed Efficienza}
@@ -350,7 +350,7 @@ Generalmente, se portassimo il numero di core $p$ all'infinito, raggiungeremmo i
 % inserire il parallel sorting
 
 Un altro esempio di codice parallelizzabile è la \textbf{somma tra vettori}. Per questo esempio, abbiamo dei vettori composti da $n$ elementi, e abbiamo $p$ core disponibili per fare la somma delle componenti dei vettori. Intuitivamente, il metodo più semplice per parallelizzare tale esempio è assegnare a ogni core un numero $\frac{n}{p}$ di elementi da ogni vettore e calcolare dunque la somma tra le varie parti autonomamente.
-\nl
+\nwl
 MPI ha una funzione collettiva che ci permette di mandare ad ogni processo una parte di un elemento, ovverosia \verb|MPI_Scatter()|. Tale funzione è definita come segue:
 
 \begin{codedefine}

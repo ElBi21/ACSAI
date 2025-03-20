@@ -1,11 +1,11 @@
 \chapter{Programmazione Parallela \texorpdfstring{\&}{&} C}
 
 Ad oggi, molte tasks e molti programmi necessitano di grandi capacità di calcolo, soprattutto nel campo delle AI, e costruire centri di elaborazione sempre più grandi può non sempre costituire una soluzione. Certo, negli ultimi anni abbiamo assistito a una grande evoluzione dei microprocessori e delle loro potenze, ma non è abbastanza avere hardware sempre più potente, serve saperlo impiegare bene.
-\nl
+\nwl
 La società Nvidia, produttrice di \textbf{GPU}s (Graphical Processing Units) è riuscita, in questi anni, a produrre schede grafiche contenenti sempre più milioni di transistors, rendendo una GPU un oggetto estremamente complicato ma anche estremamente potente e versatile. Per la legge di Moore, il \textbf{numero di transistors} che si trovano all'interno di un circuito \textbf{raddoppia} sempre ogni anno, tuttavia ci sono dei limiti fisici che non possono essere valicati. Inoltre, avere più transistors all'interno di un circuito non è sempre positivo: più transistors equivale sì a una prestazione più alta, ma equivale anche a quantità maggiori di calore generato, e grandi quantità di calore rischiano di creare incosistenza nel circuito.
-\nl
+\nwl
 Come detto in precedenza, avere oggetti così potenti non è abbastanza, serve saper usare questi ultimi nel modo migliore possibile, ed è proprio questo l'obiettivo di questo corso: cercare di \textbf{programmare} nel modo \textbf{quanto più efficiente possibile} dei circuiti che possano eseguire codice in parallelo.
-\nl
+\nwl
 Per farlo, non possiamo usare linguaggi troppo ad alto livello come Python o Java: benché siano molto famosi e semplici da scrivere, non garantiscono un buon controllo sull'hardware. Una buona scelta sono i linguaggi a basso livello come \textbf{C}, \textbf{C++} o \textbf{Rust}, che offrono un ottimo compromesso tra facilità di scrittura del codice ed efficienza (altrimenti dovremmo scrivere il tutto in Assembly, il che risulterebbe forse troppo tedioso).
 
 \section{Da Sequenziale in Parallelo}
@@ -40,7 +40,7 @@ Generalmente, si hanno 2 modi per scrivere del codice parallelo:
 
 \begin{definition}{Task e Data Parallelism}
     Definiamo come \textbf{task parallelism} quando una task principale viene spezzata in $k$ sotto-tasks e distribuita ai vari $p$ cores, i quali portano avanti le loro tasks autonomamente.
-    \nl
+    \nwl
     Definiamo invece con \textbf{data parallelism} quando i dati vengono divisi in $k$ sottogruppi, che vengono affidati poi ai diversi $p$ cores, che eseguono tutti quanti la stessa operazione.
 \end{definition}
 
@@ -109,15 +109,15 @@ L'architettura di Von Neumann è caratterizzata dalla presenza dei seguenti elem
 \end{itemize}
 
 Le architetture di Von Neumann hanno un \textbf{bottleneck}, dato dal necessario spostamento dei dati: accedere a un dato in una cache di tipo $L_1$ (una cache molto veloce situata vicino ai core della CPU) potrà forse costare $0.5ns$, tuttavia portare un dato dalla memoria ai registri costa $100ns$. La maggior parte del tempo speso in questo tipo di architetture, viene speso nel suddetto spostamento di dati.
-\nl
+\nwl
 Un modo per mitigare questi problemi è usare le \textbf{cache}, che permettono di salvare temporaneamente dei dati. Più è recente un dato, più è probabile trovarlo nella cache. Programmare una cache è molto complicato, ma è possibile e se ben fatto permette di ridurre drasticamente i tempi di accesso in memoria.
 
 \section{Il linguaggio C}
 
 Scritto nel 1972 come linguaggio di programmazione che sostituisse Assembly, C è un linguaggio a basso livello che permette di avere un controllo granulare delle risorse usate, e che viene usato spesso per disegnare e creare software che deve essere veloce e performante. In C, ogni istruzione è scritta nel formato \verb|istruzione;|, dove il \texttt{;} separa un'istruzione da quella successiva. Come molti linguaggi, anche in C è possibile usare commenti (attraverso i simboli \verb|//| per il commento a linea singola e \verb|/* ... */| per il commento a multiple linee).
-\nl
+\nwl
 Per poter includere alcune funzioni di input e output, bisogna includere un file header. Il file responsabile per l'I/O è \verb|stdio.h|, e va incluso con il comando \verb|#include <stdio.h>|. L'inclusione di librerie esterne avviene in un momento di pre-processing, dove anche avviene ad esempio la rimozione dei commenti dai file di codice. Tale sessione di pre-processing viene fatta da un'entità chiamata \textbf{pre-processore}.
-\nl
+\nwl
 Ogni programma di C \textbf{deve} avere una funzione \verb|main|, ma può anche avere più funzioni. L'importante è che ci sia una funzione \verb|main|, poiché è da essa che parte l'esecuzione del codice. La funzione \verb|main| peraltro \textbf{deve} finire con l'istruzione \verb|return 0;|, poiché essa determina che il programma è stato eseguito con successo. Segue un esempio di programma in C:
 
 \begin{codeblock}{HelloWorld.c}
@@ -149,7 +149,7 @@ y = 5;            // Ugualmente alla riga precedente, y riceve un valore\end{lst
 \end{codeblock}
 
 Nell'ultima riga, abbiamo solo definito due variabili, ma non gli abbiamo assegnato alcun valore. Questa cosa è possibile in C, e torna utile quando dobbiamo definire una variabile ma non sappiamo ancora quale valore preciso dovrà essere inserito.
-\nl
+\nwl
 C permette anche di eseguire operazioni attraverso certi operatori. Segue una lista di tutte le operazioni disponibili:
 \begin{center}
     \begin{tabular}{|c|c|c|}
@@ -226,7 +226,7 @@ scanf("Inserisci un intero: %d", address)
 \end{codeblock}
 
 Nella sezione sui puntatori, verrà spiegato meglio il concetto di indirizzo di memoria.
-\nl
+\nwl
 Come in tutti gli altri linguaggi di programmazione, C segue uno specifico ordine di esecuzione: tutte le istruzioni vengono eseguite in ordine sequenziale, una dopo l'altra. Supponiamo di avere queste righe di codice:
 
 \begin{codeblock}{ExecutionOrder.c}
@@ -262,9 +262,9 @@ Un computer non può memorizzare numeri infinitamente grandi o piccoli, in quant
 \end{center}
 
 Esistono anche delle versioni \verb|unsigned| dei primi 5 tipi, che, come suggerisce il nome, sono privi di segno, e possono essere dunque solo positivi.
-\nl
+\nwl
 Quando si esegue un'operazione tra due variabili di tipo diverso, C effettua una conversione della variabile con tipo più piccolo (a livello di bits) a una variabile di tipo più grande. Questa conversione è chiamata \textbf{promozione}.
-\nl
+\nwl
 Nel caso si volesse cambiare in corso d'opera il tipo di una variabile, si può effettuare il \textbf{casting}, ovverosia il cambio di tipo. Per esempio, supponiamo di avere due interi e volerne fare la divisione. Un modo per sfruttare il casting sarebbe il seguente:
 
 \begin{codeblock}{CastingAndPromotion.c}
@@ -310,7 +310,7 @@ switch (<variabile>) {
 \end{codeblock}
 
 Sia l'\verb|if| che lo \verb|switch| si avvalgono delle operazioni logiche per funzionare. Tali operazioni sono basate sul fatto che una condizione a un certo punto sia o vera o falsa. Infatti, esistono i valori booleani: \verb|true| e \verb|false|.
-\nl
+\nwl
 Per poter creare espressioni logiche, possiamo usare i seguenti operatori:
 
 \begin{center}
@@ -332,7 +332,7 @@ Per poter creare espressioni logiche, possiamo usare i seguenti operatori:
 \end{center}
 
 Altri strumenti che usano la logica sono i cicli, che permettono di eseguire codice fino a che una certa condizione non si avvera / finché una certa condizione non diventa falsa. I tre cicli che ci sono in C sono il \verb|for|, il \verb|while| e il \verb|do-while|.
-\nl
+\nwl
 Il \verb|for| ripete un'operazione per un numero finito di volte, fino a che la condizione non diventa falsa. La cosa comoda del ciclo \verb|for| è che permette di tener conto dell'iterazione in cui ci si trova.
 
 \begin{codeblock}{ForLoop.c}
@@ -476,7 +476,7 @@ Un array è una \textbf{collezione ordinata} di elementi dello \textbf{stesso ti
 \end{center}
 
 Ad esempio, un array di 3 interi viene specificato con \verb|int my_array [3]|. Per stampare il contenuto di un array non possiamo passare direttamente la variabile dell'array a \verb|printf()|, ma bisogna usare un \verb|for| loop per iterare attraverso l'intero array. Se passassimo un array alla funzione \verb|printf()| non potremmo predirre direttamente il risultato di tale funzione.
-\nl
+\nwl
 Si possono anche creare \textbf{array multidimensionali}, per poter rappresentare tabelle o matrici. La sintassi per creare un array multidimensionale è la stessa di Python, dove la sintassi è
 \begin{center}
     \verb|<tipo> <variabile> [<grandezza righe>][<grandezza colonne>]|
@@ -537,5 +537,5 @@ L'allocazione di memoria viene fatta tramite l'uso della libreria \verb|stdlib.h
 \end{itemize}
 
 È molto importante ricordarsi di liberare memoria quanto più possibile, proprio perché C non è dotato di un garbage collector, ed è compito del programmatore ricordarsi di liberare la memoria quando necessario.
-\nl
+\nwl
 Se serve sapere quanti bytes serve allocare per certi oggetti o elementi, potremmo voler usare la funzione \verb|sizeof()|. Tale funzione restituisce, in bytes, la dimensione dell'elemento. Questa funzione è comoda perché non sempre possiamo sapere con precisione il numero di bytes necessari per allocare qualcosa.

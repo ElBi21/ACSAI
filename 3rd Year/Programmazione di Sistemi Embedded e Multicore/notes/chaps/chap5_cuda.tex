@@ -11,7 +11,7 @@ La struttura di una GPU è molto diversa da quella di una CPU: mentre quest'ulti
 \section{CUDA}
 
 In questo corso ci concentreremo sulle architetture delle GPU con architettura CUDA, create da NVIDIA. La società statunitense si è ormai affermata come leader mondiale nel campo del calcolo parallelo, sviluppando GPU e altre componenti che rappresentano lo stato dell'arte del campo del calcolo ad alte prestazioni; da qui il motivo del perché ci concentreremo sulle loro piattaforme.
-\nl
+\nwl
 Al giorno d'oggi però sono due i grandi competitors nel mercato delle GPU: NVIDIA e AMD. Sebbene NVIDIA sia la società più quotata, AMD offre comunque hardware performante, e rimane una valida alternativa a NVIDIA. AMD offre un'API proprietara chiamata HIP, che nella maggior parte delle istruzioni è simile a CUDA. Ci sono anche altre due API open source, chiamate OpenCL e OpenACC:
 \begin{itemize}
     \item Open Computing Language (OpenCL) è uno standard di programmazione che punta allo sviluppare codice che possa essere eseguito su una varietà corposa di piattaforme, come CPU, GPU, DSP e altri tipi di processori. Sia NVIDIA che AMD supportano questo standard, ed è molto vicino alle API di CUDA;
@@ -25,7 +25,7 @@ Abbiamo spesso parlato di CUDA, ma di cosa parliamo quando usiamo questo termine
 \end{definition}
 
 CUDA va oltre il semplice linguaggio di programmazione: è una \textbf{piattaforma di calcolo} a tutti gli effetti. Le piattaforme CUDA vengono considerate come \textbf{co-processori} della CPU, non come sostituzioni. Ricordiamo che infatti, per funzionare, la GPU necessita della CPU.
-\nl
+\nwl
 Una GPU basata su CUDA è composta dalle seguenti componenti:
 \begin{itemize}
     \item una \textbf{sezione ridotta di cache}, che puntano a massimizzare il throughput della memoria;
@@ -38,15 +38,15 @@ Una GPU basata su CUDA è composta dalle seguenti componenti:
 \end{center}
 
 L'architettura CUDA prevede la seguente struttura: ogni ALU è racchiuso in un core, chiamato \textbf{streaming processor} (\textbf{SP}); gli SP sono uniti in più blocchi, chiamati \textbf{streaming multiprocessors} (\textbf{SM}). Ogni streaming multiprocessor è controllato da una \textbf{stessa unità di controllo}: questo vuol dire che ogni streaming processor in uno stesso multiprocessor eseguirà la \textbf{stessa istruzione di Assembly} in un dato momento. Ogni SM ha anche una sua cache e una memoria \verb|texture|, che però non verrà esaminata.
-\nl
+\nwl
 Ci sono alcuni caveat quando si programmano le GPU: il primo è che la memoria della GPU e quella della CPU sono diverse, e quindi per poter usare un dato sulla GPU che risiede nella memoria della CPU bisognerà prima caricarlo sulla memoria della GPU; il secondo è che le GPU potebbero aderire a standard diversi, soprattutto quando si parla di numeri a virgola mobile. Questo si verifica generalmente quando bisogna arrotondare numeri particolari.
 
 \subsection{Struttura di un programma CUDA}
 
 CUDA organizza i suoi thread in una struttura a sei dimensioni: ogni thread è posizionato in un blocco che va da una a tre dimensioni, e ogni blocco è posizionato in una griglia che va anch'essa da una a tre dimensioni. Dunque ogni thread può sapere la sua posizione in questo spazio a sei dimensioni, chiamando opportune funzioni offerte dall'API di CUDA.
-\nl
+\nwl
 Ogni piattaforma CUDA ha una sua capacità di calcolo, che viene chiamata \textbf{CUDA compute capability}. La capacità viene rappresentata da un numero di versione chiamato \textbf{SM version}. Le tipologie di architetture compatibili con CUDA sono parecchie e variano da GPU a GPU: quelle più professionali e più mirate per compiti ad alta precisione avranno un valore di compute capability più alto rispetto alle GPU desktop che si possono trovare nei computer di fascia media-alta. 
-\nl
+\nwl
 Ora che sappiamo come i threads sono organizzati in un programma CUDA, possiamo iniziare a vedere come scrivere un programma. La struttura di un programma CUDA è la seguente:
 \begin{itemize}
     \item [1)] \textbf{allocare la memoria} sulla piattaforma CUDA;
@@ -56,7 +56,7 @@ Ora che sappiamo come i threads sono organizzati in un programma CUDA, possiamo 
 \end{itemize}
 
 Per scrivere un programma di CUDA bisogna specificare una funzione, chiamata \textbf{kernel}, che andrà eseguita su tutti i threads. Chiaramente non è pensabile specificare, thread per thread, cosa ogni thread dovrà eseguire, qundi l'idea è quella di specificare come arrangiare i threads in blocchi e griglie e far eseguire a gruppi di threads la stessa funzione.
-\nl
+\nwl
 Di norma, la GPU ha già una sua struttura di blocchi e griglie, tuttavia noi abbiamo la possibilità di scegliere una nostra struttura che sia compatibile con l'architettura della nostra GPU. Ciò è possibile attraverso la specifica di blocchi / griglie custom, di tipo \verb|dim3|, che è un vettore di interi. Possiamo creare griglie e blocchi usando il seguente codice:
 
 \begin{codeblock}{CUDAGridsAndBlocks.cu}
@@ -80,7 +80,7 @@ Il fatto che un vettore specifichi una griglia o un blocco viene definito dall'o
 \end{center}
 
 Nel caso in cui non si determini un valore quando si specifica un vettore di tipo \verb|dim3|, il valore automatico che verrà usato è 1. CUDA tuttavia ritornerà errori nel caso in cui si cerchi di usare un valore illegale per le dimensioni: se ad esempio ci trovassimo su una GPU con compute capability \verb|5.x|, potremmo usare massimo 1024 threads per blocco, e chiedere a CUDA di allocare 2048 threads in un blocco sarebbe illegale.
-\nl
+\nwl
 Per eseguire una funzione su una GPU NVIDIA, servirà specificare appunto la dimensione dei blocchi e della griglia, e ciò si fa attraverso le seguenti linee di codice:
 
 \begin{codeblock}{CUDAStartKernel.cu}
@@ -121,9 +121,9 @@ $ ./CUDAHello\end{lstlisting}
 \subsection{Scheduling dei threads e Warps}
 
 Una volta definiti i kernel e i dati da calcolare, i thread che eseguiranno i kernel devono però essere schedulati sui vari SP. Ricordiamo che tutti i cores di uno stesso SM condividono la stessa unità di controllo, e che quindi devono eseguire tutti sincronizzati la stessa operazione; diversi SM possono però eseguire operazioni diverse.
-\nl
+\nwl
 Per come è stata ideada l'architettura CUDA, su uno stesso SM può essere eseguito \textbf{solo un blocco} di threads. Non è possibile che più blocchi vengano eseguiti allo stesso momento su uno stesso SM. Una volta che un blocco verrà eseguito, la GPU passerà al blocco successivo.
-\nl
+\nwl
 Oltre alla suddivisione dei threads in blocchi, che vengono poi assegnati a un SM, c'è anche un'ulteriore suddivisione, che è quella in \textbf{warps}.
 
 \begin{definition}{Warp}
@@ -139,7 +139,7 @@ Il concetto di warp è importante soprattutto quando il codice esegue branching:
 \subsection{Shared memory}
 
 Consideriamo l'esempio dello stencil: uno stencil non è altro che una funzione che, dato un'array, calcola il valore di un elemento di un'array in base al valore degli elementi adiacenti. Supponiamo di avere un thread di $n$ elementi, e che lo stencil necessiti dei 3 elementi adiacenti a un elemento $i$. 
-\nl
+\nwl
 
 \subsection{Costant memory}
 
@@ -150,12 +150,12 @@ La costant memory è un tipo di memoria fatta per immagazzinare costanti, ma è 
 \end{itemize}
 
 Facciamo un esempio: supponiamo di avere un certo numero di warps, e supponiamo che tutti i warps richiedano la stessa variabile. Se la variabile è nella memoria globale, allora questa verrà caricata, la prima volta che viene richiesta, nella cache L2. Tuttavia, se altri threads richiedessero altri dati dalla memoria globale, il dato potrebbe essere sovrascritto, richiedendo alla GPU di ricaricare in memoria il dato. Questo chiaramente richiede più cicli e più tempo, risultando in un'applicazione inefficiente.
-\nl
+\nwl
 Se il dato venisse caricato nella costant memory, allora il dato verrebbe copiato, dopo la prima richiesta, nella cache costante, e siccome ci sono, solitamente, meno richieste dalla costant memory, è meno probabile che il dato venga cancellato dalla cache.
 
 \section{Calcolo delle performance}
 
 Quando si considerano gli hardware per calcoli paralleli, la performance viene generalmente calcolata in \textbf{FLOPs}, ovverosia in quante \textbf{floating point operations} vengono eseguite in un certo amount di tempo. Fin da quando venne definito questo standard, si considerano le operazioni con numeri a virgola mobile a 64 bits, tuttavia per alcune ragioni di marketing a volte si trovano le performance calcolate su numeri a virgola mobile a 32, 16 o 8 bits.
-\nl
+\nwl
 C'è ancora grande \textbf{incertezza} su quale sia il giusto \textbf{simbolo} per identificare queste operazioni: alcuni usano \verb|FLOPs|, altri \verb|FLOP/s| e altri ancora \verb|FLOPs/s|. È (ad oggi) abbastanza indifferente quale simbolo venga usato, tuttavia è consigliato usare \verb|FLOP| per indicare un numero di operazioni a virgola mobile in una finestra di tempo non determinata, e usare invece \verb|FLOP/s| per indicare un numero di operazioni a virgola mobile in un secondo.
-\nl
+\nwl
