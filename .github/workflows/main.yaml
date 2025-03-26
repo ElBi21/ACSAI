@@ -8,8 +8,6 @@ jobs:
     name: Prepare for building
     runs-on: ubuntu-latest
     if: github.event.head_commit.author.email != 'github-actions[bot]@users.noreply.github.com'
-    permissions:
-      contents: write
     outputs:
       change_acn: ${{ steps.filter.outputs.change_acn }}
       change_psem: ${{ steps.filter.outputs.change_psem }}
@@ -32,7 +30,9 @@ jobs:
     name: Build Analisi e Calcolo Numerico
     runs-on: ubuntu-latest
     needs: prebuild
-    if: ${{ needs.changes.outputs.change_acn == 'true' }}
+    if: ${{ needs.prebuild.outputs.change_acn == 'true' }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
@@ -66,7 +66,9 @@ jobs:
     name: Build Programmazione di Sistemi Embedded e Multicore
     runs-on: ubuntu-latest
     needs: prebuild
-    if: ${{ needs.changes.outputs.change_psem == 'true' }}
+    if: ${{ needs.prebuild.outputs.change_psem == 'true' }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
