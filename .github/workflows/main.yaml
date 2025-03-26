@@ -10,31 +10,29 @@ jobs:
     if: github.event.head_commit.author.email != 'github-actions[bot]@users.noreply.github.com'
     permissions:
       contents: write
+    outputs:
+      change_acn: ${{ steps.filter.outputs.change_acn }}
+      change_psem: ${{ steps.filter.outputs.change_psem }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
         with:
           persist-credentials: false
  
-      - name: Detect changed notes
-        run: |
-          if git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -q '^3rd Year/Analisi e Calcolo Numerico/notes'; then
-            echo "::set-output name=acn_changed::true"
-          else
-            echo "::set-output name=acn_changed::false"
-          fi
-
-          if git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -q '^3rd Year/Programmazione di Sistemi Embedded e Multicore/notes'; then
-            echo "::set-output name=psem_changed::true"
-          else
-            echo "::set-output name=psem_changed::false"
-          fi
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            change_acn:
+              - '3rd Year/Analisi e Calcolo Numerico/notes/**'
+            change_psem:
+              - '3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/**' 
 
   build_acn:
     name: Build Analisi e Calcolo Numerico
     runs-on: ubuntu-latest
     needs: prebuild
-    if: needs.check-files.outputs.acn_changed == 'true'
+    if: ${{ needs.changes.outputs.change_acn == 'true' }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
@@ -68,7 +66,7 @@ jobs:
     name: Build Programmazione di Sistemi Embedded e Multicore
     runs-on: ubuntu-latest
     needs: prebuild
-    if: needs.check-files.outputs.psem_changed == 'true'
+    if: ${{ needs.changes.outputs.change_psem == 'true' }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
