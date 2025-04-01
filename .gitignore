@@ -1,6 +1,7 @@
 # Tectonic
 *.log
 *.synctex.gz
+main.pdf
 
 # C
 *.o
