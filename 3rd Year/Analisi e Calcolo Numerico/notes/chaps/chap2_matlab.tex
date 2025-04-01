@@ -1,1 +1,85 @@
 \chapter{MATLAB}
+
+MATLAB è un linguaggio di programmazione sviluppato negli anni '70, che viene usato per sviluppare modelli matematici, svolgere simulazioni e analisi dei dati. Il modo in cui MATLAB funziona è detto \textbf{interattivo}, poiché viene tutto eseguito nella console. È possibile anche eseguire più comandi assieme nello stesso prompt, separando tutti i comandi con delle virgole. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> 2+3, 7*2, 9+1*3\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm]
+ans = 5
+ans = 14
+ans = 12\end{lstlisting}
+\end{terminal}
+
+Operazioni più lunghe possono essere scritte su più righe usando i "\texttt{...}". Gli operatori disponibili sono i seguenti:
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Operazione} & \textbf{Operatore} \\
+        \hline \hline
+        Somma & \texttt{+} \\
+        \hline
+        Sottrazione & \texttt{-} \\
+        \hline
+        Moltiplicazione & \texttt{*} \\
+        \hline
+        Divisione & \texttt{/} \\
+        \hline
+        Potenza & \verb|^| \\
+        \hline\hline
+        Minore & \texttt{<} \\
+        \hline
+        Maggiore & \texttt{>} \\
+        \hline
+        Minore o uguale & \texttt{<=} \\
+        \hline
+        Maggiore o uguale & \texttt{>=} \\
+        \hline
+        Uguale & \texttt{==} \\
+        \hline
+        Diverso & \verb|~=| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+In MATLAB, è possibile anche usare gli operatori logici, quali l'\texttt{AND}, l'\texttt{OR} e il \texttt{NOT}. Chiaramente, anche i gate logici più complessi, che vengono costruiti con gli operatori logici più semplici, sono disponibili.
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Operazione} & \textbf{Operatore} \\
+        \hline \hline
+        \texttt{AND} & \verb|&| \\
+        \hline
+        \texttt{OR} & \texttt{|} \\
+        \hline
+        \texttt{NOT} & \verb|~| \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Ci sono anche alcune costanti, che vengono incluse in MATLAB di default dalla libreria standard. Qui alcune di queste vengono elencate:
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Operazione} & \textbf{Operatore} \\
+        \hline\hline
+        Infinito ($\infty$) & \texttt{inf} \\
+        \hline
+        $\pi$ & \texttt{pi} \\
+        \hline
+        $i$ & \texttt{i} \\
+        \hline
+        Numero massimo rappresentabile & \texttt{realmax} \\
+        \hline
+        Numero minimo rappresentabile & \texttt{realmin} \\
+        \hline
+        Precisione della macchina & \texttt{eps} \\
+        \hline
+        Forma indeterminata / \texttt{Not A Number} & \texttt{nan} \\
+        \hline
+    \end{tabular}
+\end{center}
