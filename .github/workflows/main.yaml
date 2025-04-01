@@ -41,21 +41,19 @@ jobs:
 
       - name: Install Tectonic
         run: |
-          cd "3rd Year/Analisi e Calcolo Numerico/notes"
           sudo apt install curl
           curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 
       - name: Compile the template
         run: |
-          ls
-          ./tectonic "main.tex" -Z continue-on-errors --color=always
+          ./tectonic "3rd Year/Analisi e Calcolo Numerico/notes/main.tex" -Z continue-on-errors --color=always
 
       - name: Commit PDF
         run: |
-          mv main.pdf "Analisi e Calcolo Numerico.pdf"
+          mv "3rd Year/Analisi e Calcolo Numerico/notes/main.pdf" "3rd Year/Analisi e Calcolo Numerico/notes/Analisi e Calcolo Numerico.pdf"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add "Analisi e Calcolo Numerico.pdf"
+          git add "3rd Year/Analisi e Calcolo Numerico/notes/Analisi e Calcolo Numerico.pdf"
           git commit -m 'Add compiled ACN notes'
 
       - name: Push PDF
@@ -79,20 +77,19 @@ jobs:
 
       - name: Install Tectonic
         run: |
-          cd "3rd Year/Programmazione di Sistemi Embedded e Multicore/notes"
           sudo apt install curl
           curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
 
       - name: Compile the template
         run: |
-          ./tectonic "main.tex" -Z continue-on-errors --color=always
+          ./tectonic "3rd Year/Analisi e Calcolo Numerico/notes/main.tex" -Z continue-on-errors --color=always
 
       - name: Commit PDF
         run: |
-          mv main.pdf "Programmazione di Sistemi Embedded e Multicore.pdf"
+          mv "3rd Year/Analisi e Calcolo Numerico/notes/main.pdf" "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add "Programmazione di Sistemi Embedded e Multicore.pdf"
+          git add "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git commit -m 'Add compiled PSEM notes'
 
       - name: Push PDF
