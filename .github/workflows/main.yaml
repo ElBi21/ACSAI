@@ -55,6 +55,7 @@ jobs:
           mv "3rd Year/Analisi e Calcolo Numerico/notes/main.pdf" "3rd Year/Analisi e Calcolo Numerico/notes/Analisi e Calcolo Numerico.pdf"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git pull --recurse-submodules
           git add "3rd Year/Analisi e Calcolo Numerico/notes/Analisi e Calcolo Numerico.pdf"
           git commit -m 'Add compiled ACN notes'
 
@@ -92,6 +93,7 @@ jobs:
           mv "3rd Year/Analisi e Calcolo Numerico/notes/main.pdf" "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git pull --recurse-submodules
           git add "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git commit -m 'Add compiled PSEM notes'
 
