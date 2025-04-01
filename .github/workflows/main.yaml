@@ -47,6 +47,7 @@ jobs:
 
       - name: Compile the template
         run: |
+          ls
           ./tectonic "main.tex" -Z continue-on-errors --color=always
 
       - name: Commit PDF
