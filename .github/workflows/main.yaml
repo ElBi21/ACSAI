@@ -86,15 +86,15 @@ jobs:
 
       - name: Compile the template
         run: |
-          ./tectonic "3rd Year/Analisi e Calcolo Numerico/notes/main.tex" -Z continue-on-errors --color=always
+          ./tectonic "3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/main.tex" -Z continue-on-errors --color=always
 
       - name: Commit PDF
         run: |
-          mv "3rd Year/Analisi e Calcolo Numerico/notes/main.pdf" "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
+          mv "3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/main.pdf" "3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git pull --recurse-submodules
-          git add "3rd Year/Analisi e Calcolo Numerico/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
+          git add "3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/Programmazione di Sistemi Embedded e Multicore.pdf"
           git commit -m 'Add compiled PSEM notes'
 
       - name: Push PDF
