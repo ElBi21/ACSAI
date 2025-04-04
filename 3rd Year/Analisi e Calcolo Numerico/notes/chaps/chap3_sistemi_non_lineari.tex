@@ -163,3 +163,34 @@ Nel caso dell'algoritmo di bisezione, è stato scelto in precedenza di usare il 
 \[ |e_k| < \frac{b - a}{2^k} < \epsilon_{\text{min}} \quad \Longrightarrow \quad K > \frac{\log(b - a) - \log(\epsilon_{\text{min}})}{\log(2)} \]
 
 $K$ dovrà essere arrotondato all'intero più vicino, in quanto deve essere un intero positivo.
+
+\section{Metodo di Newton-Raphson}
+
+Forse uno dei metodi più utilizzati quando si parla di equazioni non lineari, il \textbf{metodo di Newton-Raphson} (o metodo delle tangenti) è un metodo molto usato, grazie alla sua convergenza più immediata rispetto al metodo di bisezione. Questo metodo prevede di approssimare una funzione $f(x)$ in un intorno $I$, all'interno del quale si deve trovare una e una sola radice $\xi$, grazie alle sue \textbf{tangenti} in vari punti, le quali vengono calcolate grazie ad uno \textbf{sviluppo in serie di Taylor}
+\nwl
+\begin{algorithm}[H]
+    \caption{Metodo di Netwon-Raphson (o delle tangenti)}
+    \KwIng{L'intervallo $[a, b]$, la funzione $f(x)$ e la tolleranza}
+    $a \gets a_0, \; b \gets b_0$\;
+    $\xi_{\text{seq}} \gets \{\}$ \tcp*{$\xi_{\text{seq}}$ è una sequenza vuota}
+    \For{$k$ in $1, \; 2, \; 3, \; ...$}{
+        $x_k \gets \frac{a + b}{2}$\;
+        $d \gets |x_k - x_{k - 1}|$\;
+        \BlankLine
+        Add $x_k$ to $\xi_{\text{seq}}$\;
+        \BlankLine
+        \tcp{Se si trova la radice oppure viene raggiunta la tolleranza, l'algoritmo si ferma}
+        \If{$(f(x_k) = 0)$ \textbf{or} $(d < \text{tol})$}{
+            \textbf{return} $\xi_{\text{seq}}$
+        }
+        \BlankLine
+        \tcp{In base all'intervallo che contiene la radice, ripetere l'algoritmo con l'intervallo aggiornato}
+        \If{$f(a) \cdot f(x_k) < 0$}{
+            $a \gets a, \; b \gets x_k$
+        }
+        \BlankLine
+        \If{$f(x_k) \cdot f(b) < 0$}{
+            $a \gets x_k, \; b \gets b$
+        }
+    }
+\end{algorithm}
