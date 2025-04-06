@@ -83,3 +83,203 @@ Ci sono anche alcune costanti, che vengono incluse in MATLAB di default dalla li
         \hline
     \end{tabular}
 \end{center}
+
+Nella scorsa tabella, i valori \texttt{realmax} e \texttt{realmin} si riferiscono rispettivamente al valore massimo e minimo rappresentabile considerando numeri in IEEE 754 a doppia precisione (dunque a 64 bits). La libreria standard di MATLAB possiede varie funzioni matematiche, tra cui $\sin (x)$, $\cos (x)$, $\tan (x)$, $\log (x)$, etc... Nel caso in cui si volessero avere più informazioni circa una funzione, si può usare la funzione \texttt{help <funzione>}, dove \texttt{<funzione>} è la funzione di cui vogliamo ottenere più informazioni. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> help log\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ log - Natural logarithm
+    This MATLAB function returns the natural logarithm ln(x) of each element
+    in array X.
+
+    Syntax
+        Y = log(X)
+
+    Input Arguments
+        X - Input array
+        scalar | vector | matrix | multidimensional array | table |
+        timetable
+
+    Output Arguments
+        Y - Logarithm values
+        scalar | vector | matrix | multidimensional array | table |
+        timetable
+
+    Examples
+        Natural Logarithm of Negative Number
+
+    See also log1p, log2, log10, exp, logm, reallog, loglog, semilogx,
+        semilogy
+
+    Introduced in MATLAB before R2006a
+    Documentation for log
+    Other uses of log\end{lstlisting}
+\end{terminal}
+
+Se dovessimo aver bisogno di una funzione che svolga un certo compito, ma non ci dovessimo ricordare qual'è la funzione adatta, possiamo usare invece la funzione \texttt{lookfor <keywords>}, dove \texttt{<keywords>} è un insieme di keywords per identificare la funzione che cerchiamo. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> lookfor square\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+cgs                            - Solve system of linear equations - conjugate
+                                 gradients squared method
+deconv                         - Least-squares deconvolution and polynomial 
+                                 division
+hypot                          - Square root of sum of squares (hypotenuse)
+lscov                          - Least-squares solution in presence of known 
+                                 covariance
+lsqminnorm                     - Minimum norm least-squares solution to 
+                                 linear equation
+lsqnonneg                      - Solve nonnegative linear least-squares 
+                                 problem
+lsqr                           - Solve system of linear equations - 
+                                 least-squares method
+[...]\end{lstlisting}
+\end{terminal}
+
+\section{Variabili, handling della memoria e formati}
+
+Le variabili su MATLAB vengono assegnate e dichiarate similmente a Python: l'assegnazione e la dichiarazione avvengono allo stesso momento. Ad esempio, se volessimo dichiarare la variabile $a=4$ ci basterebbe eseguire il seguente codice:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> a = 4\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+a = 4\end{lstlisting}
+\end{terminal}
+
+Possiamo visualizzare il contenuto di una variabile in due modi: o chiamando la variabile nella console, o usando la funzione \texttt{disp(<variabile>)}. Segue un esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> a
+>> disp(a)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+a = 4
+
+4\end{lstlisting}
+\end{terminal}
+
+Per cancellare tutte le variabili dalla memoria si usa il comando \texttt{clear}. Per salvarne alcune tra una sessione e l'altra, possiamo usare il comando \texttt{save <filename> [<var1> <var2> ...]}, dove \texttt{<filename>} è il file in cui salveremo le variabili (in estensione \texttt{.mat}), mentre \texttt{[<var1> <var2> ...]} è una lista di variabili che vogliamo salvare. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> b = 5;
+>> c = 7;
+>> save Vars/someVars b c\end{lstlisting}
+\end{terminal}
+
+Una volta cancellate le variabili dalla memoria, usando il comando \texttt{who} non le vedremmo più. Possiamo caricare nuovamente le variabili all'interno di MATLAB usando il comando \texttt{load <filename>}, che caricherà tutte le variabili all'interno del file \texttt{<filename>}. Non è necessario includere l'estensione \texttt{.mat}.
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> load Vars/someVars
+>> who\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+Your variables are:
+
+b  c  \end{lstlisting}
+\end{terminal}
+
+MATLAB ha vari formati per i dati, simili concettualmente ai tipi di Python, molto vicini ai tipi di C. Ad esempio:
+
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Formato} & \textbf{Descrizione} \\
+        \hline\hline
+        \texttt{double} & Numeri in doppia precisione \\
+        \hline
+        \texttt{uint8} & Interi senza segno a 8 bits \\
+        \hline
+        \texttt{uint16} & Interi senza segno a 16 bits \\
+        \hline
+        \texttt{uint32} & Interi senza segno a 32 bits \\
+        \hline
+        \texttt{int8} & Interi con segno a 8 bits \\
+        \hline
+        \texttt{int16} & Interi con segno a 16 bits \\
+        \hline
+        \texttt{int32} & Interi con segno a 32 bits \\
+        \hline
+        \texttt{single} & Numeri a singola precisione \\
+        \hline
+        \texttt{char} & Caratteri, 2 bytes per carattere \\
+        \hline
+        \texttt{logical} & Valore che è o \texttt{0} o \texttt{1}, generalmente usato come valore Booleano \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Possiamo impostare anche un formato di visualizzazione dei dati tramite la funzione \texttt{format}. Tuttavia, questo formato sarà valido \textbf{solo per la visualizzazione dei dati}: all'interno di MATLAB i calcoli verranno effettuati con la stessa precisione standard di MATLAB. Facciamo un esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> % Qui MATLAB mostrerà i dati in formato short
+   sqrt(2)
+
+>> % Con long aumentiamo il formato
+   format long
+   sqrt(2)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 1.4142
+
+ans = 
+   1.414213562373095\end{lstlisting}
+\end{terminal}
+
+Se volessimo cambiare il tipo dei dati, possiamo farlo usando i costruttori dei vari tipi. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> a = 43.97;
+
+>> int16(a)
+>> double(a)
+>> uint8(a)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = int1644
+
+ans = 43.9700
+
+ans = uint844\end{lstlisting}
+\end{terminal}
+
+\section{Tipi di dati}
+
+Oltre ai formati di numeri menzionati fino ad ora, MATLAB ha anche altri tipi di dati, che ritornano comodi per esprimere costrutti matematici come vettori, matrici e tabelle.
+
+\subsection{Vettori, matrici e tensori}
+
+In MATLAB è possibile usare vettori, matrici e in generale tensori a $n$ dimensioni. Come in C e in Python, vettori e matrici sono realizzabili tramite array a rispettivamente una e due dimensioni. Anche le variabili in realtà sono considerate internamente come arrays: infatti uno scalare è rappresentato tramite matrici a dimensione $1\times 1$. Possiamo realizzare vettori riga e vettori colonna, in base al carattere usato per separare i valori:
+\begin{itemize}
+    \item usando la virgola \texttt{,} (o degli spazi) possiamo creare vettori riga;
+    \item usando il punto e virgola \texttt{;} possiamo creare vettori colonna.
+\end{itemize}
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A = [10, 20, 30, 40, 50]
+>> B = [10; 20; 30; 40; 50]\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+A = 1x5
+    10    20    30    40    50
+
+B = 5x1
+    10
+    20
+    30
+    40
+    50\end{lstlisting}
+\end{terminal}
