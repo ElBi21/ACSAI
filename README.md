@@ -1,4 +1,4 @@
-<h1 align="center">My ACSAI Journey</h1>
+<h1 align="center">🗺️ My ACSAI Journey</h1>
 
 This repo represents a collection of notes, tools, projects and stuff that I used while studying for my BSc course @ Sapienza. I am (still) enrolled in the **A**pplied **C**omputer **S**cience and **A**rtificial **I**ntelligence course (shorted in ACSAI, because as it is known, the longer the name of a programme, the ~~more stupid~~ better it is).
 
@@ -47,7 +47,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center" rowspan=5>1st Semester</td>
     <td align="center">Programmazione di Sistemi Embedded e Multicore<br><sub>Prof. Daniele De Sensi</sub></td>
     <td align="center">🇮🇹</td>
-    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/notes/main.pdf">PDF</a>]</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/notes/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/tree/main/3rd%20Year/Programmazione%20di%20Sistemi%20Embedded%20e%20Multicore/code">Code</a>]</td>
     <td align="center">✓</td>
   </tr>
@@ -80,7 +80,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center" rowspan=1>2nd Semester</td>
     <td align="center">Analisi e Calcolo Numerico<br><sub>Prof. Domenico Vitulano</sub></td>
     <td align="center">🇮🇹</td>
-    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Analisi%20e%20Calcolo%20Numerico/notes/main.pdf">PDF</a>]</td>
+    <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Analisi%20e%20Calcolo%20Numerico/notes/Analisi%20e%20Calcolo%20Numerico.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Analisi%20e%20Calcolo%20Numerico/code">Code</a>]</td>
     <td align="center">N/A</td>
   </tr>
