@@ -283,3 +283,245 @@ B = 5x1
     40
     50\end{lstlisting}
 \end{terminal}
+
+Per ottenere il trasposto di un vettore o di una matrice, si usa il simbolo \texttt{'}:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A'\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 5x1
+    10
+    20
+    30
+    40
+    50\end{lstlisting}
+\end{terminal}
+
+Per ottenere invece il valore posto in una certa posizione di un vettore, si usa la seguente notazione: \texttt{vettore(posizione)}. In MATLAB, \textbf{gli indici non partono da 0, ma da 1}. Possiamo usare anche una notazione simile allo slicing di Python. Infatti, esiste una notazione più complessa, che è \texttt{vettore(inizio:passo:fine)}, dove \texttt{inizio} determina l'indice di inizio della sequenza che vogliamo esprimere, \texttt{passo} indica ogni quanti elementi serve prendere un valore, \texttt{fine} (\textbf{inclusivo}) indica quando fermarsi con lo slice. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A(1:2:4)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 1x2
+    10    30\end{lstlisting}
+\end{terminal}
+
+Con questa notazione possiamo anche creare nuovi vettori. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> C = [0.9:0.01:1.1]\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+C = 1x21
+    0.9000    0.9100    0.9200    0.9300    0.9400    0.9500    0.9600    0.9700    0.9800    0.9900    1.0000    1.0100    1.0200    1.0300    1.0400    1.0500    1.0600    1.0700    1.0800    1.0900    1.1000\end{lstlisting}
+\end{terminal}
+
+Contrariamente a C, la dimensione e i valori di un array possono essere modificati in corso d'opera. Ad esempio, avendo un array di 4 elementi, possiamo modificare il 6° elemento dell'array, accedendovi come se esistesse:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> D = [1:2:7]
+>> D(6) = 11\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+D = 1x4
+    1     3     5     7
+
+D = 1x6
+    1     3     5     7     0    11\end{lstlisting}
+\end{terminal}
+
+Alle posizioni non definite, come possiamo notare, viene assegnato il valore 0.
+\nwl
+Un'operazione particolare, soprattutto quando si usano i vettori (vedi dopo) è l'evelamento a potenza. Normalmente l'elevamento a potenza viene fatto con la notazione \texttt{\textasciicircum n}, tuttavia esiste una seconda notazione: la notazione \texttt{.\textasciicircum n} indica che viene fatta la potenza alla $n$ di ogni singola componente di un vettore. Senza il . allora verrebbe fatto l'elevamento a potenza di un vettore moltiplicando il vettore per se stesso. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> D = [3, 7; 14, 21];
+>> D^2
+>> D.^2\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 2x2
+    107   168
+    336   539
+
+ans = 2x2
+      9    49
+    196   441\end{lstlisting}
+\end{terminal}
+
+\subsection{Celle}
+
+Un'ultima struttura dati che è molto comoda è la cell. Una cell è un array di valori dinamico, dove i valori possono avere tipi diversi. Una cell si definisce in questo modo:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> C = {"Hello world", [4, 6, 8], 16, -92.77, [16, 32, 11; 4, 97, 6; 14, 9, 8]}\end{lstlisting}
+    \tcblower
+    {
+        \color{white} \ttfamily
+        \begin{tabular} {|c|c|c|c|c|c|}
+        \hline
+         & 1 & 2 & 3 & 4 & 5 \\
+        \hline
+        1 & "Hello world" & [4,6,8] & 16 & -92.7700 & [16,32,11;4,97,6;14,9,8] \\ 
+        \hline
+        \end{tabular}
+    }
+\end{terminal}
+
+Possiamo controllare il valore all'interno di un elemento di una cella con la notazione \texttt{cella(indice)}:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> C(1)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 1x1 cell array
+    {["Hello world"]}\end{lstlisting}
+\end{terminal}
+
+Possiamo anche estrarre un elemento da una cella tramite la notazione \texttt{cella\{indice\}}:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A = C{1}\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+A = "Hello world"\end{lstlisting}
+\end{terminal}
+
+Una cell non contiene i puntatori alle variabili inserite all'interno di essa, ma contiene delle copie identiche dei dati. Questo vuol dire che se una certa variabile viene inserita dentro la cell, se si modificasse la variabile allora il valore nella cell non si aggiornerebbe. I valori in una cell possono essere modificati usando la seguente notazione:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> C(1) = {"Ciao mondo"}\end{lstlisting}
+    \tcblower
+    {
+        \color{white} \ttfamily
+        \begin{tabular} {|c|c|c|c|c|c|}
+        \hline
+         & 1 & 2 & 3 & 4 & 5 \\
+        \hline
+        1 & "Ciao mondo" & [4,6,8] & 16 & -92.7700 & [16,32,11;4,97,6;14,9,8] \\ 
+        \hline
+        \end{tabular}
+    }
+\end{terminal}
+
+\subsection{Structs}
+
+Una struct in MATLAB è simile a una struct in C: questa ha dei campi nominali che possono essere modificati a piacimento. Ad esempio:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> S.string = "Hello world"
+>> S.value = 32
+>> S.matrix = [2, 4; 5, 7]\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+S = struct with fields:
+    string: "Hello world"
+
+S = struct with fields:
+    string: "Hello world"
+     value: 32
+    
+S = struct with fields:
+    string: "Hello world"
+    value: 32
+    matrix: [2x2 double]\end{lstlisting}
+\end{terminal}
+
+Possiamo estrarre i valori all'interno di un campo chiamando il campo stesso:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> S.value\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+ans = 32\end{lstlisting}
+\end{terminal}
+
+\section{Funzioni}
+
+Come molti linguaggi di programmazione, MATLAB consente lo sviluppo di funzioni definite dall'utente, e questo si fa tramite la seguente notazione:
+
+\begin{verbatim}
+  function [output1, output2, ...] = nome_funzione(input1, input2, ...)
+      % Codice...
+  end
+\end{verbatim}
+
+Segue un esempio di una funzione che calcola il $\Delta$ di un'equazione di secondo grado:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+function [out] = custom_delta(a, b, c)
+% Calcola il delta di una data equazione di secondo grado, dati i coefficienti
+% a, b e c
+    out = b^2 - 4*a*c;
+end\end{lstlisting}
+\end{terminal}
+
+Possiamo testarne il funzionamento chiamando la funzione stessa, considerando ad esempio la funzione $4x^2 + 11x - 3 \eq 0$:
+
+\begin{terminal}
+    \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> [d1] = custom_delta(4, 11, -3)\end{lstlisting}
+    \tcblower
+    \begin{lstlisting}[style=notexterm, language = tex]
+d1 = 169\end{lstlisting}
+\end{terminal}
+
+\subsection{Funzioni particolari}
+
+Alcune funzioni particolari di MATLAB, che potrebbero risultare utili, sono le seguenti:
+\begin{itemize}
+    \item \texttt{diff(x)}: dato un vettore $x$ di $n$ elementi, \texttt{diff(x)} calcola un vettore di $n - 1$ elementi dove ogni elemento $y_i$ è uguale alla seguente operazione: $y_i \eq -x_i + x_{i + 1}$. Tale funzione può anche avere un parametro extra, l'ordine. Questo parametro indica che \texttt{diff(x)} viene chiamato ricorsivamente tante volte quanto specifica l'ordine. Con le matrici, la differenza viene fatta considerando le righe della matrice. Partendo da una matrice $A$ di dimensioni $m \times n$, la matrice finale avrà come dimensioni $(m - 1)\times n$. Ad esempio: 
+    \begin{terminal}
+        \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A = [-2, 5, -3, 6, -1, 4];
+>> B = [4, 7, 8; 11, 4, -3; 16, 7, 9];
+
+>> % Diff(A) con ordine 1
+>> diff(A)
+
+>> % Diff(A) con ordine 2
+>> diff(A, 2)
+
+>> % Diff(B) con ordine 1
+>> diff(B)\end{lstlisting}
+        \tcblower
+        \begin{lstlisting}[style=notexterm, language = tex]
+ans = 1x5
+    7    -8     9    -7     5
+
+ans = 1x4
+    -15    17   -16    12
+
+ans = 2x3
+    7    -3   -11
+    5     3    12\end{lstlisting}
+    \end{terminal}
+    \item \texttt{find(cond)}: data una condizione, \texttt{find()} ritorna tutti gli indici in un vettore che rispettano la condizione. Ad esempio:
+    \begin{terminal}
+        \begin{lstlisting}[language=MATLAB, style=notexterm]
+>> A = [3, 0.4, -16, 7, 11, -2, 9.07, 8];
+>> x = find(mod(A, 2) == 0)\end{lstlisting}
+        \tcblower
+        \begin{lstlisting}[style=notexterm, language = tex]
+x = 1x3
+    3     6     8\end{lstlisting}
+    \end{terminal}
+\end{itemize}
+
+\section{Costrutti di flow control}
+
+Ci sono vari costrutti di flow control presenti in MATLAB, quali il \texttt{for} loop, il \texttt{while} loop e il condizionale \texttt{if - else if - else}.
