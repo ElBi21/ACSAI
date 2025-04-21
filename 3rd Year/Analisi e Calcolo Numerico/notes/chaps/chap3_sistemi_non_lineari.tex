@@ -87,7 +87,7 @@ In sintesi, il teorema di Bolzano deve essere rispettato all'interno del nostro 
         $x_k \gets \frac{a + b}{2}$\;
         $d \gets |x_k - x_{k - 1}|$\;
         \BlankLine
-        Add $x_k$ to $\xi_{\text{seq}}$\;
+        Aggiungere $x_k$ a $\xi_{\text{seq}}$\;
         \BlankLine
         \tcp{Se si trova la radice oppure viene raggiunta la tolleranza, l'algoritmo si ferma}
         \If{$(f(x_k) = 0)$ \textbf{or} $(d < \text{tol})$}{
@@ -207,10 +207,52 @@ Viene qui mostrato l'algoritmo del metodo:
     \While {$(f(x_k) \neq 0)$ \textbf{or} $(x_k > \text{tol})$}{
         \tcp{...calcola la nuova approssimazione di $\xi$}
         $x_{k + 1} \gets x_k - \frac{f(x_k)}{f'(x_k)}$\;
-        Add $x_{k + 1}$ to $\xi_{\text{seq}}$\;
+        Aggiungere $x_{k + 1}$ a $\xi_{\text{seq}}$\;
         $x_k \gets x_{k + 1}$\;
     }
     \BlankLine
     \textbf{return} $x_k$, $\xi_{\text{seq}}$
 \end{algorithm}
+
+\nwl
+Procediamo a mostrare questo metodo attraverso un esempio:
+
+\begin{example}
+    Calcolare la radice quadrata di un numero $a$ è equivalente al trovare gli zeri della funzione
+    \[ f(x) \eq x^2 - a \]
+
+    Per trovare gli zeri, vogliamo ricorrere al metodo di Newton-Raphson. Modellando l'algoritmo definito in precedenza, otteniamo la seguente equazione:
+    \[ \begin{cases}
+        x_0 & \text{dato come input} \\
+        x_k \eq x_{k - 1} - \frac{x^2_{k - 1} - a}{2x_{k - 1}} & \text{per } k \eq 1, \; 2, \; ...
+    \end{cases} \]
+
+    Possiamo ulteriormente semplificare l'algoritmo, raggiungendo dunque la seguente equazione:
+    \[ \begin{cases}
+        x_0 & \text{dato come input} \\
+        x_k \eq \frac{1}{2} \cdot \left( x_{k - 1} \right) & \text{per } k \eq 1, \; 2, \; ...
+    \end{cases} \]
+\end{example}
+
+Similmente al metodo di bisezione, possiamo definire se l'algoritmo di Newton-Raphson convergerà, definendo dunque le sue condizioni di convergenza.
+
+\begin{theorem}{Convergenza del metodo di Newton-Raphson: esistenza di $J$}
+    Data una funzione $f(x)$, se:
+    \begin{itemize}
+        \item è stato separato un intervallo $I \eq [a, \; b]$ dove c'è una \textbf{singola} radice $\xi$;
+        \item $f, \; f', \; f''$ sono continue in $I$, tale che $f \in C^2 [a, \; b]$;
+        \item $f'(x) \neq 0$ per $x \in [a, \; b]$;
+    \end{itemize}
+
+    allora esiste un intorno $J \subseteq I$ di $\xi$ tale che, se $x_0 \in J$, allora la successione delle approssimazioni convergerà a $\xi$.
+
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[black, thick] (0, 0) -- (8, 0);
+            \fill[blue] (1, 0) circle (2pt) node[anchor=south] {$a$};
+        \end{tikzpicture}
+    \end{center}
+\end{theorem}
+
+Il precedente teorema non stabilisce che il metodo convergerà, ma che piuttosto esiste un intervallo $J$, ristretto rispetto a $I$, nel quale troveremo la nostra radice $\xi$.
 
