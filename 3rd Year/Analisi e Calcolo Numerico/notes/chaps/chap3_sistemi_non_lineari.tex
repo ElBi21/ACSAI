@@ -182,7 +182,7 @@ Generalmente, ad ogni iterazione $k \eq 1, \; 2, \; ...$ del metodo, la nuova ap
 
 Possiamo tuttavia rifattorizzare l'espressione, così da renderla in funzione dell'approssimazione in un'iterazione $k$:
 \begin{align*}
-    f(x_{k - 1}) + f'(x_{k - 1}) \cdot (\underbrace{x}_{\text{becomes } x_k} - x_{k - 1}) &\eq 0 \\
+    f(x_{k - 1}) + f'(x_{k - 1}) \cdot (\underbrace{x}_{\text{diventa } x_k} - x_{k - 1}) &\eq 0 \\
     f(x_{k - 1}) + x_k \cdot f'(x_{k - 1}) - x_{k - 1} \cdot f'(x_{k - 1}) &\eq 0 \\
     -x_k \cdot f'(x_{k - 1}) &\eq f(x_{k - 1}) - x_{k - 1} \cdot f'(x_{k - 1}) \\
     -x_k &\eq \frac{f(x_{k - 1})}{f'(x_{k - 1})} - x_{k - 1} \cdot \frac{f'(x_{k - 1})}{f'(x_{k - 1})} \\
@@ -248,11 +248,35 @@ Similmente al metodo di bisezione, possiamo definire se l'algoritmo di Newton-Ra
 
     \begin{center}
         \begin{tikzpicture}
-            \draw[black, thick] (0, 0) -- (8, 0);
-            \fill[blue] (1, 0) circle (2pt) node[anchor=south] {$a$};
+            \draw[black, thick] (0, 0) -- (6, 0);
+            \fill[blue] (0.5, 0) circle (2pt) node[anchor=south] {$a$};
+            \fill[blue] (5.5, 0) circle (2pt) node[anchor=south] {$b$};
+            \fill[blue] (4, 0) circle (2pt) node[anchor=south] {$x_0$};
+            \fill[red] (3, 0) circle (2pt) node[anchor=south] {$a$};
+            \draw[thick, decoration={brace, mirror, raise=1mm}, decorate] (2, -0.25) -- (4.5, -0.25) node [pos=0.5, anchor=north, yshift=-1.5mm] {$J$};
+            \draw[black!80, dashed] (2, -0.25) -- (2, 0.5);
+            \draw[black!80, dashed] (4.5, -0.25) -- (4.5, 0.5);
         \end{tikzpicture}
     \end{center}
 \end{theorem}
 
 Il precedente teorema non stabilisce che il metodo convergerà, ma che piuttosto esiste un intervallo $J$, ristretto rispetto a $I$, nel quale troveremo la nostra radice $\xi$.
 
+\subsection{Ordine di convergenza ed efficienza computazionale}
+
+Per valutare l'ordine di convergenza del metodo, usiamo la stessa formula per trovare $C$, ovverosia
+\[ C \eq \lim_{k \to \infty} \frac{|e_{k + 1}|}{|e_k|^p} \]
+
+Sappiamo che l'errore di troncamento all'interazione $k + 1$ è uguale alla differenza tra la radice e l'approssimazione ottenuta in quello step: dunque, possiamo sviluppare il calcolo come segue:
+\[ e_{k + 1} \eq \xi - x_{k + 1} \eq \left(\xi - \frac{f(\xi)}{f'(\xi)}\right) - \left(x_k - \frac{f(x_k)}{f'(x_k)}\right) \eq (\xi - x_k) - \left(\frac{f(\xi)}{f'(\xi)} - \frac{f(x_k)}{f'(x_k)}\right) \]
+
+Per determinare $f(x_k)$ è sufficiente sviluppare i primi tre termini dello sviluppo in serie di Taylor attorno a $\xi$, dunque:
+\[ f(x_k) \eq f(\xi) + f'(\xi) \cdot \underbrace{(x_k - \xi)}_{-e_k} + \frac{1}{2} f''(\xi) \cdot (x_k - \xi)^2 + \; ... \]
+
+Supponendo che $x_k$ sia molto vicino a $\xi$, possiamo assumere con condifenza che le derivate di $f$ in $x_k$ e $\xi$ assumano valori simili ($f'(x_k) \simeq f'(\xi)$). Possiamo ora sostituire i valori di $f(x_k)$ e $f'(x_k)$ nell'espressione di $e_{k + 1}$, ottenendo:
+\[ |e_{k + 1}| \simeq \left\lvert e_k - \frac{f(\xi) - \overbrace{f(\xi) + f'(\xi) \cdot e_k - \frac{1}{2} f''(\xi) \cdot e_k^2}^{f(x_k)}}{f'(\xi)} \right\rvert \eq \left\lvert \frac{\frac{1}{2} f''(\xi) \cdot e_k^2}{f'(\xi)} \right\rvert \]
+
+Ottenuta questa forma, possiamo sostituire $e_{k + 1}$ nel limite che definisce $C$ con ciò che abbiamo appena trovato. Otteniamo dunque la seguente forma:
+\[ \lim_{k \to \infty} \frac{|e_{k + 1}|}{|e_k|^2} \eq \frac{1}{2} \cdot \left\lvert \frac{f''(\xi)}{f'(\xi)} \right\rvert \; \Longrightarrow \; p \geq 2 \]
+
+Dunque, se $f(x) \in C^3 [a, \; b]$, avremo una convergenza almeno quadratica. Nella precedente espressione, abbiamo usato nel limite $p \eq 2$: questo valore potrebbe anche essere uguale a 3 in alcuni casi, ma verrà visto in futuro come questo può cambiare.
