@@ -262,7 +262,7 @@ Similmente al metodo di bisezione, possiamo definire se l'algoritmo di Newton-Ra
 
 Il precedente teorema non stabilisce che il metodo convergerà, ma che piuttosto esiste un intervallo $J$, ristretto rispetto a $I$, nel quale troveremo la nostra radice $\xi$.
 
-\subsection{Ordine di convergenza ed efficienza computazionale}
+\subsection{Ordine di convergenza}
 
 Per valutare l'ordine di convergenza del metodo, usiamo la stessa formula per trovare $C$, ovverosia
 \[ C \eq \lim_{k \to \infty} \frac{|e_{k + 1}|}{|e_k|^p} \]
@@ -280,3 +280,13 @@ Ottenuta questa forma, possiamo sostituire $e_{k + 1}$ nel limite che definisce 
 \[ \lim_{k \to \infty} \frac{|e_{k + 1}|}{|e_k|^2} \eq \frac{1}{2} \cdot \left\lvert \frac{f''(\xi)}{f'(\xi)} \right\rvert \; \Longrightarrow \; p \geq 2 \]
 
 Dunque, se $f(x) \in C^3 [a, \; b]$, avremo una convergenza almeno quadratica. Nella precedente espressione, abbiamo usato nel limite $p \eq 2$: questo valore potrebbe anche essere uguale a 3 in alcuni casi, ma verrà visto in futuro come questo può cambiare.
+
+\subsection{Efficienza computazionale ed estremo di Fourier}
+
+Quando va scelto un metodo numerico, non solo si vuole scegliere un metodo che sia preciso, ma che porti anche alla soluzione in tempi rapidi. A livello informatico questo viene calcolato tramite la notazione "\textit{O grande}" $O(\cdot)$. Per ora, ci interesseremo dell'\textbf{efficienza} di un nostro metodo, che ci darà una valutazione oggettiva di quanto bene il metodo performi.
+
+\begin{definition}{Efficienza computazionale}
+    Definiamo come \textbf{efficienza computazionale} $E$, dato un \textbf{ordine di convergenza} $p$ e un numero di \textbf{valutazioni funzionali} $r$ (ovverosia il numero di calcolo di funzioni o derivate) richieste ad ogni passo, il valore dato dalla seguente formula:
+    \[ E \eq p^{\frac{1}{r}} \]
+\end{definition}
+
