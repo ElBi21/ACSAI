@@ -1,4 +1,4 @@
-\chapter{Sistemi di Equazioni Non Lineari}
+\chapter{Sistemi di equazioni non lineari}
 
 Fino ad ora siamo sempre stati abituati a problemi analitici dove la soluzione a un problema era data da un'equazione, o al più un piccolo sistema di equazioni non lineari. Tuttavia nella realtà sono molti i casi dove la soluzione viene trovata risolvendo complessi sistemi di equazioni non lineari, che non sempre possono essere svolti a mano. Da qui, la nascita di alcuni metodi di calcolo numerico che aiutano nella risoluzione di tali sistemi. Prima di illustrare questi metodi, ci soffermeremo brevemente su cos'è un'equazione non lineare:
 
@@ -151,7 +151,7 @@ Abbiamo visto che il metodo di bisezione converge, ma è anche importante che co
 Applicando la definizione di ordine e fattore di convergenza al metodo di bisezione, otteniamo che, per $k \to \infty$, si ha:
 \[ \frac{|e_{k + 1}|}{|e_k|^p} \eq \frac{\frac{b - a}{2^{k + 1}}}{\frac{b - a}{2^k}} \eq \frac{2^k}{2^{k + 1}} \eq \frac{2^k}{2^k} \cdot \frac{1}{2} \eq \frac{1}{2} \]
 
-Cosa ci dice il risultato appena ottenuto? Che, supponendo una convergenza lineare, otteniamo un fattore di convergenza di $\nicefrac{1}{2}$. Questo ci dice che la convergenza è in realtà \textbf{lenta}: ad ogni step dell'algoritmo riusciamo a dimezzare l'errore, e guadagnamo una cifra binaria per meglio esprimere il nostro risultato. Siccome $2^{-4} < 10^{-1} < 2^{-3}$, allora ogni 3 o 4 iterazioni si riesce a guadagnare una cifra decimale.
+Cosa ci dice il risultato appena ottenuto? Che, \textbf{supponendo una convergenza lineare}, otteniamo un \textbf{fattore di convergenza} di $\nicefrac{1}{2}$. Questo ci dice che la convergenza è in realtà \textbf{lenta}: ad ogni step dell'algoritmo riusciamo a dimezzare l'errore, e guadagnamo una cifra binaria per meglio esprimere il nostro risultato. Siccome $2^{-4} < 10^{-1} < 2^{-3}$, allora ogni 3 o 4 iterazioni si riesce a guadagnare una cifra decimale.
 \nwl
 Tuttavia, a causa degli errori di arrotondamento e troncamento da parte del computer, è praticamente impossibile che si riesca a raggiungere $f(x_k) \eq 0$. Dunque, quando dovremmo interrompere i calcoli? Possiamo definire dei \textbf{criteri di arresto a posteriori}, ovverosia
 \[ \begin{cases}
@@ -252,7 +252,7 @@ Similmente al metodo di bisezione, possiamo definire se l'algoritmo di Newton-Ra
             \fill[blue] (0.5, 0) circle (2pt) node[anchor=south] {$a$};
             \fill[blue] (5.5, 0) circle (2pt) node[anchor=south] {$b$};
             \fill[blue] (4, 0) circle (2pt) node[anchor=south] {$x_0$};
-            \fill[red] (3, 0) circle (2pt) node[anchor=south] {$a$};
+            \fill[red] (3, 0) circle (2pt) node[anchor=south] {$\xi$};
             \draw[thick, decoration={brace, mirror, raise=1mm}, decorate] (2, -0.25) -- (4.5, -0.25) node [pos=0.5, anchor=north, yshift=-1.5mm] {$J$};
             \draw[black!80, dashed] (2, -0.25) -- (2, 0.5);
             \draw[black!80, dashed] (4.5, -0.25) -- (4.5, 0.5);
@@ -281,7 +281,7 @@ Ottenuta questa forma, possiamo sostituire $e_{k + 1}$ nel limite che definisce 
 
 Dunque, se $f(x) \in C^3 [a, \; b]$, avremo una convergenza almeno quadratica. Nella precedente espressione, abbiamo usato nel limite $p \eq 2$: questo valore potrebbe anche essere uguale a 3 in alcuni casi, ma verrà visto in futuro come questo può cambiare.
 
-\subsection{Efficienza computazionale ed estremo di Fourier}
+\subsection{Efficienza computazionale}
 
 Quando va scelto un metodo numerico, non solo si vuole scegliere un metodo che sia preciso, ma che porti anche alla soluzione in tempi rapidi. A livello informatico questo viene calcolato tramite la notazione "\textit{O grande}" $O(\cdot)$. Per ora, ci interesseremo dell'\textbf{efficienza} di un nostro metodo, che ci darà una valutazione oggettiva di quanto bene il metodo performi.
 
@@ -290,3 +290,89 @@ Quando va scelto un metodo numerico, non solo si vuole scegliere un metodo che s
     \[ E \eq p^{\frac{1}{r}} \]
 \end{definition}
 
+Applicando il concetto di efficienza computazionale sia al metodo di bisezione che al metodo di Newton-Raphson otteniamo i seguenti risultati:
+\begin{itemize}
+    \item il metodo di bisezione richiede, ad ogni iterazione, una sola valutazione funzionale, ovverosia solo $f(x_k)$: abbiamo dunque che $r \eq 1$. Supponendo $p \eq 1$, otteniamo che $E$ è uguale a:
+    \[ E \eq 1^{\nicefrac{1}{1}} \eq 1 \]
+    \item il metodo di Newton-Raphson richiede, per ogni iterazione, due valutazioni funzionali, siccome van calcolati sia $f(x_k)$ che $f'(x_k)$: abbiamo dunque $r \eq 2$. Ponendo $p \eq 2$, il valore di $E$ è uguale a:
+    \[ E \eq 2^{\nicefrac{1}{2}} \eq \sqrt{2} \]
+\end{itemize}
+
+\subsection{Ottimizzazione tramite estremo di Fourier}
+
+Fino ad ora non abbiamo mai considerato la possibilità che certe ottimizzazioni siano più efficienti di altre, e abbiamo sempre supposto che $x_0$ ci venisse data da qualche entità superiore. Tuttavia esiste un modo per determinare quale approssimazione è più efficace per avere una convergenza più rapida (o, in generale, per avere una convergenza!). Illustreremo l'importanza di una buona ottimizzazione usando il seguente esempio:
+
+\begin{example}
+    Vogliamo approssimare la redice $\xi \eq 0$ dell'equazione
+    \[ f(x) \eq 4x^3 - 5x \eq 0 \]
+
+    Come intervallo, scegliamo $I \eq [-0.5, \; 0.5]$, e decidiamo di iniziare con $x_0 \eq 0.5$. Già dopo due iterazioni, notiamo che c'è un problema con le tangenti:
+    \begin{center}
+        \includegraphics[width=\linewidth]{assets/image-005.png}
+    \end{center}
+
+    Come possiamo notare, le tangenti, per ogni iterazione pari di $k$, portano da $x \eq 0.5$ a $x \eq -0.5$, mentre invece le iterazioni dispari ritornano a $x \eq 0.5$: si genera dunque una \textbf{situazione di stallo}. Questa situazione rispetta comunque il criterio di applicabilità del metodo di Newton-Raphson: infatti, la funzione $f(x)$ e la sua derivata $f'(x) \eq 12x^2 - 5$ sono entrambe continue in $C^2 (I)$. La situazione cambia scegliendo altri valori di $x_0$, come ad esempio $x_0 = 0.4$:
+
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            $k$ & $x_k$ & $|x_k - x_{k - 1}|$ & $\left\lvert f(x_k) \right\rvert$ \\
+            \hline\hline
+            1 & -0.166233766233766 & 0.566233766233766 & 0.812794238313550 \\
+            \hline
+            2 & 0.007871908372072 & 0.174105674605839 & 0.039357590668022 \\
+            \hline
+            3 & -0.000000780593026 & 0.007872688965099 & 0.000000390296513 \\
+            \hline
+            4 & 0.000000000000000 & 0.000000780593026 & 0.000000000000000 \\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{example}
+
+Come abbiamo potuto notare, è possibile che si verifichino episodi di stallo quando selezioniamo $x_0$: in particolare, questo accade quando si scelgono come approssimazioni iniziali dei punti non appartenenti ad un opportuno intorno $J$. Fatta questa analisi, è possibile però scegliere dei punti che non creino queste situazioni? La possibilità c'è, ed è data dall'\textbf{estremo di Fourier}.
+
+\begin{definition}{Estremo di Fourier}
+    Data una funzione $f$, \textbf{continua} e \textbf{convessa} in $I = [a, \; b]$, con $f(a) \cdot f(b) < 0$, allora chiamiamo l'\textbf{estremo di Fourier} di $I$ l'estremo verso cui $f$ rivolge la convessità.
+    \nwl
+    Inoltre, se $\exists \; f''$, allora l'estremo di Fourier assume i seguenti valori:
+    \[ \begin{cases}
+        a & \text{se } f(a) \cdot f''(a) > 0 \\
+        b & \text{se } f(b) \cdot f''(b) > 0
+    \end{cases} \]
+\end{definition}
+
+Con questo nuovo elemento, possiamo ridefinire i criteri di applicabilità del metodo di Newton-Raphson, in un teorema che sia più comprensivo e che non si limiti al solo intervallo $J$:
+
+\begin{theorem}{Convergenza del metodo di Newton-Raphson}
+    Data una funzione $f(x)$, se:
+    \begin{itemize}
+        \item $f(a) \cdot f(b) < 0$;
+        \item $f, \; f', \; f''$ sono continue in $I$, tale che $f \in C^2 [a, \; b]$;
+        \item $f'(x) \neq 0$ per $x \in [a, \; b]$;
+        \item $f''(x) \neq 0$ per $x \in [a, \; b]$ e $x_0$ è l'estremo di Fourier di $[a, \; b]$;
+    \end{itemize}
+
+    allora:
+    \begin{itemize}
+        \item [1)] \textbf{esiste} un'\textbf{unica radice} $\xi \in [a, \; b]$;
+        \item [2)] la successione delle approssimazioni $a_k$ è \textbf{monotona} e \textbf{converge} a $\xi$, dove:
+        \[ a_k \eq \left\{ x_k \eq x_{k - 1} - \frac{f(x_{k - 1})}{f'(x_{k - 1})} \right\} \quad\quad \text{per } k \eq 1, \; 2, \; ... \]
+        \item [3)] se $f \in C^3 [a, \; b]$, allora la \textbf{convergenza} è \textbf{quadratica}
+    \end{itemize}
+
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[black, thick] (0, 0) -- (6, 0);
+            \fill[blue] (0.5, 0) circle (2pt) node[anchor=south] {$a$};
+            \fill[blue] (5.5, 0) circle (2pt) node[anchor=south] {$b$};
+            \fill[blue] (4, 0) circle (2pt) node[anchor=south] {$x_0$};
+            \fill[red] (3, 0) circle (2pt) node[anchor=south] {$\xi$};
+            \draw[thick, decoration={brace, mirror, raise=1mm}, decorate] (2, -0.25) -- (4.5, -0.25) node [pos=0.5, anchor=north, yshift=-1.5mm] {$J$};
+            \draw[black!80, dashed] (2, -0.25) -- (2, 0.5);
+            \draw[black!80, dashed] (4.5, -0.25) -- (4.5, 0.5);
+        \end{tikzpicture}
+    \end{center}
+\end{theorem}
+
+\section{Metodo delle secanti}

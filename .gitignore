@@ -16,3 +16,6 @@ main.pdf
 
 # Cluster Condor logs
 cuda_job.*
+
+# Jupyter Notebooks
+.ipynb_checkpoints
