@@ -376,3 +376,57 @@ Con questo nuovo elemento, possiamo ridefinire i criteri di applicabilità del m
 \end{theorem}
 
 \section{Metodo delle secanti}
+
+Nonostante il metodo di Newton-Raphson sia più efficiente del metodo di bisezione, c'è uno step che spesso rallenta il metodo, ovverosia il calcolo della derivata $f'(x)$, che può spesso non essere di facile valutazione (si pensi ai network neurali, che devono calcolare spesso il gradiente dei nodi per la backpropagation). Ci sono dei metodi che vengono usati in alternativa, che approssimano la derivata in alcuni modi:
+\begin{itemize}
+    \item il \textbf{metodo della tangente fissa}, che approssima, ad ogni iterazione, la derivata $f'(x_n)$ con $f'(x_0)$;
+    \item il \textbf{metodo delle secanti con estremi variabili}, che approssima $f'(x_n)$ con un rapporto incrementale;
+    \item il \textbf{metodo delle secanti con estremo fisso}, che approssima $f'(x_n)$ con il rapporto incrementale in cui un punto rimane fisso ad ogni iterazione.
+\end{itemize}
+
+Ci concentreremo brevemente sul metodo delle secanti con estremi variabili, per dimostrare come questo possa essere usato in alternativa al metodo di Newton-Raphson. Ricordiamo che l'equazione di una secante richiede due punti $x_1$ e $x_2$, quindi per il metodo partiremo da $k \eq 2$ (così da avere un $x_0$ e un $x_1$ iniziale). L'equazione è la seguente:
+\[ \frac{x - x_1}{x_2 - x_1} \eq \frac{y - y_1}{y_2 - y_1} \]
+
+Per il metodo delle secanti, ad ogni iterazione $k \eq 2, \; 3, \; ...$, calcoliamo una nuova approssimazione $x_k$, che è data dall'intersezione tra la retta $s_{k - 1}$ e l'asse $y \eq 0$. La retta $s_{k - 1}$ è la secante di $f(x)$ nei punti $(x_{k - 2}, \; f(x_{k - 2}))$ e $(x_{k - 1}, f(x_{k - 1}))$.
+
+Matematicamente, l'algoritmo è formulabile come segue:
+\[ \begin{cases}
+    x_0, \; x_1 & \text{vengono dati come input} \\
+    x_k \eq x_{k - 1} - f(x_{k - 1}) \cdot \frac{x_{k - 1} - x_{k - 2}}{f(x_{k - 1}) - f(x_{k - 2})} & k \geq 2
+\end{cases} \]
+
+Invece, formalmente l'algoritmo è il seguente:
+\nwl
+\begin{algorithm}[H]
+    \caption{Metodo delle secanti con estremo variabile}
+    \KwIng{Due approssimazioni $x_0$ e $x_1$, la funzione $f(x)$ e la tolleranza}
+    $x_k \gets \texttt{NULL}$
+    \tcp{$\xi_{\text{seq}}$ è una sequenza vuota}
+    $\xi_{\text{seq}} \gets \{\}$
+    \While {$(f(x_k) \neq 0)$ \textbf{or} $(x_k > \text{tol})$}{
+        \tcp{...calcola la nuova approssimazione di $\xi$}
+        $x_{k + 1} \gets x_k - f(x_k) \cdot \frac{x_k - x_{k - 1}}{f(x_k) - f(x_{k - 1})}$\;
+        Aggiungere $x_{k + 1}$ a $\xi_{\text{seq}}$\;
+        $x_k \gets x_{k + 1}$\;
+    }
+    \BlankLine
+    \textbf{return} $x_k$, $\xi_{\text{seq}}$
+\end{algorithm}
+\nwl
+I vantaggi del metodo delle secanti sono i seguenti:
+\begin{itemize}
+    \item il metodo è utile quando non si conosce la derivata di $f(x)$, o quando $f(x)$ è nota solo in alcuni punti;
+    \item ad ogni passo è richiesta solo una valutazione funzionale.
+\end{itemize}
+
+Tuttavia, per poter usare questo metodo necessitiamo di due approssimazioni iniziali $x_0$ e $x_1$, e queste devono essere abbastanza accurate.
+
+\begin{theorem}{Convergenza del metodo delle secanti}
+    Data una funzione $f(x)$, se:
+    \begin{itemize}
+        \item è stato separato un intervallo $I \eq [a, \; b]$ \textbf{simmetrico} intorno alla radice $\xi$;
+        \item $f$, $f'$ e $f''$ sono continue in $I \; : \; f \in C^2 [a, \; b]$;
+        \item $f'(x) \neq 0$ per $x \in [a, \; b]$;
+    \end{itemize}
+    allora esiste un intorno $J \subseteq I$ di $\xi$ tale che, se $x_0, x_1 \in J$, allora la successione di approssimazioni (chiamata nell'algoritmo $\xi_{\text{seq}}$), \textbf{converge} a $\xi$ con \textbf{convergenza lineare}, ovverosia $1 < p < 2$.
+\end{theorem}
