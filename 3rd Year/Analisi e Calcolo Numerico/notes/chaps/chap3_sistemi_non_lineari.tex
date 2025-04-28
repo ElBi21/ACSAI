@@ -392,7 +392,7 @@ Per il metodo delle secanti, ad ogni iterazione $k \eq 2, \; 3, \; ...$, calcoli
 Matematicamente, l'algoritmo è formulabile come segue:
 \[ \begin{cases}
     x_0, \; x_1 & \text{vengono dati come input} \\
-    x_k \eq x_{k - 1} - f(x_{k - 1}) \cdot \frac{x_{k - 1} - x_{k - 2}}{f(x_{k - 1}) - f(x_{k - 2})} & k \geq 2
+    x_k \eq x_{k - 1} - f(x_{k - 1}) \cdot \frac{x_{k - 1} - x_{k - 2}}{f(x_{k - 1}) - f(x_{k - 2})} & \text{per } k \geq 2
 \end{cases} \]
 
 Invece, formalmente l'algoritmo è il seguente:
