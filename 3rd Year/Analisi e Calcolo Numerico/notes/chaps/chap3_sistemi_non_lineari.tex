@@ -429,4 +429,11 @@ Tuttavia, per poter usare questo metodo necessitiamo di due approssimazioni iniz
         \item $f'(x) \neq 0$ per $x \in [a, \; b]$;
     \end{itemize}
     allora esiste un intorno $J \subseteq I$ di $\xi$ tale che, se $x_0, x_1 \in J$, allora la successione di approssimazioni (chiamata nell'algoritmo $\xi_{\text{seq}}$), \textbf{converge} a $\xi$ con \textbf{convergenza lineare}, ovverosia $1 < p < 2$.
+    \nwl
+    Inoltre, se $f''(x) \neq 0$, allora possiamo approssimare l'errore allo step $k + 1$ come segue:
+    \[ e_{k + 1} \simeq C_N^{\frac{p}{p + 1}} \cdot e_k^p \]
+
+    dove $p \eq \frac{1 + \sqrt{5}}{2}$ e $C_N$ è la costante asintotica del metodo di Newton-Raphson:
+    \[ C_N \eq \frac{f''(\xi)}{2f'(\xi)} \]
 \end{theorem}
+
