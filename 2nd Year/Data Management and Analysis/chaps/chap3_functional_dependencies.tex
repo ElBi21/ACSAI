@@ -1,0 +1,347 @@
+\chapter{Functional Dependencies}
+
+In the previous chapter we had a look over relational databases and relation schemas. Let us recall that a \textbf{relational schema} is a \textbf{set of attributes} $\{ A_1, \; A_2, \; ..., \; A_n \}$, and is denoted as
+\[ R \eq A_1, \; A_2, \; ..., \; A_n \]
+
+Usually, we use the first letters of the alphabet to denote single attributes, while with the last letters of the alphabet we denote \textbf{sets} of attributes. If for instance we had two sets of attributes $X$ and $Y$ and we wanted to take their \textbf{union}, we would then denote it as $XY$. Another concept that we want to recall is that a \textbf{tuple} is a \textbf{function} that associates to each attribute $A_i \in \mathbb{R}$ a value $t[A_i]$ in the corresponding domain $\text{dom}(A_i)$. Let us consider the following relation as an example:
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \rowcolor{maindoccol!60} \hline
+        \textbf{Name} & \textbf{Surname} & \textbf{StudID} & \textbf{Department} \\
+        \hline
+        Mark & Doe & 001 & INF \\
+        \hline
+        John & Doe & 002 & INF \\
+        \hline
+    \end{tabular}
+\end{center}
+    
+If we consider $X \eq \{\text{Surname, Department}\}$ and the two tuples in the relation as $t_1$ and $t_2$, then there is a property that can be verified: we say that $t_1$ and $t_2$ \textbf{coincide on} $X$ (so $t_1[X] \eq t_2[X]$) if $\forall \; A \in X \; : \; t_1[A] \eq t_2[A]$
+\nwl
+In the past we also talked about \textbf{functional dependencies}: semantic links between two non-empty sets of attributes belonging to the same relation $R$. The complete definition can be seen here.
+
+\begin{definition}{Functional dependencies $\cdot$ Part 2}
+    A \textbf{\index{functional dependency}} establishes a \textbf{semantic link} between two non-empty sets of attributes $X$ and $Y$ belonging to the same schema $R$: such link is represented via an \textbf{ordered pair} of sets. Written as
+    \[ X \rightarrow Y \]
+    and read as \textit{$X$ functionally determines $Y$}; vice versa, it can be said that \textit{$Y$ is functionally determined by $X$}. $X$ is called \textbf{determinant}, while $Y$ is called \textbf{dependent}. A relation with schema $R$ satisfies the functional dependency if:
+    \begin{itemize}
+        \item [1)] the functional dependency is applicable to $R$, in the sense that $X$ and $Y$ are subsets of $R$;
+        \item [2)] ennuples in $R$ that are identical on $X$ have to be identical on $Y$ as well
+        \[ t_1[X] \eq t_2[X] \thus t_1[Y] \eq t_2[Y]\]
+
+        It's not necessary that two tuples $t_1$ and $t_2$ exist in order to satisfy the functional dependency, but if they do exist and if they are equal, then the implication must be true.
+    \end{itemize}
+\end{definition}
+
+Note the second condition that must be respected by the functional dependency: we say that
+\[ \forall \; t_1, \; t_2 \in r \; : \; t_1[X] \eq t_2[X] \thus t_1[Y] \eq t_2[Y] \]
+
+which is completely different of saying instead
+\[ \forall \; t_1, \; t_2 \in r \; : \; t_1[X] \neq t_2[X] \thus t_1[Y] \neq t_2[Y] \]
+
+This last proportion is \textbf{not} the same as the first one, because if $t_1[X] \neq t_2[X]$, then we don't care about the values of $t_1[Y]$ and $t_2[Y]$: for what we care, they could be the same. Functional dependencies just express \textbf{constraints} on data, such as the matching of a student ID with one and only one student. We can't use for instance functional dependencies in the following case:
+\begin{center}
+    Grade $\rightarrow$ Honour (Is it possible?) \quad \quad Exams: \quad
+    \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{StudID} & \textbf{Grade} & \textbf{Honour} \\
+        \hline
+        001 & 30 & Yes \\
+        \hline
+        002 & 27 & No \\
+        \hline
+        003 & 27 & No \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Can we use the functional dependency Grade $\rightarrow$ Honour? If a student gets 30, then it could receive the honour, but this doesn't imply that all the students who get 30 should have the honour. Also because, the honor could be given also to a student who got 27, but if we have two tuples (such as $t_2$ and $t_3$) which both have the same grade, then it would imply that both got the honour, which could not be the case. We can't, following the inverse reasoning, say that Honour $\rightarrow$ Grade.
+\nwl
+Some examples of functional dependencies are the following:
+\begin{center}
+    Is the functional dependency $AB \rightarrow C$ valid in both tables? \\
+    \vspace{12pt}
+    $r_1$: \quad \begin{tabular}{|c|c|c|}
+        \rowcolor{maindoccol!60} \hline 
+        \textbf{A} & \textbf{B} & \textbf{C} \\
+        \rowcolor{green!20} \hline
+        $A_1$ & $B_1$ & $C_2$ \\
+        \hline
+        $A_2$ & $B_3$ & $C_1$ \\
+        \hline
+        \rowcolor{green!20}
+        $A_1$ & $B_1$ & $C_2$ \\
+        \hline
+    \end{tabular} \quad \quad \quad $r_2$: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{A} & \textbf{B} & \textbf{C} \\
+        \hline \rowcolor{yellow!20}
+        $A_1$ & $B_1$ & $C_2$ \\
+        \hline 
+        $A_2$ & $B_3$ & $C_1$ \\
+        \hline \rowcolor{yellow!20}
+        $A_1$ & $B_1$ & $C_3$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+In the relation $r_1$ the functional dependency is valid, because $t_1$ and $t_3$ respect the logic $t_1[AB] \eq t_3[AB] \thus t_1[C] \eq t_3[C]$, while the second relation doesn't, since $t_1[C] \neq t_3[C]$. Given a relation instance $R$ and a set of functional dependencies valid on it, we say that the relation instance is \textbf{legal} if it satisfies all the functional dependencies in $F$. Always referring to the previous example, if $F \eq \{ A \rightarrow B \}$, then both relations satisfy the functional dependency in $F$: they wouldn't satisfy $AB \rightarrow C$, but since such functional dependency isn't in $F$, it won't matter whether $r_1$ and $r_2$ respect it. If our set of functional dependencies was $F \eq \{ A \rightarrow B, \; B \rightarrow C \}$, then only $r_1$ would be a legal instance in respect to $F$.
+
+\section{Closure of $F$ ($F^+$) and keys}
+
+Let us consider again a set of functional dependencies such as $F \eq \{ A \rightarrow B, \; B \rightarrow C \}$: each legal instance of $r$ would satisfy these two functional dependencies, but would also satisfy the functional dependence $A \rightarrow C$. Can we directly include $A \rightarrow C$ into $F$? We actually can't, since $F$ is delimited only to certain functional dependencies. There could be in a relation some other functional dependencies that are not belonging to $F$. We could consider $F$ as a subset of all the possible functional dependencies on a relation $r \in R$.
+\nwl
+In general, a relation $r$ might have more functional dependencies than the ones defined in $F$; an example is the one that we said earlier: if $F \eq \{ A \rightarrow B, \; B \rightarrow C \}$, then $A \rightarrow C$ is a possible functional dependency, because it's \textbf{deduced} (or inferred) from $F$.
+
+\begin{definition}{Inferred functional dependencies}
+    A \textbf{functional dependency} $X \rightarrow Y$ is said to be \textbf{inferred from} or \textbf{implied by} a set of functional dependencies if $X \rightarrow Y$ holds for \textbf{every legal instance} $r$ of a relation schema $R$ where $F$ is applied.
+    \nwl
+    In other terms, if each relation $r$ is legal according to $F$, then $X \rightarrow Y$ also holds in $r$.
+\end{definition}
+
+Formally, we refer to the set of all the possible dependencies that can be inferred from $F$ as the \textbf{closure} of $F$.
+
+\begin{definition}{Closure of $F$ ($F^+$)}
+    Formally, we denote the \textbf{closure of} $F$ as the set of all the dependencies that can be inferred from $F$. $F$ is a subset of the closure ($F \subseteq F^+$). It is indicated with $F^+$
+\end{definition}
+
+We also talked in the past about the concept of \textbf{key}: a set of attributes that allows to identify each tuple. There is always at least one key in each relation, and there are multiple types of keys, depending on their meaning. Keys can also be defined in term of functional dependencies:
+
+\begin{definition}{Keys $\cdot$ Part 2}
+    Given a relation schema $R$ and a set $F$ of functional dependencies defined on it, we can define $K$, a subset of the relation schema $R$, as a \textbf{key} of $R$ if:
+    \begin{itemize}
+        \item [1)] the functional dependence $(K \rightarrow R) \in F^+$ always holds;
+        \item [2)] there is no subset $K' \subseteq K$ such that the functional dependence $K' \rightarrow R$ holds.
+    \end{itemize}
+\end{definition}
+
+Taking again the example of a university database with all the students, the matriculation number is the identifier for each student, and is thus the key of the relation. There are multiple types of keys, and in general a table might have multiple keys: in that case, when multiple keys exist, each key is called \textbf{candidate key}. In \texttt{SQL} in particular, a key must be selected as \textbf{primary key}: a key that can't assume a \texttt{null} value and that should determine all the items inside the relation.
+\nwl
+There is a particular type of functional dependency, called \textbf{trivial functional dependency}: let us consider two non-empty sets $X$ and $Y$ of $R$, such that $Y \subseteq X$. Suppose now that we impose the functional dependency $X \rightarrow Y$, even if not part of a specific set of functional dependencies $F$. We would have for instance $X \eq ABC$ and $Y \eq AB$. As a consequence, the functional dependency $X \rightarrow Y$ belongs to the closure of $F$ (thus $(X \rightarrow Y) \in F^+$).
+\nwl
+There are some properties connected to the functional dependencies, and one of them is the following: considering a relation schema $R$ and a set of functional dependencies $F$, we can say that given two non-empty sets $X$ and $Y$ belonging to $R$, if the functional dependency $X \rightarrow Y$ is \textbf{included} in $F^+$, then for each element $S$ belonging to the set $Y$, also the functional dependency $X \rightarrow S$ belongs to $F^+$. It can be also written with mathematical terms as follows:
+\[ (X \rightarrow Y) \in F^+ \; \Longleftrightarrow \; \forall \; S \in Y, \; (X \rightarrow S) \in F^+ \]
+
+So for instance, let us have the following situation:
+\[ X \eq A \quad \quad Y \eq BC \]
+
+then, if we let $X \rightarrow Y$, for the property we would have ${A \rightarrow B, \; A \rightarrow C} \in F^+$.
+
+\section{$F^A$ and Armstrong's axioms}
+
+When trying to compute the closure of $F$, we might realize that it's an hard task: $F^+$ does comprehend all the functional dependencies in $F$, and we can derive some of the inferred ones from $F$, but there might be other ones that are not so obvious, and for large schemas it may be hard to compute all the functional dependencies. It's for this reason that in order to compute all the functional dependencies in $F^+$ we introduce a smaller set $F^A$, which is easier to compute, although still being time consuming. We consider $F^A$ as a \textbf{set} of \textbf{functional dependencies on} $R$. By default $F^A$ is an \textbf{empty set}, which can be then populated.
+\nwl
+In order to compute all the functional dependencies in $F^A$, we'll use the \textbf{Armstrong's axioms}. Some of them are here listed:
+\begin{question}
+    \begin{itemize}
+        \item [1)] if $(X \rightarrow Y) \in F$, then $(X \rightarrow Y) \in F^A$
+        \item [2)] if $(Y \subseteq X) \in R$, then $(X \rightarrow Y) \in F^A$ (\textbf{reflexivity})
+        \item [3)] if $(X \rightarrow Y) \in F^A$, then $(XZ \rightarrow YZ) \in F^A$, $\forall \; Z \in R$ (\textbf{augmentation})
+        \item [4)] if $\{X \rightarrow Y, \; Y \rightarrow Z\} \in R$, then $(X \rightarrow Z) \in F^A$ (\textbf{transitivity})
+    \end{itemize}
+\end{question}
+
+Let's go through the various axioms:
+\begin{itemize}
+    \item \textbf{reflexivity}: if for instance $X \eq \{A, B\}$ and $Y \eq \{A\}$, then it's obvious that if a tuple has $t_1[A] \eq t_2[A]$ and $t_1[B] \eq t_2[B]$ then the value for the attribute $A$ in both tuples is equal;
+    \item \textbf{augmentation}: let us have something like TaxCode $\rightarrow$ Name, then if two tuples have the same TaxCode value then they must obviously have the same Name value. Now, let us consider, together with TaxCode and Name, the attribute Address. We then get TaxCode, Address $\rightarrow$ Name, Address. It's also obvious that if two tuples have the same TaxCode and Address values, then they have the same Name and Address values;
+    \item \textbf{transitivity}: let the two functional dependencies $A \rightarrow B$ and $B \rightarrow C$: if two tuples have the same value for the attribute $A$, then they must have the same value also for the attribute $B$; similarly, if two tuples have the same value for $B$, then also the value on $C$ will be the same. If both functional dependencies are respected, then whenever two tuples have the same value for $A$, then they will have the same value for $B$.
+\end{itemize}
+
+Why did we introduce another set $F^A$ though? Because we can recursively apply the Armstrong axioms in order to reach the point where $F^+ \eq F^A$. With the previously introduced axioms we can introduce three new rules: the \textbf{union}, \textbf{decomposition} and \textbf{pseudotransitivity} rules:
+\begin{itemize}
+    \item \textbf{Union rule}: if $(X \rightarrow Y) \in F^A$ and $(X \rightarrow Z) \in F^A$, then $(X \rightarrow YZ) \in F^A$;
+    \item \textbf{Decomposition rule}: if $(X \rightarrow Y) \in F^A$ and $Z \subseteq Y$, then $(X \rightarrow Z) \in F^A$;
+    \item \textbf{Pseudotransitivity rule}: if $(X \rightarrow Y) \in F^A$ and $(WY \rightarrow Z) \in F^A$, then $(WX \rightarrow Z) \in F^A$.
+\end{itemize} 
+
+Now, such rules can be proven through a theorem, which is here shown:
+
+\begin{theorem}{Implications regarding the functional dependencies}
+    Let $F$ be a \textbf{set} of \textbf{functional dependencies}, then the following 3 implications hold:
+    \begin{itemize}
+        \item [1)] if $(X \rightarrow Y) \in F^A$ and $(X \rightarrow Z) \in F^A$, then $(X \rightarrow YZ) \in F^A$;
+        \item [2)] if $(X \rightarrow Y) \in F^A$ and $Z \subseteq Y$, then $(X \rightarrow Z) \in F^A$;
+        \item [3)] if $(X \rightarrow Y) \in F^A$ and $(WY \rightarrow Z) \in F^A$, then $(WX \rightarrow Z) \in F^A$.
+    \end{itemize}
+\end{theorem}
+\begin{longproof}
+    \begin{itemize}
+        \item [1)] Demonstration of the \textbf{union rule}:\\
+        We start with $(X \rightarrow Y) \in F^A$: with the axiom of \textbf{augmentation} we add an $X$ by both sides:
+        \[ (XX \rightarrow XY) \in F^A \thus (X \rightarrow XY) \in F^A \]
+
+        We simplify $XX$ to $X$ because we are dealing with sets. Now, we do the same with the other functional dependency, $(X \rightarrow Z) \in F^A$, reaching then
+        \[ (XY \rightarrow YZ) \in F^A \]
+
+        We now have $(X \rightarrow XY) \in F^A$ and $(XY \rightarrow YZ) \in F^A$: we can apply the \textbf{transitivity} axiom and finally obtain $(X \rightarrow YZ) \in F^A$.
+        \item [2)] Demonstration of the \textbf{decomposition rule}:\\
+        At the beginning we have $Z \subseteq Y$, which for the \textbf{reflexivity} axiom can be translated as $(Y \rightarrow Z) \in F^A$. Now, we have
+        \[ (X \rightarrow Y) \in F^A \quad \text{ and } \quad (Y \rightarrow Z) \in F^A \thus (X \rightarrow Z) \in F^A \]
+
+        This last passage is given by the axiom of \textbf{transitivity}.
+        \item [3)] Demonstration of the \textbf{pseudotransitivity rule}:\\
+        Starting with $(X \rightarrow Y) \in F^A$, we can use the axiom of \textbf{augmentation} to reach $WX \rightarrow WY \in F^A$. Now, we have
+        \[ (WX \rightarrow WY) \in F^A \quad \text{ and } \quad (WY \rightarrow Z) \in F^A \]
+
+        We can use the \textbf{transitivity} axiom and reach finally $(WX \rightarrow Z) \in F^A$.
+    \end{itemize}
+\end{longproof}
+
+Regarding the \textbf{union rule}: it's obvious that if we have a functional dependency such as $(X \rightarrow A_i) \in F^A$ where $i \eq 1, \; 2, \; ..., \; n$, then $(X \rightarrow A_1 \; A_2 \; ... \; A_n) \in F^A$; we can go back to the previous state by using the \textbf{decomposition rule}. We can say then that
+\[ (X \rightarrow A_1 \; A_2 \; ... \; A_n) \in F^A \quad \text{ if and only if } \quad (X \rightarrow A_i) \in F^A \text{ with } i \eq 1, \; 2, \; ..., \; n \]
+
+When finding other functional dependencies that are not defined on $F$, a typical strategy is to repeatedly apply the Armstrong's axioms. Another way is to find, given a set of attributes $X$, all the attributes that depend on $X$ given the functional dependencies on $F$. Such attributes are part of a set denoted as $X^+_F$, which is the \textbf{closure of $X$ with respect to $F$}.
+
+\begin{definition}{Closure of $X$ with respect to $F$ ($X^+_F$)}
+    Let $R$ be a \textbf{relational schema}, $F$ a \textbf{set of functional dependencies} on $R$ and $X$ a \textbf{subset} of $R$. The \textbf{closure of $X$ with respect to $F$} is the set of all the \textbf{functionally determined} attributes of $X$, which are determined by the functional dependencies defined in $F$. In other words, all the attributes of $X$ that are determined by the functional dependencies in $F$. It is denoted as $X^+_F$, and is defined as:
+    \[ X^+_F \eq \{ A \; | \; (X \rightarrow A) \in F^A \} \]
+
+    Trivially, $X \subseteq X^+_F$, by the reflexivity axiom.
+\end{definition}
+
+% \pagebreak % helps with formatting the page
+
+Regarding the closure of $X$ with respect to $F$, we can have a lemma, which is the following:
+
+\begin{lemma}{Closure of $X$ with respect to $F$}
+    Let $R$ be a schema and $F$ a set of functional dependencies on $R$, then the following holds:
+    \[ (X \rightarrow Y) \in F^A \; \Longleftrightarrow \; Y \subseteq X^+_F \]
+    \begin{proof}
+        Let $Y$ be a set of attributes such that $Y \eq A_1 \; A_2 \; ... \; A_n$. Now, the lemma has \textbf{two points} that have to be proven: that if $Y \subseteq X^+_F$ then $(X \rightarrow Y) \in F^A$ and its opposite, since the original statement is \textbf{bidirectional}. We start with the first condition:
+        \begin{itemize}
+            \item [1)] if $Y \subseteq X^+_F$ then $(X \rightarrow Y) \in F^A$\nwl
+            Since $Y$ is a subset of $X^+$, then for each $i \eq 1, \; 2, \; ..., \; n$ we can say that $(X \rightarrow A_i) \in F^A$ equals to $(X \rightarrow Y) \in F^A$ for the \textbf{union} rule;\\
+            \item [2)] if $(X \rightarrow Y) \in F^A$ then $Y \subseteq X^+_F$\nwl
+            Similarly to the previous point, we use the \textbf{decomposition} rule: for every $i \eq 1, \; 2, \; ..., \; n$, then $(X \rightarrow Y) \in F^A$ is equal to $(X \rightarrow A_i) \in F^A$. This is allowed because all attributes $A_i$ are a subset of $Y$, thus the possibility of using the decomposition rule. By the definition of $X^+_F$, we can say that $A_i \in X^+_F, \; \forall \; i \in \{1, \; 2, \; ..., \; n\}$, thus $Y \subseteq X^+$
+        \end{itemize}
+    \end{proof}
+\end{lemma}
+
+We said earlier that the scope of $F^A$ was to introduce an easier set into the equation that would allow us to compute the closure of $F$ ($F^+$). Now we have all the necessary tools to introduce and prove the theorem that enunciates this very equivalence:
+
+\begin{theorem}{$F^+ = F^A$}
+    Let $R$ be a schema and $F$ a set of functional dependencies on $R$, then the following holds:
+    \[ F^+ \eq F^A \]
+    \vspace{12pt}
+\end{theorem}
+\begin{longproof}
+    The theorem can be proven by \textbf{double inclusion}. For such proof, we will show that both $F^+ \supseteq F^A$ and $F^+ \subseteq F^A$. If both statements will be true, then obviously $F^+ \eq F^A$.
+    \nwl
+    \textbf{First inclusion:} $F^+ \supseteq F^A$
+    \nwl
+    We want to prove, as a first step, that $F^+ \supseteq F^A$ (so $F^+$ \textbf{contains} $F^A$): let us consider a generic functional dependency $(X \rightarrow Y) \in F^A$, then we can prove that such functional dependency is also in $F^+$ (our goal is then $(X \rightarrow Y) \in F^+$) by \textbf{induction}. In order to do so, we apply $i$ times one of the Armstrong's axioms.
+    \nwl
+    Let us start with $i \eq 0$: in such a case, the functional dependency $X \rightarrow Y$ is in $F^A$, but is also in $F$. This is because at $i \eq 0$ we haven't yet used any axiom, and if $F^A$ has an item at that time it's because it contains only the functional dependencies of $F$, which in this case is only $X \rightarrow Y$. This means that $(X \rightarrow Y) \in F^+$.
+    \nwl
+    We formulate the following \textbf{hypothesis}: if we apply Armstrong's axioms for a number of times equal to $i - 1$, then all the functional dependencies that were obtained from $F$ are now in $F^+$. We now have to prove that such hypothesis is valid also if we apply the axioms for a number of times equal to $i$. We can prove that this hypothesis is true for each of the Armstrong's axioms:
+    \begin{itemize}
+        \item [1)] \textbf{Application of the reflexivity axiom}:\nwl
+        The functional dependency $X \rightarrow Y$ could have been inserted into $F^A$ because of the \textbf{reflexivity} axiom, which would imply that $Y \subseteq X$. Now, in a \textbf{legal} instance of $R$ (which will be called $r$), let two tuples $t_1$ and $t_2$. Clearly, since the instance is legal, we have that
+        \[ t_1[X] \eq t_2[X] \thus t_1[Y] \eq t_2[Y] \]
+
+        As a consequence, we have that $(X \rightarrow Y) \in F^+$.
+        \\
+        \item [2)] \textbf{Application of the augmentation axiom}:\nwl
+        If the functional dependency $(X \rightarrow Y) \in F^A$ was obtained via \textbf{augmentation}, then it must've come from a functional dependency such as $(V \rightarrow W) \in F^A$, which has been obtained in turn by the application of Armstrong's axioms for $n - 1$ times, such that $X \eq ZV$ and $Y \eq ZW$ for some $Z \subseteq R$. By our induction hypothesis, we have that $(V \rightarrow W) \in F^+$. Now, let $r$ be a \textbf{legal} instance of $R$, and let the two tuples $t_1$ and $t_2$ belong to $R$. The following holds:
+        \[ t_1[X] \eq t_2[X] \thus t_1[V] \eq t_2[V] \]
+        
+        because $V \subseteq X$. Similarly, because of $(V \rightarrow W) \in F^+$, we have:
+        \[ t_1[V] \eq t_2[V] \thus t_1[W] \eq t_2[W] \]
+
+        Now, there is also $(X \rightarrow Z) \in F^+$. Now, since $X$ determines both $W$ and $Z$, we reach that $X \rightarrow WZ$, and since $WZ \eq Y$, we have that $(X \rightarrow Y) \in F^+$.
+        \\
+        \item [3)] \textbf{Application of the transitivity axiom}:\nwl
+        By the transitivity axiom, if we have two functional dependencies such as $(X \rightarrow Z, \; Z \rightarrow Y) \in F^A$, then $(X \rightarrow Y) \in F^A$. Now, this tells us that in order to arrive to $X \rightarrow Y$ with $i$ applications of the Armstrong's axioms, we should arrive at most at the step $i - 1$ to a situation where we have $X \rightarrow Z, \; Z \rightarrow Y$. For our induction hypothesis, these two functional dependencies are in $F^+$, because they originated from $F$. Now, let be $r$ a legal instance of $R$, and $t_1$ and $t_2$ be two tuples belonging to $R$. We have that
+        \[ t_1[X] \eq t_2[X] \thus t_1[Z] \eq t_2[Z] \thus t_1[Y] \eq t_2[Y] \]
+
+        Therefore $(X \rightarrow Y) \in F^+$.
+    \end{itemize}
+
+    Now that our hypothesis has been verified, we just need to show the second inclusion.
+    \nwl
+    \textbf{Second inclusion:} $F^+ \subseteq F^A$
+    \nwl
+    We want to prove this second step by \textbf{contradiction}: suppose that there exists a functional dependency $(X \rightarrow Y) \in F^+$ such that $(X \rightarrow Y) \notin F^A$. Let us also consider the following instance of $R$:
+    \begin{center}
+        $r \eq$ \begin{tabular}{|c|c|c|c|c|c|c|c|}
+            \hline
+            1 & 1 & ... & 1 & 1 & 1 & ... & 1 \\
+            \hline
+            1 & 1 & ... & 1 & 0 & 0 & ... & 0 \\
+            \hline 
+            \multicolumn{4}{c}{\upbracefill} & \multicolumn{4}{c}{\upbracefill} \\
+            \multicolumn{4}{c}{$\scriptstyle X^+$} & \multicolumn{4}{c}{$\scriptstyle R - X^+$}
+        \end{tabular}
+    \end{center}
+
+    We make the assumption that $r$ is a \textbf{legal instance} of $R$. Suppose that it's wasn't legal, so there would be at least one functional dependency in the form $(V \rightarrow W) \in F$ (which is automatically also in $F^A$) that is not satisfied by the values in $r$. The fact that such dependency would exist implies that there must be at least two tuples $t_1$ and $t_2$ that don't respect such functional dependency, so that they are equal on $V$ and different on $W$. In symbols, that would be
+    \[ V \subseteq X^+ \quad \quad W \cap (R - X^+) \eq \emptyset \]
+
+    Since $V \subseteq X^+$, it means that $V$ is an attribute which is functionally determined by some functional dependency. We can use the previously shown lemma (denoted as \textbf{Lemma 1}), and determine that a functional dependency such as $(X \rightarrow V) \in F^A$ exists. We can use $X$ because, by definition of $X^+$, $X$ is a subset of $X^+$. By applying the axiom of transitivity, we get that since $\{ X \rightarrow V, \; V \rightarrow W\}$ then $X \rightarrow W \in F^A$. This tells us that $W \subseteq X^+$, which contradicts our original statement. This determines that $r$ is a legal instance of $R$.
+    \nwl
+    Now, let's go back to the original assumption, so that $(X \rightarrow Y) \in F^+$ and $(X \rightarrow Y) \notin F^A$. We know that $r$ is a legal instance, so by definition not only $r$ satisfies all the functional dependencies in $F^+$, but it also satisfies $X \rightarrow Y$. Now, we know that $X \subseteq X^+$ because of the definition of $X^+$. There are two tuples in $r$ that are identical on $X$, so they must be identical on $Y$ too. This leads us to $Y \subseteq X^+$, since $Y$ is determined by $X$. By the lemma, we get that $X \rightarrow Y \in F^A$, so we have a \textbf{contradiction}, and we can now say that $F^+ \subseteq F^A$.
+\end{longproof}
+
+With this theorem we have a way to finally identify all the functional dependencies in $F^+$. The only drawback is that it takes exponential time to compute all the functional dependencies: let us just consider the axiom of reflexivity, it would analyse each possible subset of $R$, and there are $2^{|R|}$ possible subsets of $R$; We would discover, moreover, that $|F^+| \gg 2^{|R|}$ (so the number of elements in $F^+$ is much greater than the number of subsets of $R$).
+\nwl
+But why do we have to know how to compute $F^+$? The definition of \textbf{Third Normal Form} (\textbf{3NF}) is based on such concept. In order to obtain a schema in 3NF from a schema that is not in such form, we have to decompose such schema. While decomposing, we want to preserve the dependencies in $F^+$.
+
+\section{Third Normal Form (3NF)}
+
+We know that a relation $R$ is said to be legal if it respects all the given functional dependencies in a set $F$, so for instance, if we had a database for storing the Students' data, we would have the following:
+
+\begin{center}
+    Students: \quad \begin{tabular}{|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Matr} & \textbf{TaxCode} & \textbf{Surname} & \textbf{Name} & \textbf{BDate} & \textbf{Town} \\
+        \hline
+        \multicolumn{6}{|c|}{...} \\
+        \hline
+    \end{tabular}
+    \\
+    \[ F \eq \{ \text{ Matr } \rightarrow \text{ Matr, TaxCode, Surname, Name, BDate, Town } \} \]
+\end{center}
+
+The relation \textit{Students} would be said \textbf{legal} if $F$ was valid for each tuple of \textit{Students}. If $F$ was equal to
+\[ F \eq \{ \text{ TaxCode } \rightarrow \text{ TaxCode, Matr, Surname, Name, BDate, Town } \} \]
+
+then \textit{Students} would still be considered as a legal relation. We can't say the same if for instance we had a set $F$ such as $F \eq \{ \text{ Surname } \rightarrow \text{ Name } \}$: there could be for instance two students with the same name and surname, but with different matriculation numbers. We see a pattern here: all the functional dependencies of the type $K \rightarrow X$ have the attribute $K$ that behaves like a \textbf{key}.
+
+\begin{question}
+    We come thus to a very important concept: the only \textbf{non-trivial} functional dependencies that a relation $R$ must satisfy in order to be said \textbf{legal} are of the form
+    \[ K \rightarrow X \]
+
+    where $K$ represents a \textbf{key} belonging to $R$
+\end{question}
+
+We can make another example regarding this aspect of keys: suppose that we have a relation \textit{Exams} with the following attributes:
+\[ \text{Exams} \eq \{ \text{ Matr, CCode, DatePassing, Grade } \} \]
+
+In such a system, a student with a given matriculation ID can pass the exam of a specific course only once. We derive from such property that there is only one functional dependency that respects the previously said property:
+\[ \text{Matr, CCode} \rightarrow \text{DatePassing, Grade} \]
+
+Why is it so? Let's suppose for instance that the functional dependencies were one of the following:
+\begin{itemize}
+    \item $\text{Matr} \rightarrow \text{DatePassing}$ and $\text{Matr} \rightarrow \text{Grade}$: if the matriculation ID determined the date on which an exam was passed, then if a student would not be able to make more than one exam, since the relation wouldn't be anymore legal. Same thing goes for the grade: a student would always have the same grade for all the exams, otherwise the instance won't be legal anymore;
+    \item $\text{CCode} \rightarrow \text{DatePassing}$ and $\text{CCode} \rightarrow \text{Grade}$: the first functional dependency won't allow for an exam of a specific course to be taken in multiple dates, while the second doesn't allow for an exam of a specific course to have different grades.
+\end{itemize}
+
+Logically, we would think of \textit{Matr} and \textit{CCode} as two independent keys, but they actually form together one single key, since if they were considered as independent then we would have the previously described two cases. This property that we just used on these two cases is the fundamental property of the \textbf{third normal form} (\textbf{3NF}):
+
+\begin{definition}{Third Normal Form (3NF)}
+    A relation schema $R$ is said to be in \textbf{T}hird \textbf{N}ormal \textbf{F}orm (\textbf{3NF}) if 
+    \[ \forall \; (X \rightarrow A) \in F^+, \quad A \notin X \]
+
+    then one of the two applies:
+    \begin{itemize}
+        \item $A$ \textbf{belongs} to a \textbf{key} ($A$ will be called \textbf{prime});
+        \item $X$ \textbf{contains} a \textbf{key} ($X$ will be called \textbf{super key})
+    \end{itemize}
+    
+    In other words, $R$ is in \textbf{3NF} if the only non-trivial functional dependencies that must be satisfied by every legal instance are of the type
+    \[ K \rightarrow X \]
+
+    where either $K$ \textbf{contains} a \textbf{key} \textbf{or} $X$ \textbf{is contained} in a \textbf{key}
+\end{definition}

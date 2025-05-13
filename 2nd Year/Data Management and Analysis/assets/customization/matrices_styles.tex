@@ -1,0 +1,30 @@
+\usepackage[customcolors]{hf-tikz}
+
+\tikzset{style green/.style={
+    set fill color=green!50!lime!60,
+    set border color=green!50!lime!60,
+  },
+  style cyan/.style={
+    set fill color=cyan!90!blue!60,
+    set border color=cyan!90!blue!60,
+  },
+  style orange/.style={
+    set fill color=orange!80!red!60,
+    set border color=orange!80!red!60,
+  },
+  hor/.style={
+    above left offset={-0.05,0.31},
+    below right offset={0.05,-0.05},
+    #1
+  },
+  ver/.style={
+    above left offset={-0.1,0.3},
+    below right offset={0.8,-0.15},
+    #1
+  }
+}
+
+        %\tikzmarkin[hor = style green]{rowOne} a_{11} & a_{12} & \cdots & a_{1n} \tikzmarkend{rowOne} \\
+        %\tikzmarkin[hor = style green]{rowTwo} a_{21} & a_{22} & \cdots & a_{2n} \tikzmarkend{rowTwo} \\
+        %\vdots & \vdots &  & \vdots \\
+        %\tikzmarkin[hor = style green]{rowThree}\tikzmarkend{colOne} a_{m1} & a_{m2} & \cdots & a_{mn} \tikzmarkend{rowThree} \\

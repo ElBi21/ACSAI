@@ -1,0 +1,38 @@
+\documentclass[]{../../NoTeX/notex}
+\usepackage{../../NoTeX/notexmacros}
+
+\usetikzlibrary{patterns, snakes}
+
+\renewcommand{\titleheader}{
+    {\Large \textbf{\textsc{Sapienza, University of Rome}}}
+    \linebreak
+    {\large \textsc{Course of Applied Computer Science and Artificial Intelligence (ACSAI)}}
+    
+    \vspace{0.05cm}
+    {\normal \textsc{2rd Year, 2nd Semester}}
+    }
+\renewcommand{\titlecourse}{Data Management and Analysis\\\large{Unit 1}}
+\renewcommand{\titlecover}{../../Assets/DMA-bg.jpg}
+\renewcommand{\titleauthor}{Leonardo Biason}
+\renewcommand{\titlesubtitle}{Course taught by prof. Giuseppe Perelli}
+\renewcommand{\titlefooter}{
+    \begin{tabular}{c c c}
+        \includegraphics[height=1.5cm]{../../Assets/uniroma1.png} & \hspace{2cm} & \includegraphics[height=1.5cm]{../../Assets/icon.png}
+    \end{tabular}
+}
+
+\begin{document}
+    \maincol{HTML}{046CB2}
+    \input{../../NoTeX/notextitle.tex}
+
+    \input{before.tex}
+    \notextoc
+
+    \input{chaps/chap1_dbs_and_management.tex}
+    \pagebreak
+    \input{chaps/chap2_relational_algebra.tex}
+    \pagebreak
+    \input{chaps/chap3_functional_dependencies.tex}
+    \pagebreak
+    \input{chaps/chap4_physical_organization.tex}
+\end{document}

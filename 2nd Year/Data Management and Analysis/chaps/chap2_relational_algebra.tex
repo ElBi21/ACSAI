@@ -1,0 +1,844 @@
+\chapter{Relational Algebra}
+
+We previously talked about databases and some possible types of databases. But how do we select and pick data from them? How can we structure efficient queries? We do it via the use of \textbf{relational algebra}. Relational algebra is a notation for specifying queries about the content of the relations, and eases the task of thinking about the way a query has to be structured. The \texttt{SQL} language is a query language based on the principles of relational algebra.
+
+\begin{definition}{Relational algebra}
+    \textbf{Relational algebra} is a \textbf{formal language} that allows to interrogate a \textbf{relational database} via the use of binary and unary operators that, if applied to one or two relation instances, returns a newly generated relation instance. Relational algebra is a \textbf{procedural language}, meaning that all the operations are executed in a precise order, which allow to get to the precise wanted result.
+\end{definition}
+
+More precisely, what is an \textbf{algebra}? We can consider an algebra as a structure with a domain and a list of operators: for instance, arithmetic algebra is an algebra where the domain is a number set and the operators are the sum, the product, etc...; the set algebra has instead as a domain the sets, while the operators are the union, the intersection, the difference, etc... We say that an \textbf{algebraic expression} is a combination of values and operators.
+
+\section{Possible operations}
+
+Relational algebra has the following properties: the \textbf{domain} is made out of the \textbf{relations}, which are set of tuples, and the \textbf{result} is as well made of a \textbf{set of tuples}. The expressions in relational algebra are what we call queries. There are four types of operators in relational algebra:
+\begin{itemize}
+    \item [1)] remove parts of a single relation: \textbf{projection} and \textbf{selection};
+    \item [2)] usual set operations: \textbf{union}, \textbf{intersection}, \textbf{difference};
+    \item [3)] combine the tuples of two relations: \textbf{Cartesian product} and \textbf{joins};
+    \item [4)] \textbf{renaming}
+\end{itemize}
+
+\subsection{Projection}
+
+A projection is similar to a "vertical cut" on the relation, \textbf{returning} a \textbf{subset} of the \textbf{relation's attributes}. It's represented with the symbol $\pi$. More specifically, having a relation $R$ with attributes $A_1, \; A_2, \; ..., \; A_n$, the projection $\pi_{A_j, \; ..., \; A_k}(R)$ returns the attributes $A_j, \; ..., \; A_k$, where $1 \leq j \leq k \leq n$. Let the following example:
+\begin{center}
+    $R$: \quad \begin{tabular}{|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_1$ & $A_2$ & $A_3$ & $A_4$ & $A_5$ & $A_6$ \\
+        \hline
+        ... & ... & A & ... & B & ... \\
+        \hline
+        ... & ... & A & D & B & ... \\
+        \hline
+        ... & E & A & ... & C & ... \\
+        \hline
+    \end{tabular}
+    \quad then $\pi_{A_3, A_5}(R)$: \quad \begin{tabular}{|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_3$ & $A_5$ \\
+        \hline
+        A & B \\
+        \hline
+        A & C \\
+        \hline
+    \end{tabular}
+\end{center}
+
+In the previous example we can see how in the projection there are only 2 tuples: this is because row 1 and row 2 of the first table are, after the projection, identical, thus they get merged together. A projection follows the set rules, there \textbf{can't be two identical items}. If we want to save also the duplicates, we should include in the selection a domain that acts as primary key, which identifies each tuple, even if equal for most of the attributes. For instance, if our primary key was $A_1$ in the previous example, we would now get the following:
+
+\begin{center}
+    $R$: \quad \begin{tabular}{|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_1$ & $A_2$ & $A_3$ & $A_4$ & $A_5$ & $A_6$ \\
+        \hline
+        1 & ... & A & ... & B & ... \\
+        \hline
+        2 & ... & A & D & B & ... \\
+        \hline
+        3 & E & A & ... & C & ... \\
+        \hline
+    \end{tabular}
+    \quad then $\pi_{A_1, A_3, A_5}(R)$: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_1$ & $A_3$ & $A_5$ \\
+        \hline
+        1 & A & B \\
+        \hline
+        2 & A & B \\
+        \hline
+        3 & A & C \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\subsection{Selection}
+
+Similar to the projection, but instead of performing a "vertical cut", it performs an "horizontal cut" on the relation, and selects all the rows that respect a given constraint. Denoted with the symbol $\sigma_C(R)$, where $C$ is the \textbf{condition} that has to be met. The \textbf{condition} is a \textbf{composite Boolean expression} (which uses the binary operators $\wedge$, $\vee$ and $\neg$. The operators are respectively the \textbf{AND}, the \textbf{OR} and the \textbf{NOT}), where the terms are in the following form:
+\[ A \theta B \quad \text{or} \quad A \theta \; \text{'}a\text{'} \quad \quad \text{where } \theta \in \{ \leq, \; <, \; \eq, \; >, \; \geq \} \]
+
+In the previous formula:
+\begin{itemize}
+    \item $\theta$ is called \textbf{comparison operator}, and can be one of the operators listed above;
+    \item $A$ and $B$ are attributes of the same domain ($\dom{A} \eq \dom{B}$);
+    \item $a$ is an item of $\dom{A}$, thus $a \in \dom{A}$
+\end{itemize}
+
+For instance, let us consider the following example:
+\begin{center}
+    $R$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_1$ & $A_2$ & $A_3$ & $A_4$ \\
+        \hline
+        1 & Mark & Host & Milan \\
+        \hline
+        2 & Joe & Host & Rome \\
+        \hline
+        3 & Will & Client & Milan \\
+        \hline
+    \end{tabular}
+    \quad $\theta_{A_3 \eq \text{"Host"}}(R)$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        $A_1$ & $A_2$ & $A_3$ & $A_4$ \\
+        \hline
+        1 & Mark & Host & Milan \\
+        \hline
+        2 & Joe & Host & Rome \\
+        \hline
+    \end{tabular}
+\end{center}
+
+When using the selection, we don't lose any tuple, since we take all the content of the tuples, without discarding any value.
+
+\subsection{Union}
+
+A union between two relations is represented as
+\[ r_1 \cup r_2 \]
+
+and results in a relation that contains all the tuples belonging to at least one of the operand instances. Union can't be performed on every relation though: it can be performed only on what we call \textbf{union compatible} operands. Union compatible operands have the \textbf{same number of attributes}, and each corresponding attribute has the \textbf{same domain}. It's not necessary that the attributes names are the same, but their domain must be functionally identical.
+For instance, let the following two tables:
+
+\begin{center}
+    $R_1$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Joe & Hill & 002 & Calculus \\
+        \hline
+        Will & Smith & 004 & Programming \\
+        \hline
+    \end{tabular} \\
+    \vspace{12pt} $R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Algorithms \\
+        \hline
+        Edith & Jones & 003 & Linear Algebra \\
+        \hline
+        Joe & Hill & 002 & Physics \\
+        \hline
+    \end{tabular}
+\end{center}
+
+The union of $R_1$ and $R_2$ is equal to:
+
+\begin{center}
+    $R_1 \cup R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Joe & Hill & 002 & Calculus \\
+        \hline
+        Will & Smith & 004 & Programming \\
+        \hline
+        Mark & Hike & 001 & Algorithms \\
+        \hline
+        Edith & Jones & 003 & Linear Algebra \\
+        \hline
+        Joe & Hill & 002 & Physics \\
+        \hline
+    \end{tabular}
+\end{center}
+
+If in two relations two tuples are equal (so $t_1 \eq t_2$ if $t_1 \in R_1$ and $t_2 \in R_2$), then by making the union of $R_1$ and $R_2$ we are \textbf{merging} also all the \textbf{double values}. The result of a union is still a relation, which means that it will still follow the rule that two equal tuples can't exist in the same relation. If we want to make the union between two non-compatible relations, we can first use the projection to make them compatible, and then make the union.
+\nwl
+Moreover, the union \textbf{must make sense}. If we had two relations like $R_1 \eq \{\text{name}, \text{ code},$\\$\text{department}\}$ and $R_2 \eq \{\text{name}, \text{ code}, \text{ office}\}$, then they would theoretically be union compatible, even though the union wouldn't make sense, since "department" and "office" have different meanings.
+
+\subsection{Difference}
+
+Since the difference is also a \textbf{set operation}, it follows some of the rules of the \textbf{union}: for instance, it can be applied only to \textbf{union compatible} operands. The result of the difference is a relation containing the tuples of the first relation that do not appear in the second relation. It's denoted as $r_1 - r_2$. For example:
+
+\begin{center}
+    $R_1$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Joe & Hill & 002 & Calculus \\
+        \hline
+        Will & Smith & 004 & Programming \\
+        \hline
+    \end{tabular} \\
+    \vspace{12pt} $R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Edith & Jones & 003 & Linear Algebra \\
+        \hline
+        Joe & Hill & 002 & Physics \\
+        \hline
+    \end{tabular}
+\end{center}
+
+The difference $R_1 - R_2$ would be then equal to:
+
+\begin{center}
+    $R_1 - R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Joe & Hill & 002 & Calculus \\
+        \hline
+        Will & Smith & 004 & Programming \\
+        \hline
+    \end{tabular}
+\end{center}
+
+While instead $R_2 - R_1$ would be equal to:
+
+\begin{center}
+    $R_2 - R_1$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Edith & Jones & 003 & Linear Algebra \\
+        \hline
+        Joe & Hill & 002 & Physics \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Similarly to the union, if two relations are not union compatible, then we can use the projection to make them alike and then use the difference between them
+
+\subsection{Intersection}
+
+The \textbf{intersection} is the last of the three set operations that we can apply to a relation. As for the other two operations, it can be applied only to \textbf{union compatible} operands. The intersection creates a relation containing the items that are common to both the relations, and it's denoted as $r_1 \cap r_2$. The intersection is given by this expression here:
+\[ r_1 \cap r_2 \eq (r_1 - (r_1 - r_2)) \]
+
+An example follows:
+
+\begin{center}
+    $R_1$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Joe & Hill & 002 & Calculus \\
+        \hline
+        Will & Smith & 004 & Programming \\
+        \hline
+    \end{tabular} \\
+    \vspace{12pt} $R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+        Edith & Jones & 003 & Linear Algebra \\
+        \hline
+        Joe & Hill & 002 & Physics \\
+        \hline
+    \end{tabular}
+\end{center}
+
+The intersection $R_1 \cap R_2$ would be equal to:
+
+\begin{center}
+    $R_1 \cap R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{Surname} & \textbf{Code} & \textbf{Course} \\
+        \hline
+        Mark & Hike & 001 & Chemistry \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Unlike the difference, the intersection is a commutative operand. And similarly to the union and the difference, in order to make the intersection of two non-compatible relations, we can use first the projection to select the domains that we're interested into and then use the intersection.
+
+\subsection{Cartesian product}
+
+Sometimes a database doesn't contain one single relation, but it has multiple relations that contain different data, even if each relation is linked one to the other. Normally, the main information are stored in multiple relations, so in order to retrieve such information we have to combine the multiple tuples from the multiple relations before doing any operation on them.
+\nwl
+One possible way of uniting two or more relations is with the \textbf{Cartesian product}. The Cartesian product creates a relation with \textbf{tuples} from the \textbf{first relation} \textbf{combined} with \textbf{tuples} from the \textbf{second relation}. A Cartesian product is denoted as $r_1 \times r_2$. Let us make an example:
+
+\begin{center}
+    $R_1$: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} \\
+        \hline
+        Mark & C01 & Rome \\
+        \hline
+        Joe & C02 & Milan \\
+        \hline
+        Will & C03 & Florence \\
+        \hline
+        Jack & C04 & Rome \\
+        \hline
+    \end{tabular}
+    \quad $R_2$: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Order} & \textbf{CCode} & \textbf{AssetCode} & \textbf{Pieces} \\
+        \hline
+        O01 & C01 & A01 & 200 \\
+        \hline
+        O02 & C02 & A02 & 150 \\
+        \hline
+        O03 & C03 & A01 & 300 \\
+        \hline
+        O04 & C02 & A03 & 150 \\
+        \hline
+        O01 & C01 & A02 & 200 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+We want to make the Cartesian product between $R_1$ and $R_2$. Before doing that, we have to rename the "CCode" attribute of $R_2$, since otherwise we would lose that data. The renaming can be done via the operator $\rho$. So, before doing the product, we do the renaming:
+\[ R_{2\text{New}} \eq \rho_{\text{CopyCCode} \eq \text{CCode}}(R_2) \]
+
+Now we can proceed with the product. This will result in the following:
+
+\begin{center}
+    Customer $\times$ Order: \\ \vspace{12pt}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} & \textbf{Order} & \textbf{CopyCCode} & \textbf{AssetCode} & \textbf{Pieces} \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A01 & 200 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O02 & C02 & A02 & 150 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O03 & C03 & A01 & 300 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O04 & C02 & A03 & 150 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A02 & 200 \\
+        \hline \rowcolor{blue!10}
+        Joe & C02 & Milan & O01 & C01 & A01 & 200 \\
+        \hline \rowcolor{blue!10}
+        Joe & C02 & Milan & O02 & C02 & A02 & 150 \\
+        \hline \rowcolor{blue!10}
+        Joe & C02 & Milan & O03 & C03 & A01 & 300 \\
+        \hline
+        ... & ... & ... & ... & ... & ... & ... \\
+        \hline \rowcolor{yellow!10}
+        Will & C03 & Florence & O03 & C03 & A01 & 300 \\
+        \hline
+        ... & ... & ... & ... & ... & ... & ... \\
+        \hline \rowcolor{red!10}
+        Jack & C04 & Rome & O01 & C01 & A02 & 200 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+All the tuples with the same Name, Code and Town are all marked with the same colour. There is only one problem though: some orders were never made by some customers. For instance, user Mark never did an order of 150 pieces of the asset A02, but it appears on the product. Here is the table with the right orders appearing in green and the wrong ones in red:
+
+\begin{center}
+    Customer $\times$ Order: \\ \vspace{12pt}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} & \textbf{Order} & \textbf{CopyCCode} & \textbf{AssetCode} & \textbf{Pieces} \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A01 & 200 \\
+        \hline \rowcolor{red!10}
+        Mark & C01 & Rome & O02 & C02 & A02 & 150 \\
+        \hline \rowcolor{red!10}
+        Mark & C01 & Rome & O03 & C03 & A01 & 300 \\
+        \hline \rowcolor{red!10}
+        Mark & C01 & Rome & O04 & C02 & A03 & 150 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A02 & 200 \\
+        \hline \rowcolor{red!10}
+        Joe & C02 & Milan & O01 & C01 & A01 & 200 \\
+        \hline \rowcolor{green!10}
+        Joe & C02 & Milan & O02 & C02 & A02 & 150 \\
+        \hline \rowcolor{red!10}
+        Joe & C02 & Milan & O03 & C03 & A01 & 300 \\
+        \hline
+        ... & ... & ... & ... & ... & ... & ... \\
+        \hline \rowcolor{green!10}
+        Will & C03 & Florence & O03 & C03 & A01 & 300 \\
+        \hline
+        ... & ... & ... & ... & ... & ... & ... \\
+        \hline \rowcolor{red!10}
+        Jack & C04 & Rome & O01 & C01 & A02 & 200 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+This can be solved by checking the Customers Codes: we have both CCode and CopyCCode, so if we select all the tuples where these two are equal, we get the right product with the right data:
+
+\begin{center}
+    $\sigma_{\text{CCode} = \text{CopyCCode}}(\text{Customer} \times \text{Order})$: \\ \vspace{12pt}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} & \textbf{Order} & \textbf{CopyCCode} & \textbf{AssetCode} & \textbf{Pieces} \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A01 & 200 \\
+        \hline \rowcolor{green!10}
+        Mark & C01 & Rome & O01 & C01 & A02 & 200 \\
+        \hline \rowcolor{green!10}
+        Joe & C02 & Milan & O02 & C02 & A02 & 150 \\
+        \hline \rowcolor{green!10}
+        Joe & C02 & Milan & O04 & C02 & A03 & 150 \\
+        \hline \rowcolor{green!10}
+        Will & C03 & Florence & O03 & C03 & A01 & 300 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+A more complete and elegant solution would consist of making an ulterior projection to eliminate the CopyCCode attribute:
+\[ \pi_{\text{Name}, \text{ CCode}, \text{ Town}, \text{ Order}, \text{ AssetCode}, \text{ Pieces}} \big( \sigma_{\text{CCode} = \text{CopyCCode}}(\text{Customer} \times \text{Order}) \big) \]
+
+Let's try to structure a query based on the table that we just got: we want the data of the customers and of the orders that are more than 150 pieces. We already have the table, so we don't have to worry about making the Cartesian product again. We just need to select the rows of the orders with more than 150 pieces:
+\[ \pi_{\text{Name}, \text{ CCode}, \text{ Town}, \text{ Order}, \text{ AssetCode}, \text{ Pieces}} \big( \sigma_{\text{CCode} = \text{CopyCCode} \wedge \text{Pieces} > 150}(\text{Customer} \times \text{Order}) \big) \]
+
+\subsection{Natural join}
+
+The \textbf{natural join} simplifies the process of taking away the incorrect tuples, as its definition is that if there are two relations $r_1$ and $r_2$, then the natural join between those two (denoted as $r_1 \bowtie r_2$) is equal to a relation where the tuples respect the following condition:
+\[ R_1.A_1 \eq R_2.A_1 \wedge R_1.A_2 \eq R_2.A_2 \wedge \; ... \; \wedge R_1.A_k \eq R_2.A_k \]
+
+where $A_1, \; A_2, \; ..., \; A_k$ are the \textbf{attributes in common} between the two relations $r_1$ and $r_2$. All the \textbf{duplicate attributes} are, moreover, \textbf{automatically dropped}. In synthesis, the natural join is equal to the projection of the selection of the following Cartesian product:
+\[ r_1 \bowtie r_2 \eq \pi_{XY}\big( \sigma_C(r_1 \times r_2) \big) \]
+
+where:
+\begin{itemize}
+    \item the condition $C$ is equal to the condition
+    \[ R_1.A_1 \eq R_2.A_1 \wedge R_1.A_2 \eq R_2.A_2 \wedge \; ... \; \wedge R_1.A_k \eq R_2.A_k \]
+    \item $X$ is the set of attributes in $r_1$;
+    \item $Y$ is the set of attributes in $r_2$ that are not in $r_1$;
+\end{itemize}
+
+It's important to say that the attributes in the condition $C$ have all the same name, and that only the tuples having the same values for the attributes in common are then merged and returned from the query.
+\nwl
+There are two special cases when dealing with the \textbf{natural join}:
+\begin{itemize}
+    \item [1)] the two relations have some attributes in common, but the two attributes have no values in common: the result of such join is an \textbf{empty set};
+    \item [2)] the two relations do not have attributes with the same name, so the condition
+    \[ R_1.A_1 \eq R_2.A_1 \wedge R_1.A_2 \eq R_2.A_2 \wedge \; ... \; \wedge R_1.A_k \eq R_2.A_k \]
+
+    cannot be evaluated, making the natural join result into a normal Cartesian product.
+\end{itemize}
+
+When doing the natural join, it's important to remember that attributes with the same name share also the same meaning. This is important because after the natural join the attributes that share the same name will be merged. It's important to check before doing the join what is the meaning of each attribute, and if necessary, we should rename it. Another solution is to use a $\theta$-join.
+
+\subsection{$\theta$-join}
+
+A $\theta$-join selects the tuples resulting from the Cartesian product that satisfy the following condition:
+\[ A \; \theta \; B\]
+
+where:
+\begin{itemize}
+    \item $\theta$ is the comparison operator (such that $\theta \in \{ \leq, \; <, \; =, \; >, \; \geq \}$);
+    \item $A$ is an attribute of the first relation;
+    \item $B$ is an attribute of the second relation;
+    \item $\dom{A} \eq \dom{B}$.
+\end{itemize}
+
+The final formula of a $\theta$-join is the following:
+\[ r_1 \bowtie r_2 \eq \sigma_{A \; \theta \; B} (r_1 \times r_2) \]
+
+\section{Universal quantification}
+
+Up until now, we always made examples and statements considering that there \textbf{exist} some tuples for some properties that will satisfy our query or our operation: we always used the \textbf{existential quantification} $\exists$. The way an existential quantification works is by checking all the tuples and returning the ones that correspond to our query.
+\nwl
+There exists another type of quantification: \textbf{universal quantification} ($\forall$). Such quantification checks if a condition holds true for all the elements on a set, which is different from the existential quantification: the existential checks each tuple independently, while the universal considers all tuples at the same time.
+\nwl
+Let us make an example: suppose that we have two tables, one with a list of customers and one with a list of orders. We want to make a table that collects all the customers that ordered more than 100 pieces of any item. The tables would be similar to the following ones:
+\begin{center}
+    Customers: \quad
+    \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} \\
+        \hline
+        John & C1 & Rome \\
+        \hline
+        John & C2 & Foggia \\
+        \hline
+        Smith & C3 & Rome \\
+        \hline
+        Jack & C4 & Milan \\
+        \hline
+    \end{tabular}
+    \quad
+    Orders: \quad
+    \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{CCode} & \textbf{ACode} & \textbf{Pieces} \\
+        \hline
+        C1 & A1 & 100 \\
+        \hline
+        C2 & A2 & 200 \\
+        \hline
+        C3 & A2 & 150 \\
+        \hline
+        C4 & A3 & 200 \\
+        \hline
+        C1 & A2 & 200 \\
+        \hline
+        C1 & A3 & 100 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Now, let's perform the following query:
+\[ \pi_{\text{Name, CCode, Town}} \big( \sigma_{\text{Pieces } > 100}(\text{Customers } \bowtie \text{ Orders})\big) \]
+
+The result would be the following:
+\begin{center}
+    Query result: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} \\
+        \hline
+        John & C1 & Rome \\
+        \hline
+        John & C2 & Foggia \\
+        \hline
+        Smith & C3 & Rome \\
+        \hline
+        Jack & C4 & Milan \\
+        \hline
+    \end{tabular}
+\end{center}
+
+But what if we wanted to know the customers that \textbf{always} ordered more than 100 items? Let's start and do it step by step: first, we do the natural join between the two tables $\text{Customers } \bowtie \text{ Orders}$:
+
+\begin{center}
+    $\text{Customers } \bowtie \text{ Orders}$: \quad \begin{tabular}{|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} & \textbf{ACode} & \textbf{Pieces} \\
+        \hline
+        John & C1 & Rome & A1 & 100 \\
+        \hline
+        John & C1 & Rome & A2 & 200 \\
+        \hline
+        John & C1 & Rome & A3 & 100 \\
+        \hline
+        John & C2 & Foggia & A2 & 200 \\
+        \hline
+        Smith & C3 & Rome & A2 & 150 \\
+        \hline
+        Jack & C4 & Milan & A3 & 200 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Now, how can we do the selection? We can use $\sigma_{\text{Pieces } > 100}$, but that would include the second tuple: such tuple can't be included, since the customer C1 hasn't always ordered more than 100 pieces of any item. There is a method that we can exploit, which involves the logical negations.
+\nwl
+Let's suppose that we have the following statement:
+\begin{center}
+    $\forall$ elements the condition is \textbf{true}
+\end{center}
+
+what would be the negation of such statement? It \textbf{can't} be
+\begin{center}
+    $\forall$ elements the condition is \textbf{false}
+\end{center}
+
+because in order to make the first statement not true we don't need \textbf{all} the elements to not respect the condition, but rather we need just one element for which the statement doesn't hold. Thus, the correct negation is
+\begin{center}
+    $\exists$ an element for which the condition is \textbf{false}
+\end{center}
+
+So analogously, if we say "\textit{All} of my orders is of at least 100 items", the negation is \textbf{not} "\textit{None} of my orders is of at least 100 items", but rather "\textit{None} of my orders is \textit{not} of at least 100 items". We can exploit this concept of the double negation in order to make our query work: we can find the items that satisfied the inverted condition, and then we can use them in order to remove the related items in the "for all" condition. We thus proceed this way: first, we find all the customer which ordered a number of items which is less or equal to 100 from the natural join Customers $\bowtie$ Orders:
+\begin{center}
+    $\sigma_{\text{Pieces} \leq 100}(\text{Customers } \bowtie \text{ Orders})$: \quad \begin{tabular}{|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} & \textbf{ACode} & \textbf{Pieces} \\
+        \hline
+        John & C1 & Rome & A1 & 100 \\
+        \hline
+        John & C1 & Rome & A3 & 100 \\
+        \hline
+    \end{tabular}
+    \\
+    \vspace{12pt}
+    $\pi_{\text{Name, CCode, Town}}\Big(\sigma_{\text{Pieces} \leq 100}(\text{Customers } \bowtie \text{ Orders})\Big)$: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Town} \\
+        \hline
+        John & C1 & Rome \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Now we can subtract this last query from the natural join Customers $\bowtie$ Orders and get the customers that always ordered more than 100 items. Why don't we subtract it directly from the Customers relation? Because if there was a customer that made no orders, then we wouldn't be able to detect him. If we do the natural join between Customers and Orders, all the customers that made no order will disappear, thus having a table with all the customers that made at least one order, be it of more than 100 items or not. The final query will then be:
+\begin{center}
+    \resizebox{\columnwidth}{!}{
+        $ \pi_{\text{Name, CCode, Town}}(\text{Customers } \bowtie \text{ Orders}) - \pi_{\text{Name, CCode, Town}}\Big(\sigma_{\text{Pieces} \leq 100}(\text{Customers } \bowtie \text{ Orders})\Big) $
+    }
+\end{center}
+
+Let us observe another example query: we want to know the name and the code of all the employees that have an higher salary than their supervisors. The beginning table is the following (where \texttt{SCode} stands for "Supervisor's Code"):
+\begin{center}
+    Employees: \quad \begin{tabular}{|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} & \textbf{Section} & \textbf{Salary} & \textbf{SCode} \\
+        \hline
+        Jack & C1 & B & 1000\$ & C3 \\
+        \hline
+        Joe & C2 & A & 2000\$ & C3 \\
+        \hline
+        Mark & C3 & A & 5000\$ & \texttt{NULL} \\
+        \hline
+        Buck & C4 & B & 2000\$ & C2 \\
+        \hline
+        Jimmy & C5 & B & 1500\$ & C1 \\
+        \hline
+        Jonathan & C6 & B & 1000\$ & C1 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+By itself the table can't give us any concrete data, so how can we proceed? We could for instance make a join of the table with itself: this way we would be able to have on a same tuple both the supervisor and the employee. Let's first compute the Cartesian product Employees $\times$ Employees:
+
+\begin{center}
+    \resizebox{\columnwidth}{!}{
+        \centering
+        EmployeesProd $\eq \rho_{\text{Name, CCode, Section, Salary, SCode, CName, CCCode, CSection, CSalary, CSCode}}(\text{Employees} \times \text{Employees})$
+    }
+    \\ \vspace{24pt}
+    $\sigma_{\text{SCode} \eq \text{CCode}}(\text{EmployeesProd})$:
+    \\ \vspace{12pt}
+    \resizebox{\columnwidth}{!}{
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+            \hline \rowcolor{maindoccol!60}
+            \textbf{Name} & \textbf{CCode} & \textbf{Section} & \textbf{Salary} & \textbf{SCode} & \textbf{CName} & \textbf{CCCode} & \textbf{CSection} & \textbf{CSalary} & \textbf{CSCode} \\
+            \hline
+            Jack & C1 & B & 1000\$ & C3 & Mark & C3 & A & 5000\$ & \texttt{NULL} \\
+            \hline
+            Joe & C2 & A & 2000\$ & C3 & Mark & C3 & A & 5000\$ & \texttt{NULL} \\
+            \hline
+            Buck & C4 & B & 2000\$ & C2 & Joe & C2 & A & 2000\$ & C3 \\
+            \hline
+            Jimmy & C5 & B & 1500\$ & C1 & Jack & C1 & B & 1000\$ & C3 \\
+            \hline
+            Jonathan & C6 & B & 1000\$ & C1 & Jack & C1 & B & 1000\$ & C3 \\
+            \hline
+        \end{tabular}
+    }
+\end{center}
+
+Now we can make a further selection and pick all the rows where Salary is bigger than CSalary, and finally make a projection and pick only the Name and CCode of each tuple:
+
+\begin{center}
+    Result $\eq \sigma_{\text{Salary} \geq \text{CSalary}}\Big(\sigma_{\text{SCode} \eq \text{CCode}}(\text{EmployeesProd})\Big)$:
+    \\ \vspace{12pt}
+    \resizebox{\columnwidth}{!}{
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+            \hline \rowcolor{maindoccol!60}
+            \textbf{Name} & \textbf{CCode} & \textbf{Section} & \textbf{Salary} & \textbf{SCode} & \textbf{CName} & \textbf{CCCode} & \textbf{CSection} & \textbf{CSalary} & \textbf{CSCode} \\
+            \hline
+            Buck & C4 & B & 2000\$ & C2 & Joe & C2 & A & 2000\$ & C3 \\
+            \hline
+            Jimmy & C5 & B & 1500\$ & C1 & Jack & C1 & B & 1000\$ & C3 \\
+            \hline
+            Jonathan & C6 & B & 1000\$ & C1 & Jack & C1 & B & 1000\$ & C3 \\
+            \hline
+        \end{tabular}
+    }
+    \\ \vspace{12pt}
+    $\pi_{\text{Name, CCode}}(\text{Result})$: \quad \begin{tabular}{|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{Name} & \textbf{CCode} \\
+        \hline
+        Buck & C4 \\
+        \hline
+        Jimmy & C5 \\
+        \hline
+        Jonathan & C6 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+If we wanted to get for instance the name and the code of all the employees that have a lower salary than their supervisors, then we have multiple ways of getting to such solution. Here we are talking as well about a $\forall$ condition, so we should be careful. We can use what we got previously: \texttt{Result} is equal to the tuples of the employees that have an higher salary than their supervisors, thus we can use it and subtract it from the original Employees relation:
+\[ \pi_{\text{SCode}}(\text{Employees}) - \pi_{\text{CCode}}(\text{Result}) \]
+
+Now we have the codes of the employees (which represent the supervisors) that have an higher salary than their employees: we can make a join with the Employees table and get the data of each employee listed in the operation done earlier. After it, we can make a projection and take only Name and CCode:
+\[ \pi_{\text{Name, CCode}} \Big((\pi_{\text{SCode}}(\text{Employees}) - \pi_{\text{CCode}}(\text{Result})) \bowtie \text{Employees}\Big)\]
+
+\section{Designing a relational database}
+
+% --- Lesson 06 - 20 October 2023
+
+Now that we saw all the possible operations, we can start describing some techniques that we can use to build a database. Let us suppose that we want to build a database for a university: we would start with a database with a single schema \texttt{Curriculum} with the following attributes: \texttt{StudentID}, \texttt{TC} (Tax Code), \texttt{Surname}, \texttt{Name}, \texttt{BirthDate}, \texttt{City}, \texttt{Province}, \texttt{Credits}, \texttt{TitleCourse}, \texttt{Professor}, \texttt{Date}, \texttt{Grade}.
+\nwl
+We have some problems though. For example, consider the following instance of the database:
+\begin{center}
+    \resizebox{\columnwidth}{!}{
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{ID} & \textbf{TC} & \textbf{Sname} & \textbf{Name} & \textbf{BD} & \textbf{City} & \textbf{Prov} & \textbf{C#} & \textbf{Course} & \textbf{Prof} & \textbf{Date} & \textbf{Grade} \\
+        \hline
+        01 & ... & Rossi & Mario & ... & Roma & Roma & 10 & CHEM & De Marco & ... & ... \\
+        \hline
+        02 & ... & Bianchi & Paolo & ... & Roma & Roma & 10 & CHEM & De Marco & ... & ... \\
+        \hline
+        01 & ... & Rossi & Mario & ... & Roma & Roma & 10 & CALC & Checchi & ... & ... \\
+        \hline
+    \end{tabular}}
+\end{center}
+
+We have a problem though: \textbf{redundancy}: the students appear again for every course. We don't need to rewrite the same data for all the times that a student does an exam. \textbf{Redundancy} has to be avoided, since it just occupies memory. From this problem, we can formulate 3 problems, or \textbf{anomalies}:
+\begin{itemize}
+    \item \textbf{update anomaly}: if the information regarding one course has to be updated, then we have to update each time each row where the course appears;
+    \item \textbf{insertion anomaly}: a student's data can't be inserted until the students attends and registers at least one exam. The same goes for the course: if no students are attending one course, then it will never be registered;
+    \item \textbf{deletion anomaly}: if we want to delete a student's row, then we might delete also the courses' data.
+\end{itemize}
+
+Another solution is to split the schema into multiple schemas: we now want to make 3 schemas, made of the following attributes:
+\begin{itemize}
+    \item \textbf{Students}: \texttt{StudentID}, \texttt{TC}, \texttt{Surname}, \texttt{Name}, \texttt{BirthDate}, \texttt{City}, \texttt{Province};
+    \item \textbf{Courses}: \texttt{CourseCode}, \texttt{Title}, \texttt{Professor};
+    \item \textbf{Exams}: \texttt{StudentID}, \texttt{CourseCode}, \texttt{Date}, \texttt{Grade}.
+\end{itemize}
+
+The database would look like this:
+
+\begin{center}
+    Students: \quad \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{ID} & \textbf{TC} & \textbf{Surname} & \textbf{Name} & \textbf{BirthDate} & \textbf{City} & \textbf{Province} \\
+        \hline
+        01 & ... & Rossi & Mario & ... & Roma & Roma \\
+        \hline
+        02 & ... & Bianchi & Paolo & ... & Roma & Roma \\
+        \hline
+    \end{tabular}
+    \\
+    \vspace{12pt}
+    \resizebox{\columnwidth}{!}{Course: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{CCode} & \textbf{Title} & \textbf{Professor} \\
+        \hline
+        C01 & CHEM & De Marco \\
+        \hline
+        C02 & CALC & Checchi \\
+        \hline
+    \end{tabular}
+    \quad \quad Exams: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{ID} & \textbf{CCode} & \textbf{Date} & \textbf{Grade} \\
+        \hline
+        01 & C01 & ... & 28 \\
+        \hline
+        02 & C01 & ... & 27 \\
+        \hline
+        01 & C02 & ... & 23 \\
+        \hline
+    \end{tabular}}
+\end{center}
+
+We still have some \textbf{redundancy} though: the City and Province could be repeated multiple times, and we can avoid it. Moreover, let us suppose that a municipality changes the province, then we would have to edit all the rows of all the students. Finally, we wouldn't be able to memorize the correspondence City - Province if there are no students with a specific correspondence, and deleting the only row with such a record would delete all the information regarding the match of a City with its Province. We can solve this by making a new relation:
+
+\begin{center}
+    Students: \quad \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{ID} & \textbf{TC} & \textbf{Surname} & \textbf{Name} & \textbf{BirthDate} & \textbf{City} \\
+        \hline
+        01 & ... & Rossi & Mario & ... & Roma \\
+        \hline
+        02 & ... & Bianchi & Paolo & ... & Roma \\
+        \hline
+    \end{tabular}
+    \\
+    \vspace{12pt}
+    \resizebox{\columnwidth}{!}{Course: \quad \begin{tabular}{|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{CCode} & \textbf{Title} & \textbf{Professor} \\
+        \hline
+        C01 & CHEM & De Marco \\
+        \hline
+        C02 & CALC & Checchi \\
+        \hline
+    \end{tabular}
+    \quad \quad Exams: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{ID} & \textbf{CCode} & \textbf{Date} & \textbf{Grade} \\
+        \hline
+        01 & C01 & ... & 28 \\
+        \hline
+        02 & C01 & ... & 27 \\
+        \hline
+        01 & C02 & ... & 23 \\
+        \hline
+    \end{tabular}}
+    \\
+    \vspace{12pt}
+    Municipality: \quad \begin{tabular}{|c|c|c|c|}
+        \hline \rowcolor{maindoccol!60}
+        \textbf{City} & \textbf{Province} \\
+        \hline
+        Roma & Roma \\
+        \hline
+        Frascati & Roma \\
+        \hline
+        Veglie & Lecce \\
+        \hline
+    \end{tabular}
+\end{center}
+
+We define a good database schema as a schema that presents \textbf{no redundancies} and \textbf{no update}, \textbf{insertion} and \textbf{deletion anomalies}. Most of the times we might think that it's more immediate to store all the data in a same table, but we will surely encounter at a point the problems that we saw earlier. Via the use of relational algebra, we can easily recover all the data that we need. The way to design a good schema is then to represent each concept into a different table, and the way to identify such concepts is to create \textbf{keys}.
+
+\begin{definition}{Keys}
+    A \textbf{key} is an \textbf{attribute} or a \textbf{set of attributes} which define a particular \textbf{functional dependence}. A key can be seen as a particular \textbf{constraint}.
+\end{definition}
+
+When creating a schema, some data may follow some conditions: in an exams schema, we can't register grades outside the range $[18, \; 31]$ (if we count $31$ as $30$ cum laude); the student ID must be different for each student; a salary can't be negative; etc...
+\nwl
+Such conditions are called \textbf{constraints}:
+\begin{definition}{Constraint}
+    A \textbf{constraint} is the representation in a database schema of a \textbf{condition} that is valid in the reality of interest. A database schema is said to be \textbf{legal} if it respects all the given constraints.
+\end{definition}
+
+DBMSs allow for an automatic control of the constraints, so that all the domains, keys and the containment of domains are correct. We'll see how functional dependencies represent constraints between attributes or subsets of attributes of the schema itself, and such constraints have to be respected at all times in order for the schema to be said legal.
+
+\section{Exercises}
+
+% --- Lesson 05 - 16 October 2023
+
+\begin{exercise}
+    We have the following three relations:
+    \begin{itemize}
+        \item \texttt{VEHICLE} \{Plate, Km, Type, Model\}
+        \item \texttt{MODEL} \{Name, Engine, Seats\}
+        \item \texttt{RENT} \{Plate, TaxC, PickupD, DropoffD\}
+    \end{itemize}
+
+    Perform the following queries:
+    \begin{itemize}
+        \item [1)] Plate and number of seats of passenger vehicles that were rented (picked up) on January 25, 2016;
+        \item [2)] Plates of diesel vehicles that were not leased (picked up and returned) in January 2016. Find for each user the plate of the first electric vehicle they rented
+    \end{itemize}
+    \vspace{12pt}
+\end{exercise}
+\begin{solution}{1.1.1}
+    \begin{itemize}
+        \item [1)] The solution query is
+        \[ \pi_{\text{Plate, Seats}} \big( \sigma_{\text{Type = "People"} \wedge \text{PickupD = 25/1/2016}} (A) \big)\]
+        \[ A \eq \big((\text{VEHICLE} \bowtie_{\text{VEHICLE.Model = MODEL.Name}} \text{MODEL}) \bowtie \text{RENT} \big) \]
+        \item [2)] The solution query is
+        \[ \pi_{\text{Plate}} \big( \sigma_{A} (B) \big) \]
+        \[ A \eq \neg ("31/12/2015" \leq \text{ PickupD } \leq "1/2/2016" \vee \nextline \]
+        \[ \prevline "31/12/2015" \leq \text{ DropoffD } \leq "1/2/2016") \wedge \text{Engine = "Diesel"} \]
+        \[ B \eq \big((\text{VEHICLE} \bowtie_{\text{VEHICLE.Model = MODEL.Name}} \text{MODEL}) \bowtie \text{RENT} \big) \]
+        \item [3)] 
+    \end{itemize}
+\end{solution}
