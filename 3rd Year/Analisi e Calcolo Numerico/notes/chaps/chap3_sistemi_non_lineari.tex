@@ -400,9 +400,9 @@ Invece, formalmente l'algoritmo è il seguente:
 \begin{algorithm}[H]
     \caption{Metodo delle secanti con estremo variabile}
     \KwIng{Due approssimazioni $x_0$ e $x_1$, la funzione $f(x)$ e la tolleranza}
-    $x_k \gets \texttt{NULL}$
+    $x_k \gets \texttt{NULL}$\;
     \tcp{$\xi_{\text{seq}}$ è una sequenza vuota}
-    $\xi_{\text{seq}} \gets \{\}$
+    $\xi_{\text{seq}} \gets \{\}$\;
     \While {$(f(x_k) \neq 0)$ \textbf{or} $(x_k > \text{tol})$}{
         \tcp{...calcola la nuova approssimazione di $\xi$}
         $x_{k + 1} \gets x_k - f(x_k) \cdot \frac{x_k - x_{k - 1}}{f(x_k) - f(x_{k - 1})}$\;
@@ -437,3 +437,51 @@ Tuttavia, per poter usare questo metodo necessitiamo di due approssimazioni iniz
     \[ C_N \eq \frac{f''(\xi)}{2f'(\xi)} \]
 \end{theorem}
 
+\section{Metodi iterativi a un punto (o del punto unito)}
+
+Fino ad ora abbiamo visto vari metodi numerici che ci hanno permesso di approssimare le radici, ed ognuno di questi utilizzava dei costrutti matematici come le tangenti o le secanti. Un altro tipo di metodi che possono essere usati per approssimare le radici sono i \textbf{metodi iterativi a un punto}, o \textbf{metodi iterativi del punto unito}, e questi metodi sono utilizzati perché richiedono soltanto un singolo valore iniziale di $x$.
+
+\begin{definition}{Metodo iterativo del punto unito}
+    Un \textbf{metodo iterativo del punto unito} in $\mathbb{R}$ ha la seguente forma:
+    \[ \begin{cases}
+        x_0 & \text{dato come input} \\
+        x_n \eq \phi(x_{n - 1}) & \text{per } n\eq 1, \; 2, \; ...
+    \end{cases} \]
+
+    dove $\phi$ è detta \textbf{funzione di iterazione}
+\end{definition}
+
+Ma in cosa consiste dunque il metodo del punto unito? In sintesi, questo consente di trovare le radici di un'equazione riscrivendola prima in una forma equivalente, e poi recuperando le radici di questa forma equivalente:
+\[ f(x) \eq 0 \quad \Longleftrightarrow \quad x \eq \phi(x) \]
+
+Dunque, se $\xi$ è radice di $f$, allora questa sarà detta \textbf{punto unito} di $\phi$. In altre parole, trovare il punto unito di $\phi$ significa trovare l'ascissa di intersezione tra la retta $y \eq x$ e la curva data da $y \eq \phi(x)$. Una funzione $f$ può avere più di un punto unito, un solo punto o nessun punto unito.
+\nwl
+Questi metodi convergeranno se la successione delle approssimazioni $\{ x_n \eq \phi(x_{n - 1})\}_{n \geq 1}$ rispetta il seguente limite:
+\[ \lim_{n \to \infty} |\xi - x_n| \eq 0 \quad \Longleftrightarrow \quad \lim_{n \to \infty} x_n \eq \xi \]
+
+Se il metodo è convergente, allora una buona approssimazione di $\xi$ viene data dal valore $x_n$, rispettando dunque il seguente criterio:
+\[ |x_n - x_{n - 1}| \leq \epsilon \]
+
+La convergenza del metodo può essere meglio formalizzata come segue:
+\begin{theorem}{Condizione necessaria per la convergenza}
+    Se la successione generata da:
+    \[ \begin{cases}
+        x_0 & \text{dato come input} \\
+        x_n \eq \phi(x_{n - 1}) & \text{per } n \eq 1, \; 2, \; ...
+    \end{cases} \]
+
+    è convergente a un valore $\tau$ e $\phi$ è continua in $\tau$, allora $\tau$ è \textbf{punto unito} di $\phi$, cioè $\tau \eq \phi(\tau)$
+\end{theorem}
+
+Segue ora un esempio per meglio spiegare l'uso del metodo del punto unito:
+
+\begin{example}
+    Consideriamo la funzione $f(x) \eq x^2 - x - 2$: vogliamo trovare le radici di $f(x)$ usando il metodo del punto unito. Iniziamo dunque trovando $\phi(x)$:
+    \[ \phi(x) \eq x^2 - 2 \eq x \]
+
+    Fatto ciò, possiamo procedere nel trovare le radici di $f(x)$, e lo possiamo fare controllando le intersezioni tra $y \eq x$ e $\phi(x)$:
+    
+    \begin{center}
+        \includegraphics[width=\linewidth]{assets/image-006.png}
+    \end{center}
+\end{example}
