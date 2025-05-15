@@ -451,29 +451,7 @@ Fino ad ora abbiamo visto vari metodi numerici che ci hanno permesso di approssi
     dove $\phi$ è detta \textbf{funzione di iterazione}
 \end{definition}
 
-Ma in cosa consiste dunque il metodo del punto unito? In sintesi, questo consente di trovare le radici di un'equazione riscrivendola prima in una forma equivalente, e poi recuperando le radici di questa forma equivalente:
-\[ f(x) \eq 0 \quad \Longleftrightarrow \quad x \eq \phi(x) \]
-
-Dunque, se $\xi$ è radice di $f$, allora questa sarà detta \textbf{punto unito} di $\phi$. In altre parole, trovare il punto unito di $\phi$ significa trovare l'ascissa di intersezione tra la retta $y \eq x$ e la curva data da $y \eq \phi(x)$. Una funzione $f$ può avere più di un punto unito, un solo punto o nessun punto unito.
-\nwl
-Questi metodi convergeranno se la successione delle approssimazioni $\{ x_n \eq \phi(x_{n - 1})\}_{n \geq 1}$ rispetta il seguente limite:
-\[ \lim_{n \to \infty} |\xi - x_n| \eq 0 \quad \Longleftrightarrow \quad \lim_{n \to \infty} x_n \eq \xi \]
-
-Se il metodo è convergente, allora una buona approssimazione di $\xi$ viene data dal valore $x_n$, rispettando dunque il seguente criterio:
-\[ |x_n - x_{n - 1}| \leq \epsilon \]
-
-La convergenza del metodo può essere meglio formalizzata come segue:
-\begin{theorem}{Condizione necessaria per la convergenza}
-    Se la successione generata da:
-    \[ \begin{cases}
-        x_0 & \text{dato come input} \\
-        x_n \eq \phi(x_{n - 1}) & \text{per } n \eq 1, \; 2, \; ...
-    \end{cases} \]
-
-    è convergente a un valore $\tau$ e $\phi$ è continua in $\tau$, allora $\tau$ è \textbf{punto unito} di $\phi$, cioè $\tau \eq \phi(\tau)$
-\end{theorem}
-
-Segue ora un esempio per meglio spiegare l'uso del metodo del punto unito:
+Per meglio spiegare come è possibile trovare, data una funzione $f$, i punti uniti della sua funzione di iterazione associata $\phi$, segue ora un esempio che illustra anche la correlazione tra le due funzioni:
 
 \begin{example}
     Consideriamo la funzione $f(x) \eq x^2 - x - 2$: vogliamo trovare le radici di $f(x)$ usando il metodo del punto unito. Iniziamo dunque trovando $\phi(x)$:
@@ -485,3 +463,130 @@ Segue ora un esempio per meglio spiegare l'uso del metodo del punto unito:
         \includegraphics[width=\linewidth]{assets/image-006.png}
     \end{center}
 \end{example}
+
+Ma in cosa consiste dunque il metodo del punto unito? In sintesi, questo consente di trovare le radici di un'equazione riscrivendola prima in una forma equivalente, e poi recuperando le radici di questa forma equivalente:
+\[ f(x) \eq 0 \quad \Longleftrightarrow \quad x \eq \phi(x) \]
+
+Dunque, se $\xi$ è radice di $f$, allora questa sarà detta \textbf{punto unito} di $\phi$. In altre parole, trovare il punto unito di $\phi$ significa trovare l'ascissa di intersezione tra la retta $y \eq x$ e la curva data da $y \eq \phi(x)$. Una funzione $f$ può avere più di un punto unito, un solo punto o nessun punto unito.
+\nwl
+Questi metodi convergeranno se la successione delle approssimazioni $\{ x_n \eq \phi(x_{n - 1})\}_{n \geq 1}$ rispetta il seguente limite:
+\[ \lim_{n \to \infty} |\xi - x_n| \eq 0 \quad \Longleftrightarrow \quad \lim_{n \to \infty} x_n \eq \xi \]
+
+Se il metodo è convergente, allora una buona approssimazione di $\xi$ viene data dal valore $x_n$, rispettando dunque il seguente criterio:
+\[ |x_n - x_{n - 1}| \leq \epsilon \]
+
+La convergenza del metodo richiede che due condizioni siano soddisfatte: una necessaria e una sufficiente. Iniziamo a illustrare, in una maniera meglio formalizzata, la condizione necessaria:
+
+\begin{theorem}{Condizione necessaria per la convergenza}
+    Se la successione generata da:
+    \[ \begin{cases}
+        x_0 & \text{dato come input} \\
+        x_n \eq \phi(x_{n - 1}) & \text{per } n \eq 1, \; 2, \; ...
+    \end{cases} \]
+
+    è convergente a un valore $\tau$ e $\phi$ è continua in $\tau$, allora $\tau$ è \textbf{punto unito} di $\phi$, cioè $\tau \eq \phi(\tau)$
+\end{theorem}
+
+Illustriamo ora un altro esempio, per meglio introdurre la condizione sufficiente di convergenza:
+
+\begin{example}
+    Consideriamo la funzione $f(x) \eq x^3 + 4x^2 - 10 \eq 0$: vogliamo verificare che, nell'intervallo $[1, \; 2]$ ci sia una singola radice, e vogliamo approssimare la radice tramite il metodo del punto unito.
+    \nwl
+    Possiamo verificare facilmente che la funzione ha una sola radice nell'intervallo specificato: infatti, non solo $f(1) \cdot f(2) < 0$, il che vuol dire che la funzione interseca l'asse $x$ almeno una volta, ma $f(x)$ è anche monotona crescente. Quest'ultima informazione ci viene data dalla derivata, che ha radici fuori dall'intervallo in cui siamo interessati. Dunque, la funzione è monotona crescente in $[1, \; 2]$, il che vuol dire che ha solo una radice nell'intervallo interessato.
+    \nwl
+    Ora passiamo al calcolare la funzione di iterazione. Possiamo trovarne almeno 5:
+    \begin{itemize}
+        \item [1)] tramite l'isolamento di $x^2$:
+        \[ x^2 \eq \frac{10 - x^3}{4} \; \Longrightarrow \; x \eq \frac{\sqrt{10 - x^3}}{2} \eq \phi_1(x) \]
+
+        \item [2)] tramite l'isolamento di $x^3$:
+        \[ x^3 \eq 10 - 4x^2 \; \Longrightarrow \; x \eq \sqrt[3]{10 - 4x^2} \eq \phi_2(x) \]
+
+        \item [3)] aggiungendo $-x$ a entrambi i membri:
+        \[ x^3 + 4x^2 - 10 - x \eq -x \; \Longrightarrow \; x \eq -x^3 - 4x^2 + 10 + x \eq \phi_3(x) \]
+
+        \item [4)] dividendo per $x$ e isolando $x^2$:
+        \[ \frac{x^3 + 4x^2 - 10}{x} \eq 0 \; \Longrightarrow \; x \eq \left( \frac{10}{x} - 4x \right)^{\frac{1}{2}} \eq \phi_4(x) \]
+
+        \item [5)] tramite il metodo di Newton:
+        \[ x - \frac{f(x)}{f'(x)} \eq x \; \Longrightarrow \; x \eq x - \frac{x^3 + 4x^2 - 10}{3x^2 + 8x} \eq \phi_5(x) \]
+    \end{itemize}
+
+    Utilizziamo ora il metodo del punto fisso per produrre le approssimazioni della nostra radice $\xi$; per farlo, useremo il seguente algoritmo:
+    \[ \begin{cases}
+        x_0 \eq 1,5 & \\
+        x_n \eq \phi(x_{n - 1}) & \text{per } n \eq 1, \; 2, \; ...
+    \end{cases} \]
+
+    Dopo 20 iterazioni per tutti i metodi, possiamo notare come solo alcune funzioni abbiano portato alla convergenza, benché tutte queste siano funzionalmente identiche:
+
+    \begin{center}
+        \resizebox{\linewidth}{!}{
+            \renewcommand{\arraystretch}{1.3}
+            \begin{tabular}{|c|c|c|c|c|c|}
+                \hline
+                \textbf{Iterazione} & $\mathbf{\phi_1(x)}$ & $\mathbf{\phi_2(x)}$ & $\mathbf{\phi_3(x)}$ & $\mathbf{\phi_4(x)}$ & $\mathbf{\phi_5(x)}$ \\
+                \hline\hline 
+                $1$ & $1.2869537676$ & $1.0000000000$ & $-0.875$ & $0.8164965809$ & $1.3733333333$ \\
+                \hline 
+                $2$ & $1.4025408035$ & $1.8171205928$ & $6.732421875$ & $2.9969088058$ & $1.3652620149$ \\
+                \hline 
+                $3$ & $1.3454583740$ & N/A & $-469.72001200$ & $1.0000000000$ & $1.3652300139$ \\
+                \hline 
+                $4$ & $1.3751702528$ & N/A & $102754555.19$ & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $5$ & $1.3600941928$ & N/A & $-1.0849338705 \cdot 10^{24}$ & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $6$ & $1.3678469676$ & N/A & $1.2770555914 \cdot 10^{72}$ & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $7$ & $1.3638870039$ & N/A & $-2.0827129086 \cdot 10^{216}$ & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $8$ & $1.3659167334$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $9$ & $1.3648782172$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $10$ & $1.3654100612$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $11$ & $1.3651378207$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $12$ & $1.3652772085$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $13$ & $1.3652058503$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $14$ & $1.3652423837$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $15$ & $1.3652236802$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $16$ & $1.3652332557$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $17$ & $1.3652283535$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $18$ & $1.3652308632$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline 
+                $19$ & $1.3652295783$ & N/A & N/A & $1.0000000000$ & $1.3652300134$ \\
+                \hline 
+                $20$ & $1.3652302362$ & N/A & N/A & $2.4494897428$ & $1.3652300134$ \\
+                \hline
+            \end{tabular}
+        }
+    \end{center}
+
+    Come possiamo notare, soltanto due funzioni riescono a convergere al valore della radice, mentre tutte le altre invece divergono (addirittura, $\phi_2(x)$ inizia a manifestare numeri complessi e $\phi_3(x)$ genera overflow dopo la 7$^{\text{a}}$ iterazione).
+\end{example}
+
+Con lo scorso esempio possiamo facilmente giungere alla conclusione che non tutte le funzioni di iterazione sono valide per essere usate con il metodo del punto unito. Serve dunque introdurre una nuova condizione, per meglio filtrare quali funzioni sono accettabili:
+
+\begin{theorem}{Condizione sufficiente per la convergenza}
+    Se una funzione d'iterazione $\phi$ è \textbf{derivabile} in un intorno $I \eq [a, \; b]$ e:
+    \begin{itemize}
+        \item con $\phi \; : \; I \; \longrightarrow \; I$, dove
+        \[ a \leq \min_{x \in I} \phi(x) \leq \max_{x \in I} \phi(x) \leq b \]
+        \item $\exists \; k \in (0, \; 1)$ tale che $|\phi'(x)| \leq k, \; \forall x \in I$;
+    \end{itemize}
+
+    allora:
+    \begin{itemize}
+        \item esiste un \textbf{unico punto unito} $\xi \in I$ di $\phi(\xi)$;
+        \item la successione $x_n \eq \phi(x_{n - 1})$ è convergente a $\xi$ per ogni approssimazione iniziale $x_0 \in I$.
+    \end{itemize}
+\end{theorem}
