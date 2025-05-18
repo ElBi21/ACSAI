@@ -475,6 +475,8 @@ Questi metodi convergeranno se la successione delle approssimazioni $\{ x_n \eq 
 Se il metodo è convergente, allora una buona approssimazione di $\xi$ viene data dal valore $x_n$, rispettando dunque il seguente criterio:
 \[ |x_n - x_{n - 1}| \leq \epsilon \]
 
+\subsection{Convergenza del metodo del punto fisso}
+
 La convergenza del metodo richiede che due condizioni siano soddisfatte: una necessaria e una sufficiente. Iniziamo a illustrare, in una maniera meglio formalizzata, la condizione necessaria:
 
 \begin{theorem}{Condizione necessaria per la convergenza}
@@ -581,12 +583,64 @@ Con lo scorso esempio possiamo facilmente giungere alla conclusione che non tutt
     \begin{itemize}
         \item con $\phi \; : \; I \; \longrightarrow \; I$, dove
         \[ a \leq \min_{x \in I} \phi(x) \leq \max_{x \in I} \phi(x) \leq b \]
-        \item $\exists \; k \in (0, \; 1)$ tale che $|\phi'(x)| \leq k, \; \forall x \in I$;
+        \item $\exists \; k \in (0, \; 1)$ tale che $|\phi'(x)| \leq k, \; \forall \; x \in I$;
     \end{itemize}
 
     allora:
     \begin{itemize}
         \item esiste un \textbf{unico punto unito} $\xi \in I$ di $\phi(\xi)$;
-        \item la successione $x_n \eq \phi(x_{n - 1})$ è convergente a $\xi$ per ogni approssimazione iniziale $x_0 \in I$.
+        \item la successione $x_n \eq \phi(x_{n - 1})$ è convergente a $\xi$ per ogni approssimazione iniziale $x_0 \in I$: in altre parole, $\phi$ deve essere una \textbf{contrazione}.
     \end{itemize}
 \end{theorem}
+
+Matematicamente, una contrazione è una funzione tale che, su tutto il dominio (nel nostro caso, su un intervallo specifico), per ogni $x$ del dominio allora la distanza tra due valori di $x$ qualsiasi (chiamati $x_1$ e $x_2$) è maggiore della distanza dell'immagine di questi:
+\[ x_1 \leq f(x_1) \leq f(x_2) \leq x_2 \]
+
+Circa la convergenza, possiamo fare un ulteriore appunto: dato un intervallo che rispetta le condizioni di convergenza, è possibile scegliere un sotto-intorno di $I$ all'interno del quale la successione di approssimazioni sarà sempre convergente per qualsiasi approssimazione iniziale scelta. La definizione formale è quella che segue:
+
+\begin{theorem}{Seconda condizione sufficiente per la convergenza}
+    Data una funzione di iterazione $\phi$, se questa è derivabile in $I \eq [a, \; b]$ e:
+    \begin{itemize}
+        \item $\phi(\xi) \eq \xi$, dove $\xi \in (a, \; b)$;
+        \item $\exists \; k \in (0, \; 1)$ tale che $|\phi'(x)| \leq k, \; \forall x \in I$;
+    \end{itemize}
+
+    allora esiste un intorno di $\xi$ denotato con $\Delta$ (dove $\Delta \eq [\xi - \delta, \; \xi + \delta] \subseteq I$) tale che:
+    \begin{itemize}
+        \item $\xi$ è l'unico punto unito di $\phi(\xi)$ in $\Delta$;
+        \item la successione $\{ x_n \eq \phi(x_{n - 1}) \}$, per $n \eq 1, \; 2, \; 3, \; ...$, è convergente a $\xi$ per ogni approssimazione iniziale $\x_0 \in \Delta$
+    \end{itemize}
+\end{theorem}
+
+Possiamo anche utilizzare il metodo del punto fisso assieme al metodo delle tangenti:
+
+\begin{theorem}{Applicazione del metodo del punto fisso al metodo delle tangenti}
+    Se $I \eq [a, \; b]$ è un intervallo di separazione di una radice $\xi$ di $f$, e:
+    \begin{itemize}
+        \item $f, \; f', \; f''$ sono continue in $I$, tale che $f \in C^2 [a, \; b]$;
+        \item $f'(x) \neq 0$ per $x \in [a, \; b]$;
+    \end{itemize}
+
+    allora esiste un intorno $J \subseteq I$ di $\xi$ tale che per $x_0 \in J$ la successione delle approssimazioni
+    \[ \left\{ xn \eq x_{n - 1} - \frac{f(x_{n - 1})}{f'(x_{n - 1})} \right\} \]
+
+    converge a $\xi$
+\end{theorem}
+
+Circa il metodo del punto fisso, nei scorsi teoremi circa la convergenza abbiamo usato più e più volte un intervallo $[0, \; 1)$, cercando di far sì che $|\phi'(x)|$ fosse all'interno di questo intervallo. Adesso ci concentreremo nel capire cosa succede se $\phi'(x)$ dovesse essere nell'intervallo $[0, \; 1)$ piuttosto che nell'intervallo $(-1, \; 0]$; come noteremo, questo avrà un effetto sull'errore del metodo. Per poter studiare questi comportamenti ci serviremo del teorema di Lagrange, il quale sostiene che, data una funzione continua in un intervallo $I \eq [a, \; b]$, allora esiste un punto $c \in I$ tale che
+\[ f'(c) \eq \frac{f(b) - f(a)}{b - a} \]
+
+Possiamo dunnque procedere a scrivere l'equazione dell'errore del metodo:
+\begin{align*}
+    e_n &\eq \xi - x_n \\
+    &\eq \phi(\xi) - \phi(x_{n - 1}) \\
+    &\eq \left(\phi(\xi) - \phi(x_{n - 1})\right) \cdot \frac{\xi - x_{n - 1}}{\xi - x_{n - 1}} \\
+    &\eq \phi'(t_n) \cdot (\xi - x_{n - 1}) \\
+    &\eq \phi'(t_n) \cdot e_{n - 1} \quad (\text{con } t_n \in [x_{n - 1}, \; \xi]) 
+\end{align*}
+
+Studiamo ora i due possibili casi, ovverosia se $\phi'(x) \in [0, \; 1)$ o se $\phi'(x) \in (-1, \; 0]$:
+\begin{itemize}
+    \item nel caso in cui $0 \leq \phi'(x) < 1$ per $x \in I$, la successione $\{x_n \eq \phi(x_{n - 1})\}$ (con $n \eq 1, \; 2, \; ...$) fosse monotona crescente (nel caso in cui $e_0 > 0$) o decrescente (se $e_0 < 0$), allora le approssimazioni all'interno della successione sarebbero per \textbf{difetto} (nel caso in cui $\xi > x_0$) o per \textbf{eccesso} (se $\xi < x_0$);
+    \item nel caso in cui $-1 < \phi'(x) \leq 0$ per $x \in I$, la successione $\{x_n \eq \phi(x_{n - 1})\}$ (con $n \eq 1, \; 2, \; ...$) non fosse monotona, allora le approssimazioni all'interno della successione sarebbero \textbf{alternativamente per difetto e per eccesso}.
+\end{itemize}
