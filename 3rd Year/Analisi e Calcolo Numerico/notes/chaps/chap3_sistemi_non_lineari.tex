@@ -627,6 +627,25 @@ Possiamo anche utilizzare il metodo del punto fisso assieme al metodo delle tang
     converge a $\xi$
 \end{theorem}
 
+Come per gli altri metodi, possiamo anche in questo caso studiare l'ordine di convergenza del metodo del punto unito. In questo metodo, l'ordine di convergenza è dettato dall'ordine della prima derivata di $\phi$, in serie, che non si annulla:
+
+\begin{theorem}{Ordine di convergenza del metodo del punto unito}
+    Se:
+    \begin{itemize}
+        \item $\phi \in C^p(I)$, dove $I$ è un intorno di un punto unito $\xi$ di $\phi$;
+        \item la successione delle approssimazioni $\{ x_n \}$ generata dal metodo è convergente;
+        \item $\phi(\xi) \eq \xi$;
+        \item per ogni $v \in [1, \; p - 1]$, allora
+        \[ \phi^{(v)} (\xi) \eq 0 \]
+        (dunque la derivata $v$-esima di $\phi$ con $x \eq \xi$ è uguale a $0$);
+        \item $phi^{(p)}(\xi) \neq 0$;
+    \end{itemize}
+
+    allora il metodo ha un ordine di convergenza uguale a $p$. In altre parole, il metodo ha un ordine di convergenza che è uguale all'ordine della prima derivata di $\phi$ , in ordine da $1, \; 2, \; ..., \; p-1$, che non si annulla in $\xi$
+\end{theorem}
+
+\subsection{Proprietà della successione di approssimazioni}
+
 Circa il metodo del punto fisso, nei scorsi teoremi circa la convergenza abbiamo usato più e più volte un intervallo $[0, \; 1)$, cercando di far sì che $|\phi'(x)|$ fosse all'interno di questo intervallo. Adesso ci concentreremo nel capire cosa succede se $\phi'(x)$ dovesse essere nell'intervallo $[0, \; 1)$ piuttosto che nell'intervallo $(-1, \; 0]$; come noteremo, questo avrà un effetto sull'errore del metodo. Per poter studiare questi comportamenti ci serviremo del teorema di Lagrange, il quale sostiene che, data una funzione continua in un intervallo $I \eq [a, \; b]$, allora esiste un punto $c \in I$ tale che
 \[ f'(c) \eq \frac{f(b) - f(a)}{b - a} \]
 
@@ -644,3 +663,50 @@ Studiamo ora i due possibili casi, ovverosia se $\phi'(x) \in [0, \; 1)$ o se $\
     \item nel caso in cui $0 \leq \phi'(x) < 1$ per $x \in I$, la successione $\{x_n \eq \phi(x_{n - 1})\}$ (con $n \eq 1, \; 2, \; ...$) fosse monotona crescente (nel caso in cui $e_0 > 0$) o decrescente (se $e_0 < 0$), allora le approssimazioni all'interno della successione sarebbero per \textbf{difetto} (nel caso in cui $\xi > x_0$) o per \textbf{eccesso} (se $\xi < x_0$);
     \item nel caso in cui $-1 < \phi'(x) \leq 0$ per $x \in I$, la successione $\{x_n \eq \phi(x_{n - 1})\}$ (con $n \eq 1, \; 2, \; ...$) non fosse monotona, allora le approssimazioni all'interno della successione sarebbero \textbf{alternativamente per difetto e per eccesso}.
 \end{itemize}
+
+\section{Soluzione di sistemi di equazioni non lineari}
+
+Finora abbiamo discusso di vari metodi che permettono di risolvere delle equazioni lineari, ma non ci siamo ancora addentrati nei \textbf{sistemi di equazioni lineari}. Scopriremo che in realtà alcuni dei metodi che abbiamo visto in precedenza sono facilmente aggiustabili per essere utilizzati con i sistemi di equazioni non lineari. Partiamo definendo precisamente cosa intendiamo come sistema di equazioni non lineari:
+
+\begin{definition}{Sistema di equazioni non lineari}
+    Un \textbf{sistema di equazioni non lineari}, denotato come $F(X) \eq 0$, può essere scritto nella seguente forma:
+    \[ \begin{cases}
+        f_1 (x_1, \; x_2, \; ..., \; x_n) \eq 0 \\
+        f_2 (x_1, \; x_2, \; ..., \; x_n) \eq 0 \\
+        \; \vdots \\
+        f_n (x_1, \; x_2, \; ..., \; x_n) \eq 0 \\
+    \end{cases} \]
+
+    dove $F(X) \eq \begin{bmatrix} f_1(X) & f_2(X) & ... & f_n(X) \end{bmatrix}^T$, e $X \eq \begin{bmatrix} x_1 & x_2 & ... & x_n \end{bmatrix}^T$. La soluzione di un sistema $F(X)$ è data dal vettore $\Xi \eq \begin{bmatrix} \xi_1 & \xi_2 & ... & \xi_n \end{bmatrix}$. Le componenti del vettore delle soluzioni \textbf{annullano simultaneamente} tutte le $n$ equazioni del sistema
+\end{definition}
+
+Solitamente questo non è necessario, ma durante il resto di questi appunti supporremo che tutte le funzioni appartenenti a un sistema siano continue in $D \subset \mathbb{R}^n$. Iniziamo dunque a definire i vari metodi di soluzione dei sistemi.
+
+\subsection{Metodo del punto unito in \texorpdfstring{$\mathbb{R}^n$}{R^n}}
+
+Per poter risolvere un sistema di equazioni non lineari tramite il metodo del punto unito, i passaggi da effettuare sono pressoché identici rispetto al metodo utilizzato per le singole equazioni. Infatti, partendo dal sistema in forma $F(X) \eq 0$ basterà riscriverlo in forma $X \eq \Phi(X)$, dove
+\[ \Phi \eq \begin{bmatrix} \phi_1(X) & \phi_2(X) & ... & \phi_n(X) \end{bmatrix}^T \]
+
+Similmente al metodo per le singole equazioni, se $\Xi \in \mathbb{R}^n$ è radice di $F$, allora $\Xi$ sarà anche punto unito di $\Phi$:
+\[ F(\Xi) \eq 0 \quad \Longleftrightarrow \quad \Xi \eq \Phi(\Xi) \]
+
+Il punto unito $\Xi$ può essere approssimato generando, per ogni $\phi_i$, una successione di approssimazioni. L'algoritmo infatti è il seguente:
+\[ \begin{cases}
+    X^{(0)} & \text{dato come input} \\
+    X^{(k)} \eq \Phi(X^{(k - 1)}) & \text{per } k \eq 1, \; 2, \; ...
+\end{cases} \quad \Longleftrightarrow \quad \begin{cases}
+    X^{(0)} \eq \begin{bmatrix} x_1^{(0)} & x_2^{(0)} & ... & x_n^{(0)} \end{bmatrix}^T \text{ dato come input} \\
+    x_1^{(k)} \eq \phi_1\left( x_1^{(k - 1)}, \; x_2^{(k - 1)}, \; ..., \; x_n^{(k - 1)} \right) \\
+    x_2^{(k)} \eq \phi_2\left( x_1^{(k - 1)}, \; x_2^{(k - 1)}, \; ..., \; x_n^{(k - 1)} \right) \\
+    ... \\
+    x_n^{(k)} \eq \phi_n\left( x_1^{(k - 1)}, \; x_2^{(k - 1)}, \; ..., \; x_n^{(k - 1)} \right)
+\end{cases} \]
+
+La convergenza del metodo del punto unito per i sistemi non lineari viene determinata attraverso l'\textbf{errore di troncamento}. Similarmente all'errore di troncamento per le equazioni non lineari, abbiamo che l'errore $E^{(k)}$ qui è dato dalla differenza dei vettori delle soluzioni esatte ($\overline{X}$) e delle soluzioni approssimate ($X^{(k)}$):
+\[ E^{(k)} \eq \overline{X} - X^{(k)} \in \mathbb{R}^n \]
+
+Con un metodo noi vogliamo far sì che l'errore diminuisca sempre di più tra un'iterazione e l'altra: siccome qui l'errore è dato da un vettore, noi vogliamo far sì che le sue componenti \textbf{raggiungano tutte lo zero}; questo vuol dire che la lunghezza totale del vettore deve essere uguale a zero. L'operazione che permette di calcolare la lunghezza di un vettore $V$ è la \textbf{norma}:
+\[ \left\| V \right\| \eq \left( \sum_{i \eq 1}^n |v_i|^p \right)^{\frac{1}{p}} \]
+
+Se il metodo dovesse dunque essere convergente, qualora l'errore di arrotondamento dovesse approssimare lo 0 per $k$ che tende all'infinito, allora avremmo che anche le approssimazioni del metodo convergeranno verso le radici delle equazioni del sistema:
+\[ \lim_{k \to +\infty} \; \left\| E^{(k)} \right\| \eq 0 \quad \Longleftrightarrow \quad \lim_{k \to +\infty} X^{(k)} \eq \overline{X} \]
