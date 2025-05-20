@@ -710,3 +710,26 @@ Con un metodo noi vogliamo far sì che l'errore diminuisca sempre di più tra un
 
 Se il metodo dovesse dunque essere convergente, qualora l'errore di arrotondamento dovesse approssimare lo 0 per $k$ che tende all'infinito, allora avremmo che anche le approssimazioni del metodo convergeranno verso le radici delle equazioni del sistema:
 \[ \lim_{k \to +\infty} \; \left\| E^{(k)} \right\| \eq 0 \quad \Longleftrightarrow \quad \lim_{k \to +\infty} X^{(k)} \eq \overline{X} \]
+
+A lato pratico, è raro che il metodo si fermi quando $\left\| E^{(k)} \right\| \eq 0$, e invece questo si arresta quando $\left\| E^{(k)} \right\| \leq \epsilon$.
+
+\subsection{Norme dei vettori}
+
+Abbiamo menzionato in precedenza la norma del vettore $E^{(k)}$, ma esattamente cosa intendiamo con il termine norma? Matematicamente intendiamo un metodo che viene utilizzato per misurare la lunghezza di un vettore. Esistono vari tipi di norme, ma generalmente noi identifichiamo i seguenti tre tipi:
+\begin{itemize}
+    \item \textbf{norma uno} ($\ell_1$):
+    \[ \left\| V \right\|_1 \eq \sum_{i \eq 1}^n |v_i| \]
+
+    \item \textbf{norma due} o \textbf{euclidea} ($\ell_2$):
+    \[ \left\| V \right\|_2 \eq \sqrt{\sum_{i \eq 1}^n |v_i|^2} \]
+
+    \item \textbf{norma infinito} ($\ell_\infty$):
+    \[ \left\| V \right\|_\infty \eq \max_{1 \leq i \leq n} |v_i| \]
+\end{itemize}
+
+Nonostante tutte le norme possano ritornare dei risultati numericamente diversi, il significato di questi sarà sempre equivalente. Le norme hanno anche varie proprietà, tra cui:
+\begin{itemize}
+    \item $\left\| V \right\| \geq 0$, ma $\left\| V \right\| \eq 0 \; \Longleftrightarrow \; V \eq 0$;
+    \item $\left\| \alpha \cdot V \right\| \eq |\alpha| \cdot \left\| V \right\| \quad \forall \; \alpha \in \mathbb{R}, \; \forall \; V \in \mathbb{R}^n$;
+    \item $\left\| V + W \right\| \leq \left\| V \right\| + \left\| W \right\| \quad \forall \; V, \; W \in \mathbb{R}^n$.
+\end{itemize}
