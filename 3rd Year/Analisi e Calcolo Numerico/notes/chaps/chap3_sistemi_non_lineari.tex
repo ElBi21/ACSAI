@@ -727,9 +727,30 @@ Abbiamo menzionato in precedenza la norma del vettore $E^{(k)}$, ma esattamente 
     \[ \left\| V \right\|_\infty \eq \max_{1 \leq i \leq n} |v_i| \]
 \end{itemize}
 
-Nonostante tutte le norme possano ritornare dei risultati numericamente diversi, il significato di questi sarà sempre equivalente. Le norme hanno anche varie proprietà, tra cui:
+Nonostante tutte le norme possano \textbf{ritornare dei risultati numericamente diversi}, il significato di questi \textbf{sarà sempre equivalente}. Le norme hanno anche varie proprietà, tra cui:
 \begin{itemize}
     \item $\left\| V \right\| \geq 0$, ma $\left\| V \right\| \eq 0 \; \Longleftrightarrow \; V \eq 0$;
     \item $\left\| \alpha \cdot V \right\| \eq |\alpha| \cdot \left\| V \right\| \quad \forall \; \alpha \in \mathbb{R}, \; \forall \; V \in \mathbb{R}^n$;
     \item $\left\| V + W \right\| \leq \left\| V \right\| + \left\| W \right\| \quad \forall \; V, \; W \in \mathbb{R}^n$.
 \end{itemize}
+
+Un'altra importante operazione che possiamo effettuare dati due vettori $V, \; W$ è calcolare la distanza fra questi, finché questi risiedono in uno spazio vettoriale normato $S$. La distanza è definita come la norma della differenza tra $V$ e $W$:
+\[ d(V, \; W) \eq \left\| V - W \right\| \]
+
+Come le norme, anche la distanza tra due vettori ha varie proprietà, tra cui:
+\begin{itemize}
+    \item $d(V, \; W) \geq 0$ e $d(V, \; W) \eq 0 \quad \Longleftrightarrow \quad V \eq W$;
+    \item $d(V, \; W) \eq d(W, \; V), \quad \forall \; V, \; W \in S$;
+    \item $d(V, \; W) \eq d(V, \; Z) + d(Z, \; W), \quad \forall \; V, \; W, \; Z \in S$.
+\end{itemize}
+
+Siccome una matrice è una collezione di vettori, allora è possibile anche applicare le norme alle matrici: la norma di una matrice $A \in \mathbb{R}^{n \times n}$ soddisfa sempre le seguenti proprietà:
+\begin{itemize}
+    \item $\left\| A \right\| \geq 0$, e $\left\| A \right\| \eq 0 \quad \Longleftrightarrow \quad A \eq 0$;
+    \item $\left\| \alpha \cdot A \right\| \eq |\alpha| \cdot \left\| A \right\|, \quad \forall \; \alpha \in \mathbb{R}, \forall \; A \in \mathbb{R}^{n \times n}$;
+    \item $\left\| A  + B \right\| \leq \left\| A \right\| + \left\| B \right\|, \quad \forall \; A, \; B \in \mathbb{R}^{n \times n}$;
+    \item $\left\| A \cdot B \right\| \leq \left\| A \right\| \cdot \left\| B \right\|, \quad \forall \; A, \; B \in \mathbb{R}^{n \times n}$.
+\end{itemize}
+
+Una matrice si dice \textbf{convergente} se il limite della norma della matrice alla $k$ tende a zero, con $k$ che tende a $+\infty$:
+\[ \lim_{k \to +\infty} \left\| A^k \right\| \eq 0 \]
