@@ -1,1 +1,73 @@
 \chapter{Sistemi di equazioni lineari}
+
+Nel precedente capitolo abbiamo trattato vari metodi per risolvere equazioni e sistemi di equazioni non lineari, tramite metodi come quelli di Newton-Raphson e del punto fisso. In questo capitolo ci concentreremo sulla risoluzione di sistemi di equazioni lineari, e scopriremo che in molti casi i metodi che potremo utilizzare sono simili a quelli utilizzati in precedenza. Procediamo illustrando quindi cos'è un sistema lineare:
+
+\begin{definition}{Sistema lineare}
+    Un \textbf{sistema lineare} ha la forma $AX \eq B$, dove:
+    \begin{itemize}
+        \item $A$ è la matrice dei coefficienti;
+        \item $B$ è il vettore delle incognite;
+        \item $C$ è il vettore dei termini noti.
+    \end{itemize}
+\end{definition}
+
+Ci sono due tipi di metodi che possiamo utilizzare per risolvere problemi contenenti sistemi di equazioni lineari: i \textbf{metodi diretti} e i \textbf{metodi iterativi}. Inizieremo illustrando i metodi diretti, passando poi ai metodi iterativi.
+
+\section{Metodi diretti}
+
+I metodi diretti sono basati sulla trasformazione del sistema di partenza in un sistema equivalente, avente una struttura pre-determinata (generalmente semplice). Tali metodi garantiscono che la soluzione numerica venga calcolata \textbf{esattamente} (in assenza di errori di troncamento) in un \textbf{numero finito di passi}, tuttavia hanno un elevato consumo di RAM, e sono dunque sconsigliati nel caso di matrici con "tanti" coefficienti.
+\nwl
+Prima di iniziare a illustrare i vari metodi di soluzione, andremo ad approfondire il concetto di \textbf{costo computazionale}. 
+
+\begin{definition}{Costo computazionale}
+    Il \textbf{costo computazionale} $C_c$ di un algoritmo è il numero di \textbf{operazioni pesanti} (come moltiplicazioni o divisioni) che sono necessarie per calcolare la soluzione numerica.
+\end{definition}
+
+In informatica, il costo computazionale è generalmente calcolato seguendo la notazione $O(\cdot)$, che indica il numero massimo di operazioni che potrebbero esser fatte da un algoritmo nel caso peggiore (quindi si calcola il limite superiore del numero di operazioni che verrebbero eseguite).
+
+\subsection{Metodo di Cramer}
+
+Un metodo che è molto utilizzato nel campo dell'algebra è quello di \textbf{Cramer}:
+
+\begin{definition}{Metodo di Cramer}
+    Dato un sistema lineare in forma $AX \eq B$, se $A$ è una matrice regolare, allora attraverso l'inversa $A^{-1}$ si ha che:
+    \[ X \eq A^{-1} B \quad \Longrightarrow \quad x_i \eq \frac{D_i}{\text{det}(A)} \quad \text{per } i \eq 1, \; 2, \; ..., \; n \]
+
+    dove $D_i$ è il determinante della matrice che si ottiene da $A$ sostituendo la $i$-esima colonna col vettore $B$
+\end{definition}
+
+% inserire esempio
+
+Il problema principale con l'algoritmo di Cramer riguarda il suo costo computazionale: per il metodo infatti, dovremo calcolare:
+\begin{itemize}
+    \item $n + 1$ determinanti (dunque un determinante per ogni $D_i$ e il determinante di $A$);
+    \item $n!$ prodotti per ciascun determinante;
+    \item $n - 1$ moltiplicazioni tra due scalari per ogni prodotto;
+    \item $n$ divisioni, che diventano però trascurabili rispetto alle altre operazioni.
+\end{itemize}
+
+Il costo computazionale $C_c$ ammonta dunque a:
+\[ C_c \eq \underbrace{(n + 1) \cdot (n!) \cdot (n - 1)}_{\text{moltiplicazioni}} + n \simeq (n + 1) \cdot (n!) \cdot (n - 1) \]
+
+Per farci un'idea di quanto il numero sia in realtà alto, basta considerare un valore di $n$ come 15 o 20: con $n \eq 15$, avremmo che $C_c \simeq 3 \cdot 10^{14}$ moltiplicazioni, mentre con $n \eq 20$ avremmo $C_c \simeq 3 \cdot 10^{21}$ moltiplicazioni. Assumendo un tempo di $10^{-9}$ secondi ad operazione, avremmo che con $n \eq 15$ servirebbero 3 giorni per eseguire il metodo; con $n \eq 20$ invece il tempo richiesto per eseguire il metodo peggiora drasticamente, siccome verrebbero richiesti $3 \cdot 10^5$ anni! Questo rende il metodo praticamente inutilizzabile (poiché in quasi nessun caso $n$ sarà minore di 15).
+
+\subsection{Metodo di eliminazione di Gauss}
+
+Un altro metodo molto usato per risolvere i sistemi lineari è il \textbf{metodo di eliminazione di Gauss}, che cerca di trasformare il sistema in un sistema equivalente triangolare superiore:
+
+\begin{definition}{Metodo di eliminazione di Gauss}
+    Il \textbf{metodo di eliminazione di Gauss} permette di trasformare in $n - 1$ passi un sistema lineare in forma
+    \[ A X \eq B \quad \text{con } X, \; B \in \mathbb{R}^n, \quad A \in \mathbb{R}^{n \times n} \]
+
+    dove $A$ è una matrice dei coefficienti \textbf{piena}, in un sistema equivalente
+    \[ U X \eq \widetilde{B} \quad \text{con } X, \; \widetilde{B} \in \mathbb{R}^n, \quad U \in \mathbb{R}^{n \times n} \]
+\end{definition}
+
+Per poter essere effettuato, il metodo di eliminazione di Gauss utilizza due operazioni: lo \textbf{scambio} di due equazioni all'interno del sistema e la \textbf{somma} di due equazioni, dove una delle due può essere moltiplicata per una costante.
+\nwl
+Per poter trasformare un sistema $AX \eq B$ in un sistema triangolare superiore, si usa il seguente algoritmo:
+
+\[ UX \eq B \quad \Longrightarrow \quad \begin{cases}
+    x_n \eq \frac{b_n}{u_{nn}} & \\
+    x_k \eq \left( b_k - \sum_{i \eq k + 1}^n u_{ki} \cdot x_i \right) \cdot \frac{1}{u_{kk}} & k \eq n - 1, \; n - 2, \; ..., \; 2, \; 1
+\end{cases} \]
