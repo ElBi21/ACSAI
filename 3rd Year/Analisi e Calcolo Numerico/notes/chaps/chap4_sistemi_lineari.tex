@@ -71,3 +71,11 @@ Per poter trasformare un sistema $AX \eq B$ in un sistema triangolare superiore,
     x_n \eq \frac{b_n}{u_{nn}} & \\
     x_k \eq \left( b_k - \sum_{i \eq k + 1}^n u_{ki} \cdot x_i \right) \cdot \frac{1}{u_{kk}} & k \eq n - 1, \; n - 2, \; ..., \; 2, \; 1
 \end{cases} \]
+
+% inserire in caso algoritmo del metodo
+
+Il metodo di eliminazione di Gauss ha un costo computazionale $C_c$ totale di $\nicefrac{n^3}{3}$, e questo perché abbiamo:
+\begin{itemize}
+    \item un costo di $\simeq \frac{n^3}{3}$ per la triangolarizzazione;
+    \item un costo di $\simeq \frac{n^2}{2}$ per la sostituzione all'indietro.
+\end{itemize}
