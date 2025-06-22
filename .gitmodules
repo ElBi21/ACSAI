@@ -10,3 +10,6 @@
 [submodule "Projects/PSEM-kmeans"]
 	path = Projects/PSEM-kmeans
 	url = https://github.com/ElBi21/PSEM-kmeans.git
+[submodule "3rd Year/Programmazione di Sistemi Embedded e Multicore/course_repo"]
+	path = 3rd Year/Programmazione di Sistemi Embedded e Multicore/course_repo
+	url = git@github.com:DanieleDeSensi/multicore-programming.git
