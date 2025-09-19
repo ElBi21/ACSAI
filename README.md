@@ -82,7 +82,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">🇮🇹</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Analisi%20e%20Calcolo%20Numerico/notes/Analisi%20e%20Calcolo%20Numerico.pdf">PDF</a>]</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/3rd%20Year/Analisi%20e%20Calcolo%20Numerico/code">Code</a>]</td>
-    <td align="center">N/A</td>
+    <td align="center">✓</td>
   </tr>
 </table>
 
