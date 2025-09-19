@@ -32,7 +32,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
     <td align="center">🇬🇧</td>
     <td align="center">✓<br>[<a href="https://github.com/ElBi21/ACSAI/blob/main/2nd%20Year/Systems%20and%20Networking/Systems%20and%20Networking%20Notes.pdf">PDF</a>]</td>
     <td align="center">×</td>
-    <td align="center">✓</td>
+    <td align="center">×</td>
   </tr>
   <tr>
     <td align="center">2nd Semester</td>
