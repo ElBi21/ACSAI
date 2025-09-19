@@ -10,7 +10,7 @@ The notes contained here are made with my template, [NoTeX](https://www.github.c
 >
 > Since the repo uses a submodule, make sure to clone that too. You can use directly the following command:
 > ```bash
-> git clone https://github.com/ElBi21/ACSAI --recurse-submodules
+> git clone https://github.com/ElBi21/ACSAI.git --recurse-submodules
 > ```
 
 ## Content of the repo
