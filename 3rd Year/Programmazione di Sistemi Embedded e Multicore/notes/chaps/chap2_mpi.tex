@@ -1,7 +1,7 @@
 \chapter{Message Passing Interface (MPI)}
-\textbf{MPI} (acronimo di \textbf{M}essage \textbf{P}assing \textbf{I}nterface) è una libreria usata per \textbf{programmare sistemi a memoria distribuita}, e delle varie librerie menzionate nell'introduzione è l'unica pensata per sistemi a memoria distribuita. Questo vuol dire che la memoria e il core usato per ogni thread o processo sono \textbf{unici}. Tale core e memoria possono essere collegati attraverso vari metodi: un bus, la rete, etc...
+\textbf{MPI} (acronimo di \textbf{M}essage \textbf{P}assing \textbf{I}nterface) è una libreria usata per \textbf{programmare sistemi a memoria distribuita}, e delle varie librerie menzionate nell'introduzione è l'unica pensata per sistemi a memoria distribuita. Questo vuol dire che la memoria e il core usato per ogni processo sono \textbf{unici}. Tali core e memoria su cui vengono eseguiti i processi di MPI possono essere collegati fra di loro attraverso vari metodi: un bus, la rete, etc... MPI permette a più processi di comunicare su vari tipi di canali di comunicazione, e non è raro vedere processi comunicare tramite la rete.
 \nwl
-MPI fa uso del paradigma \textbf{Single Program Multiple Data} (\textbf{SPMD}), quindi ci sarà un \textbf{unico programma} che verrà compilato e poi eseguito da vari processi o threads. Per determinare cosa ogni processo o thread deve fare, si usa semplicemente un'istruzione di \textbf{branching}, come l'\texttt{if-else} o lo \texttt{switch}.
+MPI fa uso del paradigma \textbf{Single Program Multiple Data} (\textbf{SPMD}), per cui c'è un \textbf{unico programma} che verrà compilato e poi eseguito da vari processi. Per determinare cosa ogni processo deve fare, si usa semplicemente un'istruzione di \textbf{branching}, come l'\texttt{if-else} o lo \texttt{switch}.
 \nwl
 Siccome la memoria non è condivisa tra i vari processi, l'unico modo per passarsi dei dati è attraverso l'invio di \textbf{messaggi} (da qui il nome della libreria). Per esempio, abbiamo visto come fare un semplice "Hello world" in C in modo sequenziale, ma possiamo anche renderlo parallelo tramite MPI. Ad esempio:
 \begin{codeblock}{HelloWorld.c}
@@ -31,7 +31,7 @@ int main(void) {
 
     printf("Hello world");
 
-    // Per terminare l'esecuzione di tutti i threads si usa MPI_Finalize
+    // Per terminare l'esecuzione di tutti i processi si usa MPI_Finalize
     MPI_Finalize();
     return 0;
 }\end{lstlisting}
@@ -39,18 +39,20 @@ int main(void) {
 
 Nel precedente codice sono state usate alcune funzioni e alcuni valori di MPI, che possiamo notare grazie al prefix "\texttt{MPI\_}", \textbf{comune a tutte le definizioni}, siano esse di funzioni, variabili o costanti, \textbf{della libreria}:
 \begin{itemize}
-    \item \verb|MPI_Init()|: \textbf{inizializza} un programma su più processi o threads, e restituisce come output un \texttt{int}, che identifica se è stato possibile inizializzare con successo la libreria di MPI o meno (ovverosia restituisce 0 se la libreria è stata inizializzata con successo, un altro numero altrimenti);
+    \item \verb|MPI_Init()|: \textbf{inizializza} un programma di MPI su più processi, e restituisce come output un \texttt{int}, che identifica se è stato possibile inizializzare con successo la libreria di MPI o meno (ovverosia restituisce 0 se la libreria è stata inizializzata con successo, un altro numero altrimenti);
     \item \verb|MPI_SUCCESS|: è il segnale con cui è possibile comparare l'output di \verb|MPI_Init| per controllare se MPI è stato inizializzato correttamente o meno;
     \item \verb|MPI_Abort(MPI_COMM_WORLD, <mpi_boot_result>)|: \textbf{abortisce} l'esecuzione di MPI, ad esempio nel caso in cui l'inizializzazione non sia stata eseguita con successo;
     \item \verb|MPI_Finalize()|: \textbf{interrompe} l'esecuzione di MPI a fine programma.
 \end{itemize}
 
-Per compilare ed eseguire un programma con MPI si usa \texttt{mpicc}, che è un wrapper del compilatore \texttt{gcc} di C. Un comando che viene usato per compilare un programma che usa MPI può essere il seguente:
+Per compilare ed eseguire un programma con MPI si usa il compilatore \texttt{mpicc}, che è un wrapper del compilatore \texttt{gcc} per C. Il comando che viene usato per compilare un programma che usa MPI può essere come il seguente:
 
 \begin{terminal}
     \begin{lstlisting}[style = notexterm]
 $ mpicc <file>.c -o <output>
-$ mpicc -g -Wall <file>.c -o <output>    # Fa stampare i warning in console\end{lstlisting}
+
+# Fa stampare i warning in console
+$ mpicc -g -Wall <file>.c -o <output>\end{lstlisting}
 \end{terminal}
 
 Il compilatore ha molte flags che possono essere usate, così da personalizzare il processo di compilazione. Nel secondo comando si può notare l'uso di due flags che possono risultare comode in fase di debug:
@@ -63,8 +65,9 @@ Questo è per quanto riguarda la compilazione, ma per eseguire il programma inve
 \begin{terminal}
     \begin{lstlisting}[style = notexterm]
 $ mpirun -n <numero_core_fisici> <programma>
-$ mpirun --oversubscribe -n <numero_core> <programma>
-        # Permette di usare più core di quelli fisici\end{lstlisting}
+
+# Permette di usare più core di quelli fisici
+$ mpirun --oversubscribe -n <numero_core> <programma>\end{lstlisting}
 \end{terminal}
 
 Normalmente MPI esegue il codice solo sui core fisici di una CPU, tuttavia è possibile far sì che questa limitazione non venga considerata. La flag \verb|--oversubscribe| permette di lanciare il programma su $n$ processi, dove $n \geq \text{numero di core fisici}$.
@@ -75,7 +78,7 @@ In un programma complesso, è spesso utile sapere quale core esegue quale parte 
     Il \textbf{rank} di un processo appartenente a un programma di MPI è un \textbf{indice incrementale}, nell'intervallo $[0, \; 1, \; 2, \; \dots , \; p)$, che viene assegnato ad ogni processo.
 \end{definition}
 
-Prima abbiamo usato, nella funzione \verb|MPI_Abort()|, un parametro di MPI: \verb|MPI_COMM_WORLD|. Questo è un \textbf{comunicatore}, ovverosia un canale di comunicazione con altri processi / thread (può anche essere usato per tutti i processi). \verb|MPI_COMM_WORLD| è il comunicatore di default in MPI, a cui tutti i processi sono collegati. Ogni comunicatore ha vari parametri associati, tra cui anche la sua \textbf{grandezza} (ovverosia quanti processi sono collegati al comunicatore). Ci sono due funzioni importanti relativi al comunicatore, che permettono di ottenere sia la grandezza del comunicatore che il rank del processo che chiama la funzione:
+Prima abbiamo usato, nella funzione \verb|MPI_Abort()|, un parametro di MPI: \verb|MPI_COMM_WORLD|. Questo è un \textbf{comunicatore}, ovverosia un canale di comunicazione con altri processi (può anche essere usato per tutti i processi). \verb|MPI_COMM_WORLD| è il comunicatore di default in MPI, a cui tutti i processi sono collegati. Ogni comunicatore ha vari parametri associati, tra cui anche la sua \textbf{grandezza} (ovverosia quanti processi sono collegati al comunicatore). Ci sono due funzioni importanti relativi al comunicatore, che permettono di ottenere sia la grandezza del comunicatore che il rank del processo che chiama la funzione:
 
 \begin{codedefine}
     \begin{lstlisting}[language = C, numbers = none]
@@ -135,11 +138,10 @@ int main(void) {
 
     MPI_Finalize();
     return 0;
-}
-    \end{lstlisting}
+}\end{lstlisting}
 \end{codeblock}
 
-Chiamando il precedente programma con il seguente comando di MPI, noteremo un effetto interessante, che magari potremmo non aspettarci:
+Chiamando il precedente programma con il seguente comando di MPI, noteremo un effetto interessante, che normalmente non ci aspetteremmo:
 
 \begin{terminal}
     \begin{lstlisting}[style = notexterm]
@@ -188,7 +190,7 @@ int MPI_Send(
     \end{itemize}
 \end{codedefine}
 
-Per mandare dei dati però è necessario che ci sia, all'interno del comunicatore, almeno un processo / thread che sia pronto a ricevere i dati. Per far sì che un processo si dichiari pronto a ricevere si usa la funzione \verb|MPI_Recv()|, che ha la seguente sintassi:
+Per mandare dei dati però è necessario che ci sia, all'interno del comunicatore, almeno un processo che sia pronto a ricevere i dati. Per far sì che un processo si dichiari pronto a ricevere si usa la funzione \verb|MPI_Recv()|, che ha la seguente sintassi:
 
 \begin{codedefine}
     \begin{lstlisting}[language = C, numbers = none]
@@ -212,9 +214,9 @@ int MPI_Recv(
     \end{itemize}
 \end{codedefine}
 
-In entrambe le funzioni c'è un parametro che non abbiamo spiegato, ovverosia \verb|tag|. Tale parametro permette di distinguere i messaggi mandati su un comunicatore attraverso un tag (in questo caso, un intero), e far sì che i vari processi / threads eseguano parte di codice diverso in base al tag.
+In entrambe le funzioni c'è un parametro che non abbiamo spiegato, ovverosia \verb|tag|. Tale parametro permette di distinguere i messaggi mandati su un comunicatore attraverso un tag (in questo caso, un intero), e far sì che i vari processi eseguano parti di codice diverso in base al tag.
 \nwl
-Ma possiamo esser certi che, quando inviamo un messaggio, esso sia stato ricevuto correttamente? In genere non possiamo avere la certezza che sia stato ricevuto correttamente usando solo una chiamata di \verb|MPI_Send()| e \verb|MPI_Recv()|, ma per certo il messaggio è stato inviato e ricevuto se le seguenti condizioni sono vere allo stesso momento:
+Ma possiamo esser certi che, quando inviamo un messaggio, esso sia stato ricevuto correttamente? In genere \textbf{non possiamo avere la certezza} che sia stato ricevuto correttamente usando solo una chiamata di \verb|MPI_Send()| e \verb|MPI_Recv()|, ma sappiamo per certo il messaggio è stato inviato e ricevuto se le seguenti condizioni sono vere allo stesso momento:
 \begin{itemize}
     \item se \verb|recv_type| $\eq$ \verb|send_type|;
     \item se \verb|recv_buf_sz| $\geq$ \verb|send_buf_sz|.
@@ -231,7 +233,11 @@ Supponiamo che in un momento del codice non ci interessi sapere chi manda il mes
 
 Un'altra funzione utile relativa ai messaggi è \verb|MPI_Get_count()|, che indica quanti dati stanno venendo mandati .
 
-% ...
+\subsection{Modalità di comunicazione}
+
+Come abbiamo visto prima, quando mandiamo un messaggio non abbiamo la certezza che sia stato già ricevuto dal destinatario, ma abbiamo solo la certezza che MPI ha preso in carico il buffer da mandare. Tuttavia ci sono metodi diversi attraverso i quali MPI invia messaggi: la modalità \textbf{standard}, la modalità \textbf{buffered}, la modalità \textbf{synchronous} e la modalità \textbf{ready}.
+
+La modalità standard è quella che viene utilizzata più comunemente da MPI, e per questa modalità MPI decide di volta in volta, in base al messaggio, se bloccare il processo inviante o meno. Se il buffer da inviare è largo, allora MPI potrebbe decidere di bloccare il processo fino a quando il destinatario non ha ricevuto il buffer; in caso contrario, se il messaggio è abbastanza piccolo, 
 
 \section{Misurazione delle Prestazioni}
 

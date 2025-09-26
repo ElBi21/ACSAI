@@ -1,0 +1,50 @@
+\chapter{The rise of HPC}
+
+HPC is an old topic in CS: it allows for performing powerful simulations and computations, which would be usually impossible in modern, domestic systems. But why do we need to make simulations? Generally, simulations are considered the Third Pillar of Science: they allow humans to go over the limits of experimental science (over dangerous limits, costs and time limitations), so since the rise of this field of CS, society has been needing coherent machines to overcome even greater limits.
+\nwl
+In time, there has been a shift in the kind of architecture used in HPC settings. We stopped focusing about the max frequency of a processor since 2015 (Dennon Law broke), now we focus on novel architectures because they harness different capabilities. Nowadays chips in GPUs, CPUs and so on are made with chiplets, a manufacturing process for which different components are built by stacking layers of silicon together.
+\nwl
+The results are impressive: supercomputers from the Top500 (list started in 1993) can reach, jointly, up to 4.8 Eflop/s. A modern computer may reach the power of the most performant supercomputer from 1996!
+\nwl
+Back in the days, when the Top500 list was born, Intel was the predominant architecture, using the \verb|i860| architecture. Nowadays, $78\%$ of the supercomputers use Intel with the \verb|x86-64| architecture ($97\%$ of the supercomputers use \verb|x86-64|). It costs too much to change architecture, so the scientific community sticked with it. However, nowadays we don't use anymore solely CPUs: GPUs are the dealbreaker.
+\nwl
+Curiously, at the time (during the first phase of HPC) it was more convenient to use shared memory architecture, opposed to today, where distributed is the new standard. In 1994 an experiment, the Beowulf cluster, was run: it consisted in multiple Linux machines running together in parallel. This showed how multiple, singular machines could work way better than single, monolithic supercomputers. This marked the beginning of the second phase of HPC. Now we are in the 3rd phase: we moved to heterogeneous architectures, using GPUs, and we are heading to the 4th phase, where experimentation and specialized architectures are investigated and used (consider TPUs, DPUs and special architectures such as Cerebras, Graphcore and Tenstorrent).
+\nwl
+Modern supercomputers have some commonalities: NVIDIA dominates in these contexts, interconnects use either Ethernet or InfiniBand (made by NVIDIA; indeed, 426 out of 500 supercomputers from the modern Top500 use this kind of interconnect), and most of these computers (if not all of them!) use Linux as OS.
+\nwl
+Programs are not built in Python, but usually in fast, low-level languages (such as C) with the aid of libraries such as MPI, OpenMP and CUDA. Floating point operations also employ different precision standards (from 64 to 8 bits), and are used in different contexts and scenarios (AI training doesn't need the highest precision, simulating a bridge does).
+
+\section{Components of HPC}
+
+HPC systems have different components:
+\begin{itemize}
+    \item CPUs, which nowadays are all multicore CPUs;
+    \item accelerators, such as general purpose GPUs;
+    \item memory;
+    \item storage systems;
+    \item interconnects.
+\end{itemize}
+
+Novel architectures employ hardware such as TPUs, NPUs or FPGAs (Field Programmable Gated Arrays).
+\nwl
+Nodes is a system can be used for different tasks: for computation, for storage, for data processing, etc... And all nodes in a supercomputer are interconnected through some way. Interconnections can be inter-node, intra-rack (node to node connections) and inter-rack. 
+\nwl
+Inter-node communications happen within a compute node, between CPU, GPU, memory, etc... Technologies used vary depending on the node: we may use CPU-CPU interconnects, GPU-GPU links (such as the NVLink), or CPU-Accelerator (such as PCIe Gen 5/6, which are used also in domestic machines).
+\nwl
+Intra-rack interconnection happens within nodes in the same rack. Technologies used are for instance the InfiniBand from NVIDIA, the Slingshot, Ethernet or UltraEthernet.
+\nwl
+Inter-rack communication happens between racks. The main problem with this kind of connections is that we don't have enough bandwidth to connect all the racks together. The technologies used are the same of the intra-rack communication, but with some tweaks for allowing scalability (examples are Dragonfly, Fat-Tree, Torus, or HyperX). There has been some interest lately for optical interconnects. This kind of technologies allow for scalability, fault tolerance and congestion control.
+
+\section{Study case: Leonardo}
+
+Let us consider a very familiar supercomputer: Leonardo. Nodes are based on the Atos BullSequana XH2000 design, and nodes either designed for hosting a CPU partition or a booster partition with NVIDIA A100 GPUs. It uses Mellanox interconnects.
+\nwl
+There are some nodes used as front-end nodes (16), which are needed for interfacing with the supercomputer. The partitions are as follows:
+\begin{itemize}
+    \item \textbf{Data Centric} and \textbf{General Purpose partitions}, which are nodes with 3-nodes blades, where each node counts 2 CPUs;
+    \item \textbf{Booster GPU partition}, also called "Da Vinci" blades, they are diskless and are intended to host 4 NVIDIA Ampere A100 GPUs.
+\end{itemize}
+
+The topology used to connect the nodes is called Dragonfly+, and is based on the NVIDIA Mellanox Infiniband, capable of transmitting up to 200 Gb/s.
+\nwl
+Now Leonardo is also being expanded with an other partition, called LISA, made specifically for AI purposes. In this partition, the GPUs (which use last generation accelerators, such as the NVIDIA H100 GPUs) are collected all together through an NVIDIA NVLink, so there is no CPU work involved in the communication. 
