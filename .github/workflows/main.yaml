@@ -28,7 +28,7 @@ jobs:
             change_psem:
               - '3rd Year/Programmazione di Sistemi Embedded e Multicore/notes/**'
             change_hpc:
-              - '3rd Year/Extra/HPC/**' 
+              - 'Extra/HPC/**' 
 
   build_acn:
     name: Build Analisi e Calcolo Numerico
