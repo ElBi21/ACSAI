@@ -111,7 +111,7 @@ A pipeline contains hazards:
 
 We mentioned Out of Order (OoO) processors: these are CPUs that allow for instructions to enter in the execution stage in an arbitrary stage with respect to the sequential order they have been written; the order depends also on any dependency or resource availability. We say that an instruction is called retired if the results of the CPU is visible in the architectural state (aka, instructions should go out from the pipeline in the same order in which they got inside the pipeline). In order to ensure correctness, a CPU should retire all the instructions in the order specified by the program (this constraint is called in-order retire).
 \nwl
-Superscalar processors have the capability of issuing more than an instruction per clock cycle. The maximum number of instructions that can be executed in a clock cycle is called issue ??? % ???
+Superscalar processors have the capability of issuing more than an instruction per clock cycle. The maximum number of instructions that can be executed in a clock cycle is called issue width.
 \nwl
 % {recover VLIW}
 In order to contrast static scheduling, CPUs use dynamic scheduling. For this kind of scheduling, CPUs employ:
