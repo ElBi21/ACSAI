@@ -1,20 +1,20 @@
 \chapter{The rise of HPC}
 
-HPC is an old topic in CS: it allows for performing powerful simulations and computations, which would be usually impossible in modern, domestic systems. But why do we need to make simulations? Generally, simulations are considered the Third Pillar of Science: they allow humans to go over the limits of experimental science (over dangerous limits, costs and time limitations), so since the rise of this field of CS, society has been needing coherent machines to overcome even greater limits.
+High Performance Computing (\textbf{HPC}) is an old topic in computer science: it has always allowed to perform powerful simulations and computations, which would be usually impossible in modern, domestic systems. We care a lot about simulations because they are the \textbf{Third Pillar of Science}: they allow humans to overcome the limits of experimental science (over dangerous limits, costs and time limitations), so since the rise of this field of CS, society has been needing coherent machines to overcome even greater limits.
 \nwl
-In time, there has been a shift in the kind of architecture used in HPC settings. We stopped focusing about the max frequency of a processor since 2015 (Dennard Law broke), now we focus on novel architectures because they harness different capabilities. Nowadays chips in GPUs, CPUs and so on are made with chiplets, a manufacturing process for which different components are built by stacking layers of silicon together.
+In time, there has been a shift in the kind of architecture used in HPC settings: since 2015 (when the Dennard Law broke) we stopped focusing about the max frequency of a processor; now we focus instead on other capabilities (such as the number and types of cores in a chip) or on novel architectures, because they harness different capabilities.
 \nwl
-The results are impressive: supercomputers from the Top500 (list started in 1993) can reach, jointly, up to 4.8 Eflop/s. A modern computer may reach the power of the most performant supercomputer from 1996!
+Also the manufacturing process of these chips changed during time: nowadays chips in GPUs, CPUs and so on are made with \textbf{chiplets}, a manufacturing process for which different components are built by stacking layers of silicon together. The results are impressive: supercomputers from the Top500 (a list of the best supercomputers, started in 1993) can reach, jointly, up to 4.8 Eflop/s. A modern computer may reach the power of the most performant supercomputer from 1996!
 \nwl
-Back in the days, when the Top500 list was born, Intel was the predominant architecture, using the \verb|i860| architecture. Nowadays, $78\%$ of the supercomputers use Intel with the \verb|x86-64| architecture ($97\%$ of the supercomputers use \verb|x86-64|). It costs too much to change architecture, so the scientific community sticked with it. However, nowadays we don't use anymore solely CPUs: GPUs are the dealbreaker.
+Back in the days, when the Top500 list was born, Intel was the predominant architecture, using the \verb|i860| architecture. Today, $78\%$ of the supercomputers use Intel with the \verb|x86-64| architecture ($97\%$ of the supercomputers use \verb|x86-64|). But shifts of architectures are not that frequent, and that is because a change costs too much, so the scientific community sticks with an architecture until the time when it becomes obsolete. However, nowadays we don't use anymore solely CPUs: GPUs (and in general, accelerators) are the dealbreaker.
 \nwl
-Curiously, at the time (during the first phase of HPC) it was more convenient to use shared memory architecture, opposed to today, where distributed is the new standard. In 1994 an experiment, the Beowulf cluster, was run: it consisted in multiple Linux machines running together in parallel. This showed how multiple, singular machines could work way better than single, monolithic supercomputers. This marked the beginning of the second phase of HPC. Now we are in the 3rd phase: we moved to heterogeneous architectures, using GPUs, and we are heading to the 4th phase, where experimentation and specialized architectures are investigated and used (consider TPUs, DPUs and special architectures such as Cerebras, Graphcore and Tenstorrent).
+Curiously, at the time (during what is called the \textbf{first phase} of HPC) it was more convenient to use shared memory architecture, opposed to today, where distributed is the new standard. However things changed in 1994, when an experiment, the \textbf{Beowulf cluster}, was run: it consisted in multiple Linux machines running together in parallel in order to complete a joint task. This showed how multiple, singular machines could work way better than single, monolithic supercomputers. This marked the beginning of the \textbf{second phase} of HPC. Now we are in the \textbf{third phase}: we moved to \textbf{heterogeneous architectures}, using GPUs, and we are heading to the \textbf{fourth phase}, where \textbf{experimentation} and specialized architectures are investigated and used (consider TPUs, DPUs and special architectures such as Cerebras, Graphcore and Tenstorrent).
 \nwl
-Modern supercomputers have some commonalities: NVIDIA dominates in these contexts, interconnects use either Ethernet or InfiniBand (made by NVIDIA; indeed, 426 out of 500 supercomputers from the modern Top500 use this kind of interconnect), and most of these computers (if not all of them!) use Linux as OS.
+Modern supercomputers have some commonalities: NVIDIA dominates in the accelerators field, interconnects use either Ethernet or InfiniBand (a technology made by NVIDIA; indeed, 426 out of 500 supercomputers from the modern Top500 use this kind of interconnect), and most of these computers (if not all of them!) use Linux as OS.
 \nwl
-Programs are not built in Python, but usually in fast, low-level languages (such as C) with the aid of libraries such as MPI, OpenMP and CUDA. Floating point operations also employ different precision standards (from 64 to 8 bits), and are used in different contexts and scenarios (AI training doesn't need the highest precision, simulating a bridge does).
+Programs are not built in Python, but usually in fast, low-level languages (such as C) with the aid of libraries such as MPI, OpenMP and CUDA/HIP (for AMD's accelerators). Floating point operations also employ different precision standards (from 64 to 8 bits), and are used in different contexts and scenarios (while AI training doesn't need the highest precision available in a computer, simulating a bridge does).
 
-\section{Components of HPC}
+\section{HPC systems' structure}
 
 HPC systems have different components:
 \begin{itemize}
@@ -35,7 +35,7 @@ Intra-rack interconnection happens within nodes in the same rack. Technologies u
 \nwl
 Inter-rack communication happens between racks. The main problem with this kind of connections is that we don't have enough bandwidth to connect all the racks together. The technologies used are the same of the intra-rack communication, but with some tweaks for allowing scalability (examples are Dragonfly, Fat-Tree, Torus, or HyperX). There has been some interest lately for optical interconnects. This kind of technologies allow for scalability, fault tolerance and congestion control.
 
-\section{Study case: Leonardo}
+\subsection{Study case: Leonardo (CINECA)}
 
 Let us consider a very familiar supercomputer: Leonardo. Nodes are based on the Atos BullSequana XH2000 design, and nodes either designed for hosting a CPU partition or a booster partition with NVIDIA A100 GPUs. It uses Mellanox interconnects.
 \nwl
@@ -93,10 +93,14 @@ All CPUs run on a given Instruction Set Architecture (ISA). There are two catego
 
 An ISA provides basic functions (such as load, store, control and arithmetic operations) and extensions for different precision formats (even the ones for AI functions), vectors processing (Intel AVX2, RISC-V "V" extension) and even matrix/tensor instructions (in newer architectures).
 \nwl
-In order to improve efficiency in a CPU, we can use pipelining in order to perform multiple operations together, although in different stages. Usually, modern pipelines have around 10-20 pipeline stages.
+In order to improve efficiency in a CPU, we can use \textbf{pipelining} in order to perform multiple operations together, although in different stages. Usually, modern pipelines have around 10-20 stages.
 \nwl
-We consider the \textbf{throughput} of a pipeline as the number of instructions that complete and exit the pipeline for a unit of time. Instead, the \textbf{latency} of a pipeline is the total time through all the stages of a pipeline.
-\nwl
+\begin{definition}{Throughput and Latency}
+    The \textbf{throughput} of a pipeline is the number of instructions that complete and exit the pipeline for a unit of time.
+    \nwl
+    The \textbf{latency} of a pipeline is the total time that an instruction needs in order to go through all the stages of a pipeline.
+\end{definition}
+
 A pipeline contains hazards:
 \begin{itemize}
     \item structural hazards are caused by resource conflicting, which can be eliminated by replicating hardware resources;
@@ -111,9 +115,12 @@ A pipeline contains hazards:
 
 We mentioned Out of Order (OoO) processors: these are CPUs that allow for instructions to enter in the execution stage in an arbitrary stage with respect to the sequential order they have been written; the order depends also on any dependency or resource availability. We say that an instruction is called retired if the results of the CPU is visible in the architectural state (aka, instructions should go out from the pipeline in the same order in which they got inside the pipeline). In order to ensure correctness, a CPU should retire all the instructions in the order specified by the program (this constraint is called in-order retire).
 \nwl
-Superscalar processors have the capability of issuing more than an instruction per clock cycle. The maximum number of instructions that can be executed in a clock cycle is called issue width.
+The maximum number of instructions that can be executed in a clock cycle is called \textbf{issue width}. Superscalar processors have the capability of issuing more than an instruction per clock cycle, as if they were sending a "packet" of instructions to the CPU (indeed, we call such packets of instruction an \textbf{issue packet}); this issue packet can be considered as a very long instruction. Back in the days, Intel proposed the concept of \textbf{Very Long Instruction Words} (\textbf{VLIW}), where multiple concurrent operations were specified within a single word.
 \nwl
-% {recover VLIW}
+VLIWs came with some issues though: for starters, a malpredicted branch (but also a cache miss) affects significantly the throughput, especially if the program is control-heavy; secondly, building compilers for VLIWs is more complex due to the fact that data dependencies represent a greater issue; lastly, VLIW architectures have limited ability to handle memory access conflicts.
+\nwl
+Because of the aforementioned issues, Intel was not able at the time to correctly exploit this concept, but nevertheless, VLIWs are still a thing: they are used in audio/video processing tasks, in DSP applications and also in machine learning. 
+\nwl
 In order to contrast static scheduling, CPUs use dynamic scheduling. For this kind of scheduling, CPUs employ:
 \begin{itemize}
     \item the Tomasulo algorithm for register renaming, in order to eliminate false dependencies (which are also known as dependency chains, and are usually found in loops). It does not solve RAW dependencies;
@@ -134,7 +141,7 @@ In order to aid branch prediction, we have a Branch Prediction Unit (BPU), which
 \begin{itemize}
     \item a Branch Target Buffer (BTB), which caches the target addresses of every taken branch;
     \item a Pattern History Table (PHT), which remembers the pattern of all taken branches with just 2 bits. 
-    % also another element, recover from slides
+    \item a Return Address Stack (RAS), which is used for predicting what the return address of a function call will be.
 \end{itemize}
 
 \section{Thread-level parallelism}
