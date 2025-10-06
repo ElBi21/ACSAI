@@ -1,0 +1,206 @@
+\chapter{CPU Micro-Architecture}
+
+All CPUs run on a given Instruction Set Architecture (ISA). There are two categories:
+\begin{itemize}
+    \item register-based, load-store memory: \verb|ARM| / \verb|RISC-V|;
+    \item register-memory architecture: \verb|x86|.
+\end{itemize}
+
+An ISA provides basic functions (such as load, store, control and arithmetic operations) and extensions for different precision formats (even the ones for AI functions), vectors processing (Intel AVX2, RISC-V "V" extension) and even matrix/tensor instructions (in newer architectures).
+\nwl
+In order to improve efficiency in a CPU, we can use \textbf{pipelining} in order to perform multiple operations together, although in different stages. Usually, modern pipelines have around 10-20 stages.
+\nwl
+\begin{definition}{Throughput and Latency}
+    The \textbf{throughput} of a pipeline is the number of instructions that complete and exit the pipeline for a unit of time.
+    \nwl
+    The \textbf{latency} of a pipeline is the total time that an instruction needs in order to go through all the stages of a pipeline.
+\end{definition}
+
+A pipeline contains hazards:
+\begin{itemize}
+    \item structural hazards are caused by resource conflicting, which can be eliminated by replicating hardware resources;
+    \item control hazards are caused by changes in the program flow. Branching is one of the main causes of control hazards;
+    \item data hazards are caused by data dependencies, and are of three types:
+    \begin{itemize}
+        \item read after write (RAW): can be solved through data forwarding. The longer the pipeline, the more effective data forwarding is;
+        \item write after read (WAR): usually happens in superscalar/Out of Order (OoO) processors. Can be solved through register renaming;
+        \item write after write (WAW): also here, we can solve them through register renaming.
+    \end{itemize}
+\end{itemize} 
+
+\section{Out of Order processors}
+
+We mentioned Out of Order (OoO) processors: these are CPUs that allow for instructions to enter in the execution stage in an arbitrary stage with respect to the sequential order they have been written; the order depends also on any dependency or resource availability. We say that an instruction is called retired if the results of the CPU is visible in the architectural state (aka, instructions should go out from the pipeline in the same order in which they got inside the pipeline). In order to ensure correctness, a CPU should retire all the instructions in the order specified by the program (this constraint is called in-order retire).
+\nwl
+The maximum number of instructions that can be executed in a clock cycle is called \textbf{issue width}. Superscalar processors have the capability of issuing more than an instruction per clock cycle, as if they were sending a "packet" of instructions to the CPU (indeed, we call such packets of instruction an \textbf{issue packet}); this issue packet can be considered as a very long instruction. Back in the days, Intel proposed the concept of \textbf{Very Long Instruction Words} (\textbf{VLIW}), where multiple concurrent operations were specified within a single word.
+\nwl
+VLIWs came with some issues though: for starters, a malpredicted branch (but also a cache miss) affects significantly the throughput, especially if the program is control-heavy; secondly, building compilers for VLIWs is more complex due to the fact that data dependencies represent a greater issue; lastly, VLIW architectures have limited ability to handle memory access conflicts.
+\nwl
+Because of the aforementioned issues, Intel was not able at the time to correctly exploit this concept, but nevertheless, VLIWs are still a thing: they are used in audio/video processing tasks, in DSP applications and also in machine learning. 
+\nwl
+In order to contrast static scheduling, CPUs use dynamic scheduling. For this kind of scheduling, CPUs employ:
+\begin{itemize}
+    \item the Tomasulo algorithm for register renaming, in order to eliminate false dependencies (which are also known as dependency chains, and are usually found in loops). It does not solve RAW dependencies;
+    \item a Reorder Buffer (ROB), which is a buffer that keeps track of the state of each instruction. Here, instructions are inserted in order, executed out of order, and retired in order. Instructions are also inserted in the RS. The size of the ROB allows for a better future lookup. It's here that register renaming happens;
+    \item a Reservation Station (RS) holds instructions until the resource needed is free. There are different entries in the RS depending on the execution unit type. Moreover, it supports speculative execution: it can allow to execute the instructions of a branch, even if it's known whether that branch will be taken or not. In the worst case, the instruction will be cancelled. Speculative execution is used because, in the best case, it can save a lot of cycles. 
+\end{itemize}
+
+Speculative execution is backed by Branch Prediction, which can make speculative execution much more accurate and confident. Branches can be of three types:
+\begin{itemize}
+    \item [1)] \textbf{unconditional branches} and \textbf{direct calls}: always taken;
+    \item [2)] \textbf{conditional branches}: can be either taken or not. Forward conditional branches are generated from if-else statements, backward conditional jumps are frequent in loops, and are usually taken;
+    \item [3)] \textbf{indirect call}: has many targets, perhaps because of a switch statement.
+\end{itemize}
+
+Prediction mechanisms are based on temporal (if a branch has been taken many times in the past, it's likely that it's going to be taken again) and spatial correlation (if the branch is based on nearby data, it's possible to make inference).
+\nwl
+In order to aid branch prediction, we have a Branch Prediction Unit (BPU), which is composed of:
+\begin{itemize}
+    \item a Branch Target Buffer (BTB), which caches the target addresses of every taken branch;
+    \item a Pattern History Table (PHT), which remembers the pattern of all taken branches with just 2 bits. 
+    \item a Return Address Stack (RAS), which is used for predicting what the return address of a function call will be.
+\end{itemize}
+
+\subsection{Thread-level parallelism}
+
+What we've seen so far is completely transparent for the user function-wise, but performance-wise this is completely opaque. Instead, thread-level parallelism is transparent by all means. 
+\nwl
+Thread-parallelism can be achieved through simultaneous multi-threading (SMT), which allow for multiple threads to run simultaneously on different cores. The greatest issue with SMT is given by the cache handling and by the fact that it's very hard to measure performances of an SMT application.
+\nwl
+SMT scheduling also becomes harder in hybrid architectures (architectures where different types of cores are merged in a single CPU. An example is the Apple M1 chip, which uses high-performance "Firestorm" cores and energy-efficient "Icestorm" cores). In the Intel P-cores and E-cores there is also a difference with respect to support for SMT: P-cores do support it, E-cores don't.
+
+\section{Caches and High Bandwidth Memory}
+
+We know that the major bottleneck is moving data from the memory to the CPU. We can take advantage of caches in order to avoid wastes of time in data fetching/storing, which are based on the concept of locality (be it spatial or temporal). In a CPU we have 3 levels of caches: L1, L2 and L3.
+\nwl
+A new type of GPU/CPU memory that has been developed recently is the High Bandwidth Memory. This kind if memory sees a series of HBM DRAM dies stacked all together, and that communicate through a very short interconnect (which is also very large, allowing for up to 1024 bits to be read simultaneously from each HBM stack) with both the CPU and the GPU. It's not as fast as the SRAM used within the CPU caches, but it's faster than the usual DRAM that we may find in domestic computers.
+\nwl
+Caches can be organized in 3 ways:
+\begin{itemize}
+    \item \textbf{Direct Mapped Cache}: data can go only on one slot depending on the last $n$ bits of the memory address (e.g. data with memory address ending with 001 will only go in the cache in address 001);
+    \item \textbf{Set Associative} and \textbf{Fully Associative}: for set associative, cache is divided into sets, and items can only go in some sets; fully associative there are no constraints for placing in cache.
+\end{itemize}
+
+It has been proven how cache associativity decreases miss rate.
+
+\begin{definition}{Memory Stall Cycles}
+    Performance of an HPC system heavily depends from cache performance. With simplifying assumptions:
+    \[ \text{MSC} = n_{\text{ma}} \; \times \; \text{miss rate} \times \text{miss penalty} \]
+    
+    where:
+    \begin{itemize}
+        \item \textbf{memory stall cycles} ($\text{MSC}$) denotes the time wasted from the CPU when it waits for data to arrive from memory;
+        \item $n_{\text{ma}}$ counts all the memory accesses done by the CPU (load, store, etc...).
+    \end{itemize}
+\end{definition}
+
+Interestingly, the MSC is used as a benchmarking metric mostly used over standard CPUs: superscalar CPUs are instead benchmarked depending on how many instructions are loaded in 1 clock cycle.
+
+\begin{definition}{Average Memory Access Time}
+    The Average Memory Access Time ($\text{AMAT}$) is computed as
+    \[ \text{AMAT} = t_{\text{hit}} + \text{miss rate} \times \text{miss penalty} \]
+
+    where $t_{\text{hit}}$ is the hit time of the cache.
+\end{definition}
+
+As we said before, there are different cache levels:
+\begin{itemize}
+    \item \textbf{L1}: private to each core, small and fast. It focuses on reaching \textbf{minimal hit time};
+    \item \textbf{L2}: private to each core, contains both data and instructions. It focuses on \textbf{low miss rate};
+    \item \textbf{L3}: shared cache between all cores (also called "last level cache").
+\end{itemize}
+
+When there is a cache miss, OoO CPUs can execute other instructions: a pending memory operation is saved in the load/store unit, and the dependent instructions wait in the reservation stations; instructions that have no dependencies get executed instead.
+\nwl
+Misses mostly depend on memory access patterns (thus on the algorithm's design), but the main sources are:
+\begin{itemize}
+    \item \textbf{compulsory}: cold start misses, first ever access to a block;
+    \item \textbf{capacity}: due to cache size;
+    \item \textbf{conflict}: happens in non-fully associative cache, when the space promised to an item is not available anymore because it has been given to other data.
+\end{itemize}
+
+In order to avoid compulsory misses, we can \textbf{prefetch} data (thus load them into the cache preemptively, but not load them in the registers) prior to when the pipeline will demand it. Some CPUs allow for it, through the use of hardware prefetchers, which only work on limited set of common data patterns. Hardware prefetch can also be accompanied by software prefetching, done by either the developer or the compiler. This must however be balanced in order to not prefetch too much and thus create traffic (prefetching from the software is still done through an instruction).
+\nwl
+Another great issue with caches is to maintain cache coherence, which can be a tricky task, since we may risk \textbf{false sharing}; if a core edits a line of cache, and another core needs the edited data, the core must inform the other cores of the edit. This can be done through a message on a common shared bus.
+
+\section{Main memory organization}
+
+Memory is organized in chips, and then each chip is selected through a mux via the MSB. Chips are organized in memory sticks, where each stick is given a channel. Usually nodes have around 4/8 channels. Addresses may be divided into chunks and then assigned to different channels. Cache can also be split into chunks through a technique called interleaving. The interleaving granularity controls the size of the cache blocks:
+\begin{itemize}
+    \item \textbf{fine granularity}: interleave is made of small blocks (cache line, pages). This maximizes parallelism and bandwidth utilization;
+    \item \textbf{coarse granularity}: interleave is made of larger blocks (2MB, 1GB, which are the sizes of virtual pages). This improves locality (useful for NUMA-aware apps like MPI), and is useful when software is explicitly NUMA/hugepage-aware;
+\end{itemize}
+
+Virtual memory happens in order to give the illusion of infinite memory. Pages usually have a size of 4K. It is possible to have some sort of hierarchy when storing pages to virtual memory within the caches. Usually virtual pages addresses in 64 bits systems use the first 16 MSBits in order to store metadata about the address. This is called pointer tagging.
+\nwl
+In order to retrieve the physical address of the memory, we use the TLB. We can however use the L1 cache as a sort of TLB, where we use the virtual address to index the cache, and inside the cache we have the physical address. Indeed, the virtual address is stored in the L1 cache. This speeds up computations because we don't have to access to the TLB, which is still fast, but L1 cache is faster.
+\nwl
+Huge pages are virtual memory pages with a size of 2MB or 1GB. While huge pages increase the chance of a TLB hit, they increase also the memory fragmentation and bring, at times, non-deterministic page allocation latency.
+
+\subsection{Compute-node architectures}
+
+In a compute-node, we may usually see a Not-Uniform Memory Access architecture (NUMA), which may have multiple CPU sockets, connected through an inter-socket link, and with memory local for each socket. If a socket needs data belonging to the other socket, it will have to ask it.
+\nwl
+In a CPU, what is not inside a specific CPU core, is called uncore. Memory-bound processes pose a great workload on the uncores. Key uncore components are:
+\begin{itemize}
+    \item the LLC (L3) cache;
+    \item the MBox;
+    \item interconnects;
+    \item PCI Express (PCIe) and I/O controllers;
+    \item System Configuration Controller (UBox);
+    \item Power Control Logic (PWR).
+\end{itemize}
+
+\section{Study case: Intel Golden Cove}
+
+Golden Cove is the codename for Intel's 12th gen cores. It is made of:
+\begin{itemize}
+    \item a frontend, which does fetch and decode for the instructions;
+    \item a OoO engine, which has a ROB and a reservation station (also called scheduler by Intel). We also have physical registers files;
+    \item an execution engine, which is made of different execution ports (5 for the logic);
+    \item a load-store unit, where 3 ports are used for load operations, and 4 are used for store operations.
+\end{itemize}
+
+Since Intel uses a CISC instruction set, then each instruction is actually made of several micro-instructions.
+\nwl
+The frontend is made of a BPU and a 32 KB instruction L1 cache. The CPU loads instructions in blocks of 32 bytes. Instructions are then decoded from the 32 bytes in an instruction queue, and finally each macro-instruction is decomposed into micro-instructions in the Instruction Decode Queue.
+\nwl
+The backend is composed of an OoO engine, which is composed by a Reorder Buffer (of 512 entries) and a Scheduler (or Reservation Station). The instructions are then sent through an execution port.
+\nwl
+The execution engine has 5 execution ports, one for each different function, for operations that do not require memory handling. Depending on the type of the data, we have different functions (so either INT or FP/VEC). One of the steps of the INT pipeline is the LEA (Load Effective Address), which computes an address of the memory (no memory ops are done here!).
+\nwl
+The load-store unit (LSU) has 7 ports, divided into AGU (Address Generation Unit) and STD ports. 3 ports can issue load operations, 4 ports can issue store operations. An instruction such as
+
+\begin{lstlisting}[language = asm]
+    vmovss DWORD PTR [rsi + 0x4], xmm0
+\end{lstlisting}
+
+will ask for a AGU port in order to compute the address `rsi + 0x4` to store the data from `xmm0`. We have both Store and Load buffers; store buffers are useful because if some nearby instruction needs to read data that must be yet written to the cache, then it can read it from the store buffer instead.
+\nwl
+It is possible that the CPU reorders memory read and write for optimization reasons. If we don't want to allow this, we can set a fence, which is a memory barrier that allows for memory instructions to be executed in the same order they are written.
+
+\section{Monitoring of CPU performance}
+
+In order to measure the performance of a high-end CPU, we employ some hardware units that measure various performances of the cores (which are called Performance Monitoring Unit, PMU. There is one per core). This unit allows to measure the following metrics:
+\begin{itemize}
+    \item Performance Monitoring Counter (PMC): counter for the number of specific event;
+    \item Last Branch Record (LBR): stack log for the source and target addresses of most recent branches;
+    \item Precise Event-Based Sampling (PEBS): Intel feature only, delivers accurate samples of events precise instructions pointers;
+    \item Processor Trace (PT): hardware trace of control-flow information for near-complete program execution reconstruction.
+\end{itemize}
+
+PMCs specifically are hardware registers implemented through Model-Specific Register (meaning that each CPU family has its own kind of registers); such registers are accessed through \verb|RDMSR| (read) and \verb|WRMSR| (write) instructions. Counters within a CPU could be programmable too: Intel Skylake's architecture has 3 fixed (for counting core clocks, reference clocks and instructions retired) and 8 programmable counters. 
+
+\begin{definition}{Core clock vs Reference clock}
+    The core clock is a variable clock which depends on the frequency of a CPU. The reference clock is a fixed clock running on a fixed frequency, which has the job of synchronizing the whole system.
+\end{definition}
+
+Usually, PMCs are 48 bits wide. If a program makes a PMC overflow, then it will be interrupted through a specific interrupt (the PMI), and at that point the trace will be saved into the PEBS.
+\nwl
+Since we can't show all the events going on the CPU, we can group them in 4 main categories:
+\begin{itemize}
+    \item CPU core / execution;
+    \item Branching / Control flow;
+    \item Caches & Memory;
+    \item Floating-Point / SIMD.
+\end{itemize}
