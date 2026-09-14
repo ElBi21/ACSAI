@@ -1,9 +1,11 @@
 <h1 align="center">🗺️ My ACSAI Journey</h1>
 
-This repo represents a collection of notes, tools, projects and stuff that I used while studying for my BSc course @ Sapienza. I am (still) enrolled in the **A**pplied **C**omputer **S**cience and **A**rtificial **I**ntelligence course (shorted in ACSAI, because as it is known, the longer the name of a programme, the ~~more stupid~~ better it is).
+This repo represents a collection of notes, tools, projects and stuff that I used while studying for my BSc course @ Sapienza. I had enrolled in the **A**pplied **C**omputer **S**cience and **A**rtificial **I**ntelligence course (shorted in ACSAI, because as it is known, the longer the name of a programme, the ~~more stupid~~ better it is).
 
 The notes contained here are made with my template, [NoTeX](https://www.github.com/ElBi21/NoTeX), which is also contained as a submodule. Hence, if you want to correct some errors, make sure to clone the whole repo.
 
+> [!WARNING]
+> Unluckily, the repo is **VERY** incomplete. This means that many notes and codes lack completion and will not be complete. Now, there is the plan of integrating these materials (if I will have the time to do so), but time is not on my side. This is why I heavily encourage you to pick up on my work and to complete it, not for the sake of glorifying my work, but to help other people out
 
 > [!NOTE]
 > While these notes *may* seem correct, they may have some conceptual errors. If you do find some, feel free to open a PR!
